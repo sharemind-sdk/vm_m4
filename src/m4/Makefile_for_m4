@@ -1,0 +1,16 @@
+SOURCES=preprocess_pass1_cases.m4 preprocess_pass2_cases.m4 dispatches.m4
+
+TARGETS=$(SOURCES:.m4=.h)
+M4=m4 -E -P
+
+all: cleanlib $(TARGETS) Makefile
+
+.PHONY: cleanlib
+cleanlib:
+	rm -f libm4.a
+
+instr.m4f: instr.m4
+	$(M4) $< --freeze-state=$@
+
+$(TARGETS): %.h: %.m4 instr.m4f
+	$(M4) --reload-state=instr.m4f $< > $@
