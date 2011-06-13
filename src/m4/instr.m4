@@ -7,7 +7,12 @@ m4_include([product.m4])
 m4_include([datatypebyte.m4])
 m4_include([operandlocationbyte.m4])
 
-
+# (value)
+m4_define([DEC_TO_HEX], [_$0(m4_eval([$1 % 16]))[]m4_ifelse(m4_eval([$1 >= 16]),
+                                                            [1],
+                                                            [$0(m4_eval([$1 / 16]))])])
+m4_define([_DEC_TO_HEX], [m4_ifelse([$1], [15], [f], [$1], [14], [e], [$1], [13], [d],
+                                    [$1], [12], [c], [$1], [11], [b], [$1], [10], [a], [$1])])
 
 m4_define([_INSTR_EXPAND],[$1])
 
