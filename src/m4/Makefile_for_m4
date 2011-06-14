@@ -1,4 +1,9 @@
-SOURCES=preprocess_pass1_cases.m4 preprocess_pass2_cases.m4 dispatches.m4
+SOURCES= \
+    dispatches.m4 \
+    instruction_args_cases.m4 \
+    instruction_name_cases.m4 \
+    preprocess_pass1_cases.m4 \
+    preprocess_pass2_cases.m4
 
 TARGETS=$(SOURCES:.m4=.h)
 M4=m4 -E -P

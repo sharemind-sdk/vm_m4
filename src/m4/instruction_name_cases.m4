@@ -1,0 +1,7 @@
+m4_define([INSTR_NAME_CASE], [
+    case COMPOSE([INSTR_CODE_TO_BYTECODE],INSTR_CODE$1): return "INSTR_NAME$1";])
+
+m4_define([DO_INSTRS_NAME_CASES], [foreach([INSTR_NAME_CASE], [(INSTRS)])])
+
+m4_divert[]m4_dnl
+DO_INSTRS_NAME_CASES
