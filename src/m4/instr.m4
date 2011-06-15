@@ -25,7 +25,13 @@ m4_define([INSTR_DEFINE], [m4_define(m4_format([[INSTR_%s]], [$1]), [$1, $2, $3,
 m4_define([INSTRS],[forloop([i], 1, INSTR_COUNT, [m4_ifelse(i, [1], [], [, ])(INSTR(INSTR(i)))])])
 m4_define([INSTR_FOREACH],[forloop([i], 1, INSTR_COUNT, [m4_indir([$1],_INSTR_EXPAND(INSTR(INSTR(i))))])])
 
-m4_define([INSTR_NAME], $1)
+m4_define([STRIP_NAME], [m4_patsubst($1, [\.[^.]*$])])
+m4_define([STRIP_TOP_NAMESPACE], [m4_patsubst($1, [^[^.]*\.])])
+m4_define([STRIP_NAMESPACE], [m4_patsubst($1, [^\([^.]*\.\)*])])
+
+m4_define([INSTR_FULLNAME], $1)
+m4_define([INSTR_NAME], [STRIP_NAMESPACE($1)])
+m4_define([INSTR_NAMESPACE], [STRIP_NAME($1)])
 m4_define([INSTR_CODE], $2)
 m4_define([INSTR_ARGS], $3)
 m4_define([INSTR_PREPARATION], $4)
@@ -47,7 +53,9 @@ m4_define([EMPTY_IMPL_DEFINE], [m4_define(m4_format([[EMPTY_IMPL_%s]], [$1]), [$
 m4_define([EMPTY_IMPLS],[forloop([i], 1, EMPTY_IMPL_COUNT, [m4_ifelse(i, [1], [], [, ])(EMPTY_IMPL(EMPTY_IMPL(i)))])])
 m4_define([EMPTY_IMPL_FOREACH],[forloop([i], 1, EMPTY_IMPL_COUNT, [m4_indir([$1],_INSTR_EXPAND(EMPTY_IMPL(EMPTY_IMPL(i))))])])
 
-m4_define([EMPTY_IMPL_LABEL], $1)
+m4_define([EMPTY_IMPL_FULLLABEL], $1)
+m4_define([EMPTY_IMPL_LABEL], [STRIP_NAMESPACE($1)])
+m4_define([EMPTY_IMPL_NAMESPACE], [STRIP_NAME($1)])
 m4_define([EMPTY_IMPL_ARGS], $2)
 m4_define([EMPTY_IMPL_CODE], $3)
 m4_define([EMPTY_IMPL_NEED_DISPATCH], $4)
@@ -61,29 +69,29 @@ m4_define([IMPL_SUFFIX], [$1])
 m4_define([NO_IMPL_SUFFIX], [])
 m4_define([IMPL], [$1])
 
-INSTR_DEFINE([common_nop],
+INSTR_DEFINE([common.nop],
     CODE(0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00),
     NO_ARGS, NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([SVM_MI_NOP]), DO_DISPATCH, PREPARE_FINISH)
 
-INSTR_DEFINE([common_trap],
+INSTR_DEFINE([common.trap],
     CODE(0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00),
     NO_ARGS, NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([SVM_MI_TRAP]), DO_DISPATCH, PREPARE_FINISH)
 
-INSTR_DEFINE([common_mov_imm_reg_all_0],
+INSTR_DEFINE([common.mov_imm_reg_all_0],
     CODE(0x00, 0x01, OLB_CODE_imm, OLB_CODE_reg, 0xff, 0x00, 0x00, 0x00),
     ARGS(2), NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([
         uint64_t * d;
         SVM_MI_GET_reg(d, SVM_MI_ARG_AS(2, size_t));
         *d = SVM_MI_ARG_AS(1,uint64_t);]), DO_DISPATCH, PREPARE_FINISH)
 
-INSTR_DEFINE([common_mov_imm_stack_all_0],
+INSTR_DEFINE([common.mov_imm_stack_all_0],
     CODE(0x00, 0x01, OLB_CODE_imm, OLB_CODE_stack, 0xff, 0x00, 0x00, 0x00),
     ARGS(2), NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([
         uint64_t * d;
         SVM_MI_GET_stack(d, SVM_MI_ARG_AS(2, size_t));
         *d = SVM_MI_ARG_AS(1,uint64_t);]), DO_DISPATCH, PREPARE_FINISH)
 
-INSTR_DEFINE([common_mov_reg_reg_all_0],
+INSTR_DEFINE([common.mov_reg_reg_all_0],
     CODE(0x00, 0x01, OLB_CODE_reg, OLB_CODE_reg, 0xff, 0x00, 0x00, 0x00),
     ARGS(2), PREPARATION([
         SVM_PREPARE_CHECK_OR_ERROR(SVM_PREPARE_ARG(1) != SVM_PREPARE_ARG(2),
@@ -95,7 +103,7 @@ INSTR_DEFINE([common_mov_reg_reg_all_0],
         SVM_MI_GET_reg(d, SVM_MI_ARG_AS(2, size_t));
         *d = *s;]), DO_DISPATCH, PREPARE_FINISH)
 
-INSTR_DEFINE([common_mov_reg_stack_all_0],
+INSTR_DEFINE([common.mov_reg_stack_all_0],
     CODE(0x00, 0x01, OLB_CODE_reg, OLB_CODE_stack, 0xff, 0x00, 0x00, 0x00),
     ARGS(2), NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([
         uint64_t * s;
@@ -104,7 +112,7 @@ INSTR_DEFINE([common_mov_reg_stack_all_0],
         SVM_MI_GET_stack(d, SVM_MI_ARG_AS(2, size_t));
         *d = *s;]), DO_DISPATCH, PREPARE_FINISH)
 
-INSTR_DEFINE([common_mov_stack_reg_all_0],
+INSTR_DEFINE([common.mov_stack_reg_all_0],
     CODE(0x00, 0x01, OLB_CODE_stack, OLB_CODE_reg, 0xff, 0x00, 0x00, 0x00),
     ARGS(2), NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([
         uint64_t * s;
@@ -113,7 +121,7 @@ INSTR_DEFINE([common_mov_stack_reg_all_0],
         SVM_MI_GET_reg(d, SVM_MI_ARG_AS(2, size_t));
         *d = *s;]), DO_DISPATCH, PREPARE_FINISH)
 
-INSTR_DEFINE([common_mov_stack_stack_all_0],
+INSTR_DEFINE([common.mov_stack_stack_all_0],
     CODE(0x00, 0x01, OLB_CODE_stack, OLB_CODE_stack, 0xff, 0x00, 0x00, 0x00),
     ARGS(2), PREPARATION([
         SVM_PREPARE_CHECK_OR_ERROR(SVM_PREPARE_ARG(1) != SVM_PREPARE_ARG(2),
@@ -125,7 +133,7 @@ INSTR_DEFINE([common_mov_stack_stack_all_0],
         SVM_MI_GET_stack(d, SVM_MI_ARG_AS(2, size_t));
         *d = *s;]), DO_DISPATCH, PREPARE_FINISH)
 
-INSTR_DEFINE([common_call_imm_imm],
+INSTR_DEFINE([common.proc.call_imm_imm],
     CODE(0x00, 0x02, 0x00, 0x01, 0x01, 0x00, 0x00, 0x00),
     NO_ARGS,
     PREPARATION([{
@@ -144,39 +152,39 @@ INSTR_DEFINE([common_call_imm_imm],
     IMPL([SVM_MI_CALL(SVM_MI_ARG_AS(1, size_t),NULL,1)]),
     NO_DISPATCH, PREPARE_FINISH)
 
-INSTR_DEFINE([common_return_imm],
+INSTR_DEFINE([common.proc.return_imm],
     CODE(0x00, 0x02, 0x03, 0x01, 0x00, 0x00, 0x00, 0x00),
     NO_ARGS, NO_PREPARATION, NO_IMPL_SUFFIX,
     IMPL([SVM_MI_RETURN(SVM_MI_ARG_AS(1, int64_t))]),
     NO_DISPATCH, PREPARE_FINISH)
 
-INSTR_DEFINE([common_proc_push_imm],
+INSTR_DEFINE([common.proc.push_imm],
     CODE(0x00, 0x02, 0x04, OLB_CODE_imm, 0x00, 0x00, 0x00, 0x00),
     ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([SVM_MI_PUSH(SVM_MI_ARG_AS(1, uint64_t))]), DO_DISPATCH, PREPARE_FINISH)
 
-INSTR_DEFINE([common_proc_push_reg],
+INSTR_DEFINE([common.proc.push_reg],
     CODE(0x00, 0x02, 0x04, OLB_CODE_reg, 0x00, 0x00, 0x00, 0x00),
     ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([
             uint64_t * d;
             SVM_MI_GET_reg(d, SVM_MI_ARG_AS(1, size_t));
             SVM_MI_PUSH(*d);]), DO_DISPATCH, PREPARE_FINISH)
 
-INSTR_DEFINE([common_proc_push_stack],
+INSTR_DEFINE([common.proc.push_stack],
     CODE(0x00, 0x02, 0x04, OLB_CODE_stack, 0x00, 0x00, 0x00, 0x00),
     ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([
         uint64_t * d;
         SVM_MI_GET_stack(d, SVM_MI_ARG_AS(1, size_t));
         SVM_MI_PUSH(*d);]), DO_DISPATCH, PREPARE_FINISH)
 
-INSTR_DEFINE([common_proc_clearstack],
+INSTR_DEFINE([common.proc.clearstack],
     CODE(0x00, 0x02, 0x07, 0x00, 0x00, 0x00, 0x00, 0x00),
     NO_ARGS, NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([SVM_MI_CLEAR_STACK]), DO_DISPATCH, PREPARE_FINISH)
 
-INSTR_DEFINE([common_proc_resizestack],
+INSTR_DEFINE([common.proc.resizestack],
     CODE(0x00, 0x02, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00),
     ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([SVM_MI_RESIZE_STACK(SVM_MI_ARG_AS(1, uint64_t))]), DO_DISPATCH, PREPARE_FINISH)
 
-INSTR_DEFINE([common_halt],
+INSTR_DEFINE([common.halt],
     CODE(0x00, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00),
     ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([SVM_MI_HALT(SVM_MI_ARG_AS(1, int64_t))]), DO_DISPATCH, PREPARE_FINISH)
 
@@ -223,7 +231,7 @@ m4_define([INSTR_JUMP_DEFINE], [
         PREPARATION([m4_ifelse([$8], [NO_PREPARATION], [], [
             if (1) {
                 $8;
-                ])INSTR_JUMP_PREPARE_IMM($1[_imm],1,1,_backward,_forward)m4_ifelse([$8], [NO_PREPARATION], [], [;
+                ])INSTR_JUMP_PREPARE_IMM(STRIP_NAMESPACE($1)[_imm],1,1,_backward,_forward)m4_ifelse([$8], [NO_PREPARATION], [], [;
             } else (void) 0])]),
         IMPL_SUFFIX(_forward),
         IMPL([m4_ifelse([$9], [NO_JUMP_PRECODE], [], [
@@ -277,7 +285,7 @@ m4_define([_ARG4],[$4])
 # (name, code, cond, dtb, olb)
 m4_define([INSTR_JUMP_COND_1_DEFINE], [
     INSTR_JUMP_DEFINE(
-        jump_$1_$4_$5,
+        jump.$1_$4_$5,
         $2, DTB_CODE_$4, OLB_CODE_$5, 0x00, 0x00, 2,
         NO_PREPARATION,
         JUMP_PRECODE([
@@ -288,7 +296,7 @@ m4_define([INSTR_JUMP_COND_1_DEFINE], [
 # (name, code, cond, dtb, olb, dtb2, olb2)
 m4_define([INSTR_JUMP_COND_2_DEFINE], [
     INSTR_JUMP_DEFINE(
-        jump_$1_$4_$5_$6_$7,
+        jump.$1_$4_$5_$6_$7,
         $2, DTB_CODE_$4, OLB_CODE_$5, DTB_CODE_$6, OLB_CODE_$7, 3,
         m4_ifelse([$4], [$6], m4_ifelse([$5], [$7], [if (SVM_PREPARE_ARG(1) == SVM_PREPARE_ARG(2)) {
             SVM_PREPARE_ERROR(SVM_PREPARE_ERROR_INVALID_ARGUMENTS);
@@ -304,7 +312,7 @@ m4_define([INSTR_JUMP_COND_2_DEFINE], [
                       [SVM_MI_GET_T_$7(c2, DTB_TYPE_$6, SVM_MI_ARG_AS(3,size_t))]);]),
         $3, DO_DISPATCH)])
 
-INSTR_JUMP_DEFINE([jump_jmp], 0x00, 0x00, 0x00, 0x00, 0x00, 1, NO_PREPARATION, NO_JUMP_PRECODE, NO_JUMP_CONDITION, NO_DISPATCH)
+INSTR_JUMP_DEFINE([jump.jmp], 0x00, 0x00, 0x00, 0x00, 0x00, 1, NO_PREPARATION, NO_JUMP_PRECODE, NO_JUMP_CONDITION, NO_DISPATCH)
 
 m4_define([INSTR_JUMP_JZ_DEFINE],
           [INSTR_JUMP_COND_1_DEFINE([jz],0x01,((*((DTB_GET_TYPE(_ARG1$1)*)c)) == 0),_ARG1$1,_ARG2$1)])

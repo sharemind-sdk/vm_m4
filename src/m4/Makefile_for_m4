@@ -1,14 +1,16 @@
-SOURCES= \
+M4_2_H_SOURCES= \
     dispatches.m4 \
-    instruction_args_cases.m4 \
-    instruction_name_cases.m4 \
+    instruction_from_code_cases.m4 \
+    instruction_from_name_cases.m4 \
+    instruction_structs.m4 \
     preprocess_pass1_cases.m4 \
     preprocess_pass2_cases.m4
 
-TARGETS=$(SOURCES:.m4=.h)
 M4=m4 -E -P
 
-all: cleanlib $(TARGETS) Makefile
+M4_2_H_TARGETS=$(M4_2_H_SOURCES:.m4=.h)
+
+all: cleanlib $(M4_2_H_TARGETS) Makefile
 
 .PHONY: cleanlib
 cleanlib:
@@ -17,5 +19,5 @@ cleanlib:
 instr.m4f: instr.m4
 	$(M4) $< --freeze-state=$@
 
-$(TARGETS): %.h: %.m4 instr.m4f
+$(M4_2_H_TARGETS): %.h: %.m4 instr.m4f
 	$(M4) --reload-state=instr.m4f $< > $@
