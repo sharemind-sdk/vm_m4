@@ -231,7 +231,7 @@ m4_define([INSTR_JUMP_DEFINE], [
         PREPARATION([m4_ifelse([$9], [NO_PREPARATION], [], [
             if (1) {
                 $9;
-                ])INSTR_JUMP_PREPARE_IMM(STRIP_NAMESPACE($1)[_imm],1,1,_backward,_forward)m4_ifelse([$9], [NO_PREPARATION], [], [;
+                ])INSTR_JUMP_PREPARE_IMM(STRIP_NAMESPACE($1)[_imm]$2,1,1,_backward,_forward,$2)m4_ifelse([$9], [NO_PREPARATION], [], [;
             } else (void) 0])]),
         IMPL_SUFFIX(_forward),
         IMPL([m4_ifelse([$10], [NO_JUMP_PRECODE], [], [
@@ -275,6 +275,7 @@ m4_define([INSTR_JUMP_DEFINE], [
         $12, PREPARE_FINISH)
 ])
 
+INSTR_JUMP_DEFINE([jump.jmp], [], 0x00, 0x00, 0x00, 0x00, 0x00, 1, NO_PREPARATION, NO_JUMP_PRECODE, NO_JUMP_CONDITION, NO_DISPATCH)
 
 
 m4_define([_ARG1],[$1])
@@ -311,8 +312,6 @@ m4_define([INSTR_JUMP_COND_2_DEFINE], [
                       [SVM_MI_GET_$7(c2, SVM_MI_ARG_AS(3,size_t))],
                       [SVM_MI_GET_T_$7(c2, DTB_TYPE_$6, SVM_MI_ARG_AS(3,size_t))]);]),
         $3, DO_DISPATCH)])
-
-INSTR_JUMP_DEFINE([jump.jmp], [], 0x00, 0x00, 0x00, 0x00, 0x00, 1, NO_PREPARATION, NO_JUMP_PRECODE, NO_JUMP_CONDITION, NO_DISPATCH)
 
 m4_define([INSTR_JUMP_JZ_DEFINE],
           [INSTR_JUMP_COND_1_DEFINE([jz],0x01,((*((DTB_GET_TYPE(_ARG1$1)*)c)) == 0),_ARG1$1,_ARG2$1)])
