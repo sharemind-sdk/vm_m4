@@ -4,7 +4,8 @@ M4_2_H_SOURCES= \
     instruction_from_name_cases.m4 \
     instruction_structs.m4 \
     preprocess_pass1_cases.m4 \
-    preprocess_pass2_cases.m4
+    preprocess_pass2_cases.m4 \
+    static_label_structs.m4
 
 M4=m4 -E -P
 
