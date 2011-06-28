@@ -80,21 +80,21 @@ INSTR_DEFINE([common.trap],
     CODE(0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00),
     NO_ARGS, NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([SVM_MI_TRAP]), DO_DISPATCH, PREPARE_FINISH)
 
-INSTR_DEFINE([common.mov_imm_reg_all_0],
+INSTR_DEFINE([common.mov_imm_reg],
     CODE(0x00, 0x01, OLB_CODE_imm, OLB_CODE_reg, 0xff, 0x00, 0x00, 0x00),
     ARGS(2), NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([
         union SVM_IBlock * d;
         SVM_MI_GET_reg(d, SVM_MI_ARG_AS(2, sizet));
         *d = SVM_MI_ARG(1);]), DO_DISPATCH, PREPARE_FINISH)
 
-INSTR_DEFINE([common.mov_imm_stack_all_0],
+INSTR_DEFINE([common.mov_imm_stack],
     CODE(0x00, 0x01, OLB_CODE_imm, OLB_CODE_stack, 0xff, 0x00, 0x00, 0x00),
     ARGS(2), NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([
         union SVM_IBlock * d;
         SVM_MI_GET_stack(d, SVM_MI_ARG_AS(2, sizet));
         *d = SVM_MI_ARG(1);]), DO_DISPATCH, PREPARE_FINISH)
 
-INSTR_DEFINE([common.mov_reg_reg_all_0],
+INSTR_DEFINE([common.mov_reg_reg],
     CODE(0x00, 0x01, OLB_CODE_reg, OLB_CODE_reg, 0xff, 0x00, 0x00, 0x00),
     ARGS(2), PREPARATION([
         SVM_PREPARE_CHECK_OR_ERROR(SVM_PREPARE_ARG_AS(1,uint64) != SVM_PREPARE_ARG_AS(2,uint64),
@@ -106,7 +106,7 @@ INSTR_DEFINE([common.mov_reg_reg_all_0],
         SVM_MI_GET_reg(d, SVM_MI_ARG_AS(2, sizet));
         *d = *s;]), DO_DISPATCH, PREPARE_FINISH)
 
-INSTR_DEFINE([common.mov_reg_stack_all_0],
+INSTR_DEFINE([common.mov_reg_stack],
     CODE(0x00, 0x01, OLB_CODE_reg, OLB_CODE_stack, 0xff, 0x00, 0x00, 0x00),
     ARGS(2), NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([
         union SVM_IBlock * s;
@@ -115,7 +115,7 @@ INSTR_DEFINE([common.mov_reg_stack_all_0],
         SVM_MI_GET_stack(d, SVM_MI_ARG_AS(2, sizet));
         *d = *s;]), DO_DISPATCH, PREPARE_FINISH)
 
-INSTR_DEFINE([common.mov_stack_reg_all_0],
+INSTR_DEFINE([common.mov_stack_reg],
     CODE(0x00, 0x01, OLB_CODE_stack, OLB_CODE_reg, 0xff, 0x00, 0x00, 0x00),
     ARGS(2), NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([
         union SVM_IBlock * s;
@@ -124,7 +124,7 @@ INSTR_DEFINE([common.mov_stack_reg_all_0],
         SVM_MI_GET_reg(d, SVM_MI_ARG_AS(2, sizet));
         *d = *s;]), DO_DISPATCH, PREPARE_FINISH)
 
-INSTR_DEFINE([common.mov_stack_stack_all_0],
+INSTR_DEFINE([common.mov_stack_stack],
     CODE(0x00, 0x01, OLB_CODE_stack, OLB_CODE_stack, 0xff, 0x00, 0x00, 0x00),
     ARGS(2), PREPARATION([
         SVM_PREPARE_CHECK_OR_ERROR(SVM_PREPARE_ARG_AS(1,uint64) != SVM_PREPARE_ARG_AS(2,uint64),
