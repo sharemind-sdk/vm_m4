@@ -59,7 +59,7 @@ m4_define([CC_FULLNAME], $3)
 
 m4_define([SIMPLE], [
     if (strcmp("INSTR_FULLNAME$1",N) == 0)
-        return & SVM_Instr_[]FNSANIT(CC_FULLNAME$1);])
+        return & SMVMI_Instr_[]FNSANIT(CC_FULLNAME$1);])
 
 m4_define([DO_TOSTRING], [foreach([SIMPLE], [(CCS)])])
 
