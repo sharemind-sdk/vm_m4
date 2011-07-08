@@ -1,3 +1,4 @@
+m4_divert(-1)
 #
 # This file is a part of the Sharemind framework.
 # Copyright (C) Cybernetica AS
@@ -6,8 +7,6 @@
 # without the written consent of the copyright owner. The usage of this
 # code is subject to the appropriate license agreement.
 #
-
-m4_divert(-1)
 
 m4_changequote([,])
 m4_include([forloop.m4])
