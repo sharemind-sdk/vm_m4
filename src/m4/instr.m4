@@ -82,152 +82,152 @@ m4_define([IMPL], [$1])
 
 INSTR_DEFINE([common.nop],
     CODE(0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00),
-    NO_ARGS, NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([SVM_MI_NOP]), DO_DISPATCH, PREPARE_FINISH)
+    NO_ARGS, NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([SMVM_MI_NOP]), DO_DISPATCH, PREPARE_FINISH)
 
 INSTR_DEFINE([common.trap],
     CODE(0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00),
-    NO_ARGS, NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([SVM_MI_TRAP]), DO_DISPATCH, PREPARE_FINISH)
+    NO_ARGS, NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([SMVM_MI_TRAP]), DO_DISPATCH, PREPARE_FINISH)
 
 INSTR_DEFINE([common.mov_imm_reg],
     CODE(0x00, 0x01, OLB_CODE_imm, OLB_CODE_reg, 0xff, 0x00, 0x00, 0x00),
     ARGS(2), NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([
-        union SVM_IBlock * d;
-        SVM_MI_GET_reg(d, SVM_MI_ARG_AS(2, sizet));
-        *d = SVM_MI_ARG(1);]), DO_DISPATCH, PREPARE_FINISH)
+        union SM_CodeBlock * d;
+        SMVM_MI_GET_reg(d, SMVM_MI_ARG_AS(2, sizet));
+        *d = SMVM_MI_ARG(1);]), DO_DISPATCH, PREPARE_FINISH)
 
 INSTR_DEFINE([common.mov_imm_stack],
     CODE(0x00, 0x01, OLB_CODE_imm, OLB_CODE_stack, 0xff, 0x00, 0x00, 0x00),
     ARGS(2), NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([
-        union SVM_IBlock * d;
-        SVM_MI_GET_stack(d, SVM_MI_ARG_AS(2, sizet));
-        *d = SVM_MI_ARG(1);]), DO_DISPATCH, PREPARE_FINISH)
+        union SM_CodeBlock * d;
+        SMVM_MI_GET_stack(d, SMVM_MI_ARG_AS(2, sizet));
+        *d = SMVM_MI_ARG(1);]), DO_DISPATCH, PREPARE_FINISH)
 
 INSTR_DEFINE([common.mov_reg_reg],
     CODE(0x00, 0x01, OLB_CODE_reg, OLB_CODE_reg, 0xff, 0x00, 0x00, 0x00),
     ARGS(2), PREPARATION([
-        SVM_PREPARE_CHECK_OR_ERROR(SVM_PREPARE_ARG_AS(1,uint64) != SVM_PREPARE_ARG_AS(2,uint64),
-                                   SVM_PREPARE_ERROR_INVALID_ARGUMENTS)]),
+        SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(1,uint64) != SMVM_PREPARE_ARG_AS(2,uint64),
+                                    SMVM_PREPARE_ERROR_INVALID_ARGUMENTS)]),
     NO_IMPL_SUFFIX, IMPL([
-        union SVM_IBlock * s;
-        SVM_MI_GET_reg(s, SVM_MI_ARG_AS(1, sizet));
-        union SVM_IBlock * d;
-        SVM_MI_GET_reg(d, SVM_MI_ARG_AS(2, sizet));
+        union SM_CodeBlock * s;
+        SMVM_MI_GET_reg(s, SMVM_MI_ARG_AS(1, sizet));
+        union SM_CodeBlock * d;
+        SMVM_MI_GET_reg(d, SMVM_MI_ARG_AS(2, sizet));
         *d = *s;]), DO_DISPATCH, PREPARE_FINISH)
 
 INSTR_DEFINE([common.mov_reg_stack],
     CODE(0x00, 0x01, OLB_CODE_reg, OLB_CODE_stack, 0xff, 0x00, 0x00, 0x00),
     ARGS(2), NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([
-        union SVM_IBlock * s;
-        SVM_MI_GET_reg(s, SVM_MI_ARG_AS(1, sizet));
-        union SVM_IBlock * d;
-        SVM_MI_GET_stack(d, SVM_MI_ARG_AS(2, sizet));
+        union SM_CodeBlock * s;
+        SMVM_MI_GET_reg(s, SMVM_MI_ARG_AS(1, sizet));
+        union SM_CodeBlock * d;
+        SMVM_MI_GET_stack(d, SMVM_MI_ARG_AS(2, sizet));
         *d = *s;]), DO_DISPATCH, PREPARE_FINISH)
 
 INSTR_DEFINE([common.mov_stack_reg],
     CODE(0x00, 0x01, OLB_CODE_stack, OLB_CODE_reg, 0xff, 0x00, 0x00, 0x00),
     ARGS(2), NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([
-        union SVM_IBlock * s;
-        SVM_MI_GET_reg(s, SVM_MI_ARG_AS(1, sizet));
-        union SVM_IBlock * d;
-        SVM_MI_GET_reg(d, SVM_MI_ARG_AS(2, sizet));
+        union SM_CodeBlock * s;
+        SMVM_MI_GET_reg(s, SMVM_MI_ARG_AS(1, sizet));
+        union SM_CodeBlock * d;
+        SMVM_MI_GET_reg(d, SMVM_MI_ARG_AS(2, sizet));
         *d = *s;]), DO_DISPATCH, PREPARE_FINISH)
 
 INSTR_DEFINE([common.mov_stack_stack],
     CODE(0x00, 0x01, OLB_CODE_stack, OLB_CODE_stack, 0xff, 0x00, 0x00, 0x00),
     ARGS(2), PREPARATION([
-        SVM_PREPARE_CHECK_OR_ERROR(SVM_PREPARE_ARG_AS(1,uint64) != SVM_PREPARE_ARG_AS(2,uint64),
-                                   SVM_PREPARE_ERROR_INVALID_ARGUMENTS)]),
+        SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(1,uint64) != SMVM_PREPARE_ARG_AS(2,uint64),
+                                    SMVM_PREPARE_ERROR_INVALID_ARGUMENTS)]),
     NO_IMPL_SUFFIX, IMPL([
-        union SVM_IBlock * s;
-        SVM_MI_GET_reg(s, SVM_MI_ARG_AS(1, sizet));
-        union SVM_IBlock * d;
-        SVM_MI_GET_stack(d, SVM_MI_ARG_AS(2, sizet));
+        union SM_CodeBlock * s;
+        SMVM_MI_GET_reg(s, SMVM_MI_ARG_AS(1, sizet));
+        union SM_CodeBlock * d;
+        SMVM_MI_GET_stack(d, SMVM_MI_ARG_AS(2, sizet));
         *d = *s;]), DO_DISPATCH, PREPARE_FINISH)
 
 INSTR_DEFINE([common.proc.call_imm_imm],
     CODE(0x00, 0x02, 0x00, 0x01, 0x01, 0x00, 0x00, 0x00),
     NO_ARGS,
     PREPARATION([{
-        size_t b = SVM_PREPARE_ARG_AS(1,sizet);
-        SVM_PREPARE_CHECK_OR_ERROR(
-            ((uint64_t) b) != SVM_PREPARE_ARG_AS(1,uint64),
-            SVM_PREPARE_ERROR_INVALID_ARGUMENTS);
-        SVM_PREPARE_CHECK_OR_ERROR(
-            b < SVM_PREPARE_CODESIZE(SVM_PREPARE_CURRENT_CODE_SECTION),
-            SVM_PREPARE_ERROR_INVALID_ARGUMENTS);
-        SVM_PREPARE_CHECK_OR_ERROR(
-            SVM_PREPARE_IS_INSTR(b),
-            SVM_PREPARE_ERROR_INVALID_ARGUMENTS);
+        size_t b = SMVM_PREPARE_ARG_AS(1,sizet);
+        SMVM_PREPARE_CHECK_OR_ERROR(
+            ((uint64_t) b) != SMVM_PREPARE_ARG_AS(1,uint64),
+            SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
+        SMVM_PREPARE_CHECK_OR_ERROR(
+            b < SMVM_PREPARE_CODESIZE(SMVM_PREPARE_CURRENT_CODE_SECTION),
+            SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
+        SMVM_PREPARE_CHECK_OR_ERROR(
+            SMVM_PREPARE_IS_INSTR(b),
+            SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
     }]),
     NO_IMPL_SUFFIX,
-    IMPL([SVM_MI_CALL(SVM_MI_ARG_AS(1, sizet),NULL,1)]),
+    IMPL([SMVM_MI_CALL(SMVM_MI_ARG_AS(1, sizet),NULL,1)]),
     NO_DISPATCH, PREPARE_FINISH)
 
 INSTR_DEFINE([common.proc.return_imm],
     CODE(0x00, 0x02, 0x03, 0x01, 0x00, 0x00, 0x00, 0x00),
     NO_ARGS, NO_PREPARATION, NO_IMPL_SUFFIX,
-    IMPL([SVM_MI_RETURN(SVM_MI_ARG_AS(1, int64))]),
+    IMPL([SMVM_MI_RETURN(SMVM_MI_ARG_AS(1, int64))]),
     NO_DISPATCH, PREPARE_FINISH)
 
 INSTR_DEFINE([common.proc.push_imm],
     CODE(0x00, 0x02, 0x04, OLB_CODE_imm, 0x00, 0x00, 0x00, 0x00),
-    ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([SVM_MI_PUSH(SVM_MI_ARG(1))]), DO_DISPATCH, PREPARE_FINISH)
+    ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([SMVM_MI_PUSH(SMVM_MI_ARG(1))]), DO_DISPATCH, PREPARE_FINISH)
 
 INSTR_DEFINE([common.proc.push_reg],
     CODE(0x00, 0x02, 0x04, OLB_CODE_reg, 0x00, 0x00, 0x00, 0x00),
     ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([
-            union SVM_IBlock * d;
-            SVM_MI_GET_reg(d, SVM_MI_ARG_AS(1, sizet));
-            SVM_MI_PUSH(*d);]), DO_DISPATCH, PREPARE_FINISH)
+            union SM_CodeBlock * d;
+            SMVM_MI_GET_reg(d, SMVM_MI_ARG_AS(1, sizet));
+            SMVM_MI_PUSH(*d);]), DO_DISPATCH, PREPARE_FINISH)
 
 INSTR_DEFINE([common.proc.push_stack],
     CODE(0x00, 0x02, 0x04, OLB_CODE_stack, 0x00, 0x00, 0x00, 0x00),
     ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([
-        union SVM_IBlock * d;
-        SVM_MI_GET_stack(d, SVM_MI_ARG_AS(1, sizet));
-        SVM_MI_PUSH(*d);]), DO_DISPATCH, PREPARE_FINISH)
+        union SM_CodeBlock * d;
+        SMVM_MI_GET_stack(d, SMVM_MI_ARG_AS(1, sizet));
+        SMVM_MI_PUSH(*d);]), DO_DISPATCH, PREPARE_FINISH)
 
 INSTR_DEFINE([common.proc.clearstack],
     CODE(0x00, 0x02, 0x07, 0x00, 0x00, 0x00, 0x00, 0x00),
-    NO_ARGS, NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([SVM_MI_CLEAR_STACK]), DO_DISPATCH, PREPARE_FINISH)
+    NO_ARGS, NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([SMVM_MI_CLEAR_STACK]), DO_DISPATCH, PREPARE_FINISH)
 
 INSTR_DEFINE([common.proc.resizestack],
     CODE(0x00, 0x02, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00),
-    ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([SVM_MI_RESIZE_STACK(SVM_MI_ARG_AS(1, uint64))]), DO_DISPATCH, PREPARE_FINISH)
+    ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([SMVM_MI_RESIZE_STACK(SMVM_MI_ARG_AS(1, uint64))]), DO_DISPATCH, PREPARE_FINISH)
 
 INSTR_DEFINE([common.halt],
     CODE(0x00, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00),
-    ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([SVM_MI_HALT(SVM_MI_ARG_AS(1, int64))]), DO_DISPATCH, PREPARE_FINISH)
+    ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([SMVM_MI_HALT(SMVM_MI_ARG_AS(1, int64))]), DO_DISPATCH, PREPARE_FINISH)
 
 # (name,arg,numargs,backward_e,backward_i,forward_e,forward_i)
 m4_define([INSTR_JUMP_PREPARE_IMM],
        [{
-        int64_t a = SVM_PREPARE_ARG_AS($2,int64);
+        int64_t a = SMVM_PREPARE_ARG_AS($2,int64);
         if (a > 0) {
-            uint64_t b = SVM_PREPARE_CURRENT_I + 1 + ($3);
-            SVM_PREPARE_CHECK_OR_ERROR(
-                b > SVM_PREPARE_CURRENT_I,
-                SVM_PREPARE_ERROR_INVALID_ARGUMENTS);
+            uint64_t b = SMVM_PREPARE_CURRENT_I + 1 + ($3);
+            SMVM_PREPARE_CHECK_OR_ERROR(
+                b > SMVM_PREPARE_CURRENT_I,
+                SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
             b += ((uint64_t) a);
-            SVM_PREPARE_CHECK_OR_ERROR(
-                b > SVM_PREPARE_CURRENT_I + 1 + ($3),
-                SVM_PREPARE_ERROR_INVALID_ARGUMENTS);
-            SVM_PREPARE_CHECK_OR_ERROR(
-                b < SVM_PREPARE_CODESIZE(SVM_PREPARE_CURRENT_CODE_SECTION),
-                SVM_PREPARE_ERROR_INVALID_ARGUMENTS);
-            SVM_PREPARE_CHECK_OR_ERROR(
-                SVM_PREPARE_IS_INSTR((size_t) b),
-                SVM_PREPARE_ERROR_INVALID_ARGUMENTS);
-            SVM_PREPARE_END_AS($6,$7,$3);
+            SMVM_PREPARE_CHECK_OR_ERROR(
+                b > SMVM_PREPARE_CURRENT_I + 1 + ($3),
+                SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
+            SMVM_PREPARE_CHECK_OR_ERROR(
+                b < SMVM_PREPARE_CODESIZE(SMVM_PREPARE_CURRENT_CODE_SECTION),
+                SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
+            SMVM_PREPARE_CHECK_OR_ERROR(
+                SMVM_PREPARE_IS_INSTR((size_t) b),
+                SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
+            SMVM_PREPARE_END_AS($6,$7,$3);
         } else {
             a = -a;
-            SVM_PREPARE_CHECK_OR_ERROR(
-                SVM_PREPARE_CURRENT_I > ((uint64_t) a),
-                SVM_PREPARE_ERROR_INVALID_ARGUMENTS);
-            SVM_PREPARE_CHECK_OR_ERROR(
-                SVM_PREPARE_IS_INSTR(SVM_PREPARE_CURRENT_I - ((uint64_t) a) - 1),
-                SVM_PREPARE_ERROR_INVALID_ARGUMENTS);
-            SVM_PREPARE_END_AS($4,$5,$3);
+            SMVM_PREPARE_CHECK_OR_ERROR(
+                SMVM_PREPARE_CURRENT_I > ((uint64_t) a),
+                SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
+            SMVM_PREPARE_CHECK_OR_ERROR(
+                SMVM_PREPARE_IS_INSTR(SMVM_PREPARE_CURRENT_I - ((uint64_t) a) - 1),
+                SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
+            SMVM_PREPARE_END_AS($4,$5,$3);
         }
     }])
 
@@ -248,14 +248,14 @@ m4_define([INSTR_JUMP_DEFINE], [
         IMPL([m4_ifelse([$10], [NO_JUMP_PRECODE], [], [
                 $10;])m4_ifelse([$11], [NO_JUMP_CONDITION], [], [
                 if ($11) {])
-                    SVM_MI_JUMP_REL_FORWARD(SVM_MI_ARG_P(1), $8);m4_ifelse([$11], [NO_JUMP_CONDITION], [], [[
+                    SMVM_MI_JUMP_REL_FORWARD(SMVM_MI_ARG_P(1), $8);m4_ifelse([$11], [NO_JUMP_CONDITION], [], [[
                 }]])]),
         $12, NO_PREPARE_FINISH)
     EMPTY_IMPL_DEFINE($1[_imm]$2[_backward], ARGS($8),
         IMPL([m4_ifelse([$10], [NO_JUMP_PRECODE], [], [
             $10;])m4_ifelse([$11], [NO_JUMP_CONDITION], [], [
             if ($11) {])
-                SVM_MI_JUMP_REL_BACKWARD(SVM_MI_ARG_P(1));m4_ifelse([$11], [NO_JUMP_CONDITION], [], [[
+                SMVM_MI_JUMP_REL_BACKWARD(SMVM_MI_ARG_P(1));m4_ifelse([$11], [NO_JUMP_CONDITION], [], [[
             }]])]),
         $12)
     INSTR_DEFINE($1[_reg]$2,
@@ -266,9 +266,9 @@ m4_define([INSTR_JUMP_DEFINE], [
         IMPL([m4_ifelse([$10], [NO_JUMP_PRECODE], [], [
                 $10;])m4_ifelse([$11], [NO_JUMP_CONDITION], [], [
                 if ($11) {])
-                    union SVM_IBlock * t;
-                    SVM_MI_GET_reg(t, SVM_MI_ARG_AS(1, sizet));
-                    SVM_MI_CHECK_JUMP_REL(t,1);m4_ifelse([$11], [NO_JUMP_CONDITION], [], [[
+                    union SM_CodeBlock * t;
+                    SMVM_MI_GET_reg(t, SMVM_MI_ARG_AS(1, sizet));
+                    SMVM_MI_CHECK_JUMP_REL(t,1);m4_ifelse([$11], [NO_JUMP_CONDITION], [], [[
                 }]])]),
         $12, PREPARE_FINISH)
     INSTR_DEFINE($1[_stack]$2,
@@ -279,9 +279,9 @@ m4_define([INSTR_JUMP_DEFINE], [
         IMPL([m4_ifelse([$10], [NO_JUMP_PRECODE], [], [
                 $10;])m4_ifelse([$11], [NO_JUMP_CONDITION], [], [
                 if ($11) {])
-                    union SVM_IBlock * t;
-                    SVM_MI_GET_stack(t, SVM_MI_ARG_AS(1, sizet));
-                    SVM_MI_CHECK_JUMP_REL(t,1);m4_ifelse([$11], [NO_JUMP_CONDITION], [], [[
+                    union SM_CodeBlock * t;
+                    SMVM_MI_GET_stack(t, SMVM_MI_ARG_AS(1, sizet));
+                    SMVM_MI_CHECK_JUMP_REL(t,1);m4_ifelse([$11], [NO_JUMP_CONDITION], [], [[
                 }]])]),
         $12, PREPARE_FINISH)
 ])
@@ -301,8 +301,8 @@ m4_define([INSTR_JUMP_COND_1_DEFINE], [
         $2, DTB_CODE_$4, OLB_CODE_$5, 0x00, 0x00, 2,
         NO_PREPARATION,
         JUMP_PRECODE([
-            union SVM_IBlock * c;
-            SVM_MI_GET_[]$5(c, SVM_MI_ARG_AS(2, sizet))]),
+            union SM_CodeBlock * c;
+            SMVM_MI_GET_[]$5(c, SMVM_MI_ARG_AS(2, sizet))]),
         $3, DO_DISPATCH)])
 
 # (name, code, cond, dtb, olb, dtb2, olb2)
@@ -310,31 +310,31 @@ m4_define([INSTR_JUMP_COND_2_DEFINE], [
     INSTR_JUMP_DEFINE(
         jump.$1, _$4_$5_$6_$7,
         $2, DTB_CODE_$4, OLB_CODE_$5, DTB_CODE_$6, OLB_CODE_$7, 3,
-        m4_ifelse([$4], [$6], m4_ifelse([$5], [$7], [if (SVM_PREPARE_ARG_AS(1,uint64) == SVM_PREPARE_ARG_AS(2,uint64)) {
-            SVM_PREPARE_ERROR(SVM_PREPARE_ERROR_INVALID_ARGUMENTS);
+        m4_ifelse([$4], [$6], m4_ifelse([$5], [$7], [if (SMVM_PREPARE_ARG_AS(1,uint64) == SMVM_PREPARE_ARG_AS(2,uint64)) {
+            SMVM_PREPARE_ERROR(SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
         }], [NO_PREPARATION]), [NO_PREPARATION]),
         JUMP_PRECODE([
             DTB_TYPE_$4 * c1;
-            m4_ifelse([$5], [imm], [c1 = SVM_MI_ARG_AS_P(2, DTB_NAME_$4)],
-                      [SVM_MI_GET_T_$5(c1, $4, SVM_MI_ARG_AS(2, sizet))]);
+            m4_ifelse([$5], [imm], [c1 = SMVM_MI_ARG_AS_P(2, DTB_NAME_$4)],
+                      [SMVM_MI_GET_T_$5(c1, $4, SMVM_MI_ARG_AS(2, sizet))]);
             DTB_TYPE_$6 * c2;
-            SVM_MI_GET_T_$7(c2, $6, SVM_MI_ARG_AS(3, sizet));]),
+            SMVM_MI_GET_T_$7(c2, $6, SMVM_MI_ARG_AS(3, sizet));]),
         $3, DO_DISPATCH)])
 
 m4_define([INSTR_JUMP_JZ_DEFINE],
-          [INSTR_JUMP_COND_1_DEFINE([jz],0x01,(SVM_MI_BLOCK_AS(c,_ARG1$1) == 0),_ARG1$1,_ARG2$1)])
+          [INSTR_JUMP_COND_1_DEFINE([jz],0x01,(SMVM_MI_BLOCK_AS(c,_ARG1$1) == 0),_ARG1$1,_ARG2$1)])
 foreach([INSTR_JUMP_JZ_DEFINE], (product(([[uint8]], [[uint16]], [[uint32]], [[uint64]], [[float32]]),([[reg]], [[stack]]))))
 
 m4_define([INSTR_JUMP_JNZ_DEFINE],
-          [INSTR_JUMP_COND_1_DEFINE([jnz],0x02,[SVM_MI_BLOCK_AS(c,_ARG1$1) != 0)],_ARG1$1,_ARG2$1)])
+          [INSTR_JUMP_COND_1_DEFINE([jnz],0x02,[SMVM_MI_BLOCK_AS(c,_ARG1$1) != 0)],_ARG1$1,_ARG2$1)])
 foreach([INSTR_JUMP_JNZ_DEFINE], (product(([[uint8]], [[uint16]], [[uint32]], [[uint64]], [[float32]]),([[reg]], [[stack]]))))
 
 m4_define([INSTR_JUMP_DNJZ_DEFINE],
-          [INSTR_JUMP_COND_1_DEFINE([dnjz],0x03,[(--(SVM_MI_BLOCK_AS(c,_ARG1$1)) == 0)],_ARG1$1,_ARG2$1)])
+          [INSTR_JUMP_COND_1_DEFINE([dnjz],0x03,[(--(SMVM_MI_BLOCK_AS(c,_ARG1$1)) == 0)],_ARG1$1,_ARG2$1)])
 foreach([INSTR_JUMP_DNJZ_DEFINE], (product(([[uint8]], [[uint16]], [[uint32]], [[uint64]]),([[reg]], [[stack]]))))
 
 m4_define([INSTR_JUMP_DNJNZ_DEFINE],
-          [INSTR_JUMP_COND_1_DEFINE([dnjnz],0x04,[(--(SVM_MI_BLOCK_AS(c,_ARG1$1)) != 0)],_ARG1$1,_ARG2$1)])
+          [INSTR_JUMP_COND_1_DEFINE([dnjnz],0x04,[(--(SMVM_MI_BLOCK_AS(c,_ARG1$1)) != 0)],_ARG1$1,_ARG2$1)])
 foreach([INSTR_JUMP_DNJNZ_DEFINE], (product(([[uint8]], [[uint16]], [[uint32]], [[uint64]]),([[reg]], [[stack]]))))
 
 m4_define([INSTR_JUMP_JE_DEFINE],
