@@ -24,8 +24,8 @@ m4_define([INSTR_DISPATCH_EMPTY_IMPL],
 ])
 
 m4_define([DO_INSTRS_DISPATCH_SECTIONS],
-          [foreach([INSTR_DISPATCH], (INSTRS))
-foreach([INSTR_DISPATCH_EMPTY_IMPL], (EMPTY_IMPLS))])
+          [m4_ifelse(INSTR_COUNT, [0], [], [foreach([INSTR_DISPATCH], (INSTRS))])
+m4_ifelse(EMPTY_IMPL_COUNT, [0], [], [foreach([INSTR_DISPATCH_EMPTY_IMPL], (EMPTY_IMPLS))])])
 
 m4_divert[]m4_dnl
 DO_INSTRS_DISPATCH_SECTIONS()

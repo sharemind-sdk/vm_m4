@@ -199,77 +199,36 @@ INSTR_DEFINE([common.halt],
     CODE(0x00, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00),
     ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([SMVM_MI_HALT(SMVM_MI_ARG_AS(1, int64))]), DO_DISPATCH, PREPARE_FINISH)
 
-# (name,arg,numargs,backward_e,backward_i,forward_e,forward_i)
-m4_define([INSTR_JUMP_PREPARE_IMM],
-       [{
-        int64_t a = SMVM_PREPARE_ARG_AS($2,int64);
-        if (a > 0) {
-            uint64_t b = SMVM_PREPARE_CURRENT_I + 1 + ($3);
-            SMVM_PREPARE_CHECK_OR_ERROR(
-                b > SMVM_PREPARE_CURRENT_I,
-                SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
-            b += ((uint64_t) a);
-            SMVM_PREPARE_CHECK_OR_ERROR(
-                b > SMVM_PREPARE_CURRENT_I + 1 + ($3),
-                SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
-            SMVM_PREPARE_CHECK_OR_ERROR(
-                b < SMVM_PREPARE_CODESIZE(SMVM_PREPARE_CURRENT_CODE_SECTION),
-                SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
-            SMVM_PREPARE_CHECK_OR_ERROR(
-                SMVM_PREPARE_IS_INSTR((size_t) b),
-                SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
-            SMVM_PREPARE_END_AS($6,$7,$3);
-        } else {
-            a = -a;
-            SMVM_PREPARE_CHECK_OR_ERROR(
-                SMVM_PREPARE_CURRENT_I > ((uint64_t) a),
-                SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
-            SMVM_PREPARE_CHECK_OR_ERROR(
-                SMVM_PREPARE_IS_INSTR(SMVM_PREPARE_CURRENT_I - ((uint64_t) a) - 1),
-                SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
-            SMVM_PREPARE_END_AS($4,$5,$3);
-        }
-    }])
-
-m4_define([JUMP_PREPARATION], [$1])
-m4_define([JUMP_PRECODE], [$1])
-m4_define([JUMP_CONDITION], [$1])
 # (name,suffixes,code,b3,b4,b5,b6,args,prep,precode,conds,dispatch)
 m4_define([INSTR_JUMP_DEFINE], [
     INSTR_DEFINE($1[_imm]$2,
         CODE(0x04, $3, OLB_CODE_imm, $4, $5, $6, $7, 0x00),
         ARGS($8),
-        PREPARATION([m4_ifelse([$9], [NO_PREPARATION], [], [
-            if (1) {
-                $9;
-                ])INSTR_JUMP_PREPARE_IMM(STRIP_NAMESPACE($1)[_imm]$2,1,1,1,EMPTY_IMPL_COUNT,0,INSTR_COUNT,$2)m4_ifelse([$9], [NO_PREPARATION], [], [;
-            } else (void) 0])]),
-        IMPL_SUFFIX(_forward),
+        [if (1) {
+            m4_ifelse([$9], [NO_PREPARATION], [], [$9;
+            ])SMVM_PREPARE_CHECK_OR_ERROR(
+                SMVM_PREPARE_IS_INSTR((size_t) SMVM_PREPARE_CURRENT_I + SMVM_PREPARE_ARG_AS(1,int64)),
+                SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
+        }],
+        NO_IMPL_SUFFIX,
         IMPL([m4_ifelse([$10], [NO_JUMP_PRECODE], [], [
-                $10;])m4_ifelse([$11], [NO_JUMP_CONDITION], [], [
-                if ($11) {])
-                    SMVM_MI_JUMP_REL_FORWARD(SMVM_MI_ARG_P(1), $8);m4_ifelse([$11], [NO_JUMP_CONDITION], [], [[
-                }]])]),
-        $12, NO_PREPARE_FINISH)
-    EMPTY_IMPL_DEFINE($1[_imm]$2[_backward], ARGS($8),
-        IMPL([m4_ifelse([$10], [NO_JUMP_PRECODE], [], [
-            $10;])m4_ifelse([$11], [NO_JUMP_CONDITION], [], [
-            if ($11) {])
-                SMVM_MI_JUMP_REL_BACKWARD(SMVM_MI_ARG_P(1));m4_ifelse([$11], [NO_JUMP_CONDITION], [], [[
-            }]])]),
-        $12)
+        $10;])m4_ifelse([$11], [NO_JUMP_CONDITION], [], [
+        if ($11) {])
+            SMVM_MI_JUMP_REL(SMVM_MI_ARG_P(1));m4_ifelse([$11], [NO_JUMP_CONDITION], [], [[
+        } else (void) 0]])]),
+        $12, PREPARE_FINISH)
     INSTR_DEFINE($1[_reg]$2,
         CODE(0x04, $3, OLB_CODE_reg, $4, $5, $6, $7, 0x00),
         ARGS($8),
         PREPARATION([$9]),
         NO_IMPL_SUFFIX,
         IMPL([m4_ifelse([$10], [NO_JUMP_PRECODE], [], [
-                $10;])m4_ifelse([$11], [NO_JUMP_CONDITION], [], [
-                if ($11) {])
-                    union SM_CodeBlock * t;
-                    SMVM_MI_GET_reg(t, SMVM_MI_ARG_AS(1, sizet));
-                    SMVM_MI_CHECK_JUMP_REL(t,1);m4_ifelse([$11], [NO_JUMP_CONDITION], [], [[
-                }]])]),
+        $10;])m4_ifelse([$11], [NO_JUMP_CONDITION], [], [
+        if ($11) {])
+            union SM_CodeBlock * t;
+            SMVM_MI_GET_reg(t, SMVM_MI_ARG_AS(1, sizet));
+            SMVM_MI_CHECK_JUMP_REL(SMVM_MI_BLOCK_AS(t,int64));m4_ifelse([$11], [NO_JUMP_CONDITION], [], [[
+        } else (void) 0]])]),
         $12, PREPARE_FINISH)
     INSTR_DEFINE($1[_stack]$2,
         CODE(0x04, $3, OLB_CODE_stack, $4, $5, $6, $7, 0x00),
@@ -277,12 +236,12 @@ m4_define([INSTR_JUMP_DEFINE], [
         PREPARATION([$9]),
         NO_IMPL_SUFFIX,
         IMPL([m4_ifelse([$10], [NO_JUMP_PRECODE], [], [
-                $10;])m4_ifelse([$11], [NO_JUMP_CONDITION], [], [
-                if ($11) {])
-                    union SM_CodeBlock * t;
-                    SMVM_MI_GET_stack(t, SMVM_MI_ARG_AS(1, sizet));
-                    SMVM_MI_CHECK_JUMP_REL(t,1);m4_ifelse([$11], [NO_JUMP_CONDITION], [], [[
-                }]])]),
+        $10;])m4_ifelse([$11], [NO_JUMP_CONDITION], [], [
+        if ($11) {])
+            union SM_CodeBlock * t;
+            SMVM_MI_GET_stack(t, SMVM_MI_ARG_AS(1, sizet));
+            SMVM_MI_CHECK_JUMP_REL(SMVM_MI_BLOCK_AS(t,int64));m4_ifelse([$11], [NO_JUMP_CONDITION], [], [[
+        } else (void) 0]])]),
         $12, PREPARE_FINISH)
 ])
 
@@ -300,9 +259,9 @@ m4_define([INSTR_JUMP_COND_1_DEFINE], [
         jump.$1, _$4_$5,
         $2, DTB_CODE_$4, OLB_CODE_$5, 0x00, 0x00, 2,
         NO_PREPARATION,
-        JUMP_PRECODE([
-            union SM_CodeBlock * c;
-            SMVM_MI_GET_[]$5(c, SMVM_MI_ARG_AS(2, sizet))]),
+        [
+        union SM_CodeBlock * c;
+        SMVM_MI_GET_[]$5(c, SMVM_MI_ARG_AS(2, sizet))],
         $3, DO_DISPATCH)])
 
 # (name, code, cond, dtb, olb, dtb2, olb2)
@@ -313,12 +272,12 @@ m4_define([INSTR_JUMP_COND_2_DEFINE], [
         m4_ifelse([$4], [$6], m4_ifelse([$5], [$7], [if (SMVM_PREPARE_ARG_AS(1,uint64) == SMVM_PREPARE_ARG_AS(2,uint64)) {
             SMVM_PREPARE_ERROR(SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
         }], [NO_PREPARATION]), [NO_PREPARATION]),
-        JUMP_PRECODE([
-            DTB_TYPE_$4 * c1;
-            m4_ifelse([$5], [imm], [c1 = SMVM_MI_ARG_AS_P(2, DTB_NAME_$4)],
-                      [SMVM_MI_GET_T_$5(c1, $4, SMVM_MI_ARG_AS(2, sizet))]);
-            DTB_TYPE_$6 * c2;
-            SMVM_MI_GET_T_$7(c2, $6, SMVM_MI_ARG_AS(3, sizet));]),
+        [
+        DTB_TYPE_$4 * c1;
+        m4_ifelse([$5], [imm], [c1 = SMVM_MI_ARG_AS_P(2, DTB_NAME_$4)],
+                    [SMVM_MI_GET_T_$5(c1, $4, SMVM_MI_ARG_AS(2, sizet))]);
+        DTB_TYPE_$6 * c2;
+        SMVM_MI_GET_T_$7(c2, $6, SMVM_MI_ARG_AS(3, sizet))],
         $3, DO_DISPATCH)])
 
 m4_define([INSTR_JUMP_JZ_DEFINE],
