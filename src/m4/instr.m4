@@ -166,7 +166,7 @@ INSTR_DEFINE([common.proc.call_imm_imm],
 INSTR_DEFINE([common.proc.return_imm],
     CODE(0x00, 0x02, 0x03, 0x01, 0x00, 0x00, 0x00, 0x00),
     NO_ARGS, NO_PREPARATION, NO_IMPL_SUFFIX,
-    IMPL([SMVM_MI_RETURN(SMVM_MI_ARG_AS(1, int64))]),
+    IMPL([SMVM_MI_RETURN(SMVM_MI_ARG(1))]),
     NO_DISPATCH, PREPARE_FINISH)
 
 INSTR_DEFINE([common.proc.push_imm],
@@ -197,7 +197,7 @@ INSTR_DEFINE([common.proc.resizestack],
 
 INSTR_DEFINE([common.halt],
     CODE(0x00, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00),
-    ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([SMVM_MI_HALT(SMVM_MI_ARG_AS(1, int64))]), DO_DISPATCH, PREPARE_FINISH)
+    ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([SMVM_MI_HALT(SMVM_MI_ARG(1))]), DO_DISPATCH, PREPARE_FINISH)
 
 # (name,suffixes,code,b3,b4,b5,b6,args,prep,precode,conds,dispatch)
 m4_define([INSTR_JUMP_DEFINE], [
