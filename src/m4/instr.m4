@@ -91,14 +91,14 @@ INSTR_DEFINE([common.trap],
 INSTR_DEFINE([common.mov_imm_reg],
     CODE(0x00, 0x01, OLB_CODE_imm, OLB_CODE_reg, 0xff, 0x00, 0x00, 0x00),
     ARGS(2), NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([
-        union SM_CodeBlock * d;
+        union SM_CodeBlock * restrict d;
         SMVM_MI_GET_reg(d, SMVM_MI_ARG_AS(2, sizet));
         *d = SMVM_MI_ARG(1);]), DO_DISPATCH, PREPARE_FINISH)
 
 INSTR_DEFINE([common.mov_imm_stack],
     CODE(0x00, 0x01, OLB_CODE_imm, OLB_CODE_stack, 0xff, 0x00, 0x00, 0x00),
     ARGS(2), NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([
-        union SM_CodeBlock * d;
+        union SM_CodeBlock * restrict d;
         SMVM_MI_GET_stack(d, SMVM_MI_ARG_AS(2, sizet));
         *d = SMVM_MI_ARG(1);]), DO_DISPATCH, PREPARE_FINISH)
 
@@ -108,9 +108,9 @@ INSTR_DEFINE([common.mov_reg_reg],
         SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(1,uint64) != SMVM_PREPARE_ARG_AS(2,uint64),
                                     SMVM_PREPARE_ERROR_INVALID_ARGUMENTS)]),
     NO_IMPL_SUFFIX, IMPL([
-        union SM_CodeBlock * s;
+        union SM_CodeBlock * restrict s;
         SMVM_MI_GET_reg(s, SMVM_MI_ARG_AS(1, sizet));
-        union SM_CodeBlock * d;
+        union SM_CodeBlock * restrict d;
         SMVM_MI_GET_reg(d, SMVM_MI_ARG_AS(2, sizet));
         *d = *s;]), DO_DISPATCH, PREPARE_FINISH)
 
@@ -138,9 +138,9 @@ INSTR_DEFINE([common.mov_stack_stack],
         SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(1,uint64) != SMVM_PREPARE_ARG_AS(2,uint64),
                                     SMVM_PREPARE_ERROR_INVALID_ARGUMENTS)]),
     NO_IMPL_SUFFIX, IMPL([
-        union SM_CodeBlock * s;
+        union SM_CodeBlock * restrict s;
         SMVM_MI_GET_reg(s, SMVM_MI_ARG_AS(1, sizet));
-        union SM_CodeBlock * d;
+        union SM_CodeBlock * restrict d;
         SMVM_MI_GET_stack(d, SMVM_MI_ARG_AS(2, sizet));
         *d = *s;]), DO_DISPATCH, PREPARE_FINISH)
 
@@ -176,14 +176,14 @@ INSTR_DEFINE([common.proc.push_imm],
 INSTR_DEFINE([common.proc.push_reg],
     CODE(0x00, 0x02, 0x04, OLB_CODE_reg, 0x00, 0x00, 0x00, 0x00),
     ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([
-            union SM_CodeBlock * d;
+            union SM_CodeBlock * restrict d;
             SMVM_MI_GET_reg(d, SMVM_MI_ARG_AS(1, sizet));
             SMVM_MI_PUSH(*d);]), DO_DISPATCH, PREPARE_FINISH)
 
 INSTR_DEFINE([common.proc.push_stack],
     CODE(0x00, 0x02, 0x04, OLB_CODE_stack, 0x00, 0x00, 0x00, 0x00),
     ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([
-        union SM_CodeBlock * d;
+        union SM_CodeBlock * restrict d;
         SMVM_MI_GET_stack(d, SMVM_MI_ARG_AS(1, sizet));
         SMVM_MI_PUSH(*d);]), DO_DISPATCH, PREPARE_FINISH)
 
@@ -269,9 +269,9 @@ m4_define([INSTR_JUMP_COND_2_DEFINE], [
     INSTR_JUMP_DEFINE(
         jump.$1, _$4_$5_$6_$7,
         $2, DTB_CODE_$4, OLB_CODE_$5, DTB_CODE_$6, OLB_CODE_$7, 3,
-        m4_ifelse([$4], [$6], m4_ifelse([$5], [$7], [if (SMVM_PREPARE_ARG_AS(1,uint64) == SMVM_PREPARE_ARG_AS(2,uint64)) {
-            SMVM_PREPARE_ERROR(SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
-        }], [NO_PREPARATION]), [NO_PREPARATION]),
+        m4_ifelse([$4], [$6], m4_ifelse([$5], [$7], [SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(1,uint64) != SMVM_PREPARE_ARG_AS(2,uint64),
+                                    SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
+        ], [NO_PREPARATION]), [NO_PREPARATION]),
         [
         DTB_TYPE_$4 * c1;
         m4_ifelse([$5], [imm], [c1 = SMVM_MI_ARG_AS_P(2, DTB_NAME_$4)],
