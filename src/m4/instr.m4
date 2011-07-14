@@ -217,6 +217,13 @@ INSTR_DEFINE([common.halt],
     CODE(0x00, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00),
     ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([SMVM_MI_HALT(SMVM_MI_ARG(1))]), DO_DISPATCH, PREPARE_FINISH)
 
+INSTR_DEFINE([common.except],
+    CODE(0x00, 0xff, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00),
+    ARGS(1), PREPARATION([
+        SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_IS_EXCEPTIONCODE(SMVM_PREPARE_ARG_AS(1,int64)),
+                                    SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
+    ]), NO_IMPL_SUFFIX, IMPL([SMVM_MI_DO_EXCEPT(SMVM_MI_ARG_AS(1,int64))]), DO_DISPATCH, PREPARE_FINISH)
+
 # (name,suffixes,code,b3,b4,b5,b6,args,prep,precode,conds,dispatch)
 m4_define([INSTR_JUMP_DEFINE], [
     INSTR_DEFINE($1[_imm]$2,
