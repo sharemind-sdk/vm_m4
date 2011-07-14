@@ -169,6 +169,24 @@ INSTR_DEFINE([common.proc.return_imm],
     IMPL([SMVM_MI_RETURN(SMVM_MI_ARG(1))]),
     NO_DISPATCH, PREPARE_FINISH)
 
+INSTR_DEFINE([common.proc.return_reg],
+    CODE(0x00, 0x02, 0x03, 0x02, 0x00, 0x00, 0x00, 0x00),
+    NO_ARGS, NO_PREPARATION, NO_IMPL_SUFFIX,
+    IMPL([
+        union SM_CodeBlock * v;
+        SMVM_MI_GET_reg(v, SMVM_MI_ARG_AS(1, sizet));
+        SMVM_MI_RETURN(*v);]),
+    NO_DISPATCH, PREPARE_FINISH)
+
+INSTR_DEFINE([common.proc.return_stack],
+    CODE(0x00, 0x02, 0x03, 0x03, 0x00, 0x00, 0x00, 0x00),
+    NO_ARGS, NO_PREPARATION, NO_IMPL_SUFFIX,
+    IMPL([
+        union SM_CodeBlock * v;
+        SMVM_MI_GET_stack(v, SMVM_MI_ARG_AS(1, sizet));
+        SMVM_MI_RETURN(*v);]),
+    NO_DISPATCH, PREPARE_FINISH)
+
 INSTR_DEFINE([common.proc.push_imm],
     CODE(0x00, 0x02, 0x04, OLB_CODE_imm, 0x00, 0x00, 0x00, 0x00),
     ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([SMVM_MI_PUSH(SMVM_MI_ARG(1))]), DO_DISPATCH, PREPARE_FINISH)
