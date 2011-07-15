@@ -144,23 +144,36 @@ INSTR_DEFINE([common.mov_stack_stack],
         SMVM_MI_GET_stack(d, SMVM_MI_ARG_AS(2, sizet));
         *d = *s;]), DO_DISPATCH, PREPARE_FINISH)
 
+m4_define([CHECK_CALL_TARGET], [SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_IS_INSTR($1), SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);])
+
 INSTR_DEFINE([common.proc.call_imm_imm],
     CODE(0x00, 0x02, 0x00, 0x01, 0x01, 0x00, 0x00, 0x00),
     NO_ARGS,
-    PREPARATION([{
-        size_t b = SMVM_PREPARE_ARG_AS(1,sizet);
-        SMVM_PREPARE_CHECK_OR_ERROR(
-            ((uint64_t) b) != SMVM_PREPARE_ARG_AS(1,uint64),
-            SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
-        SMVM_PREPARE_CHECK_OR_ERROR(
-            b < SMVM_PREPARE_CODESIZE(SMVM_PREPARE_CURRENT_CODE_SECTION),
-            SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
-        SMVM_PREPARE_CHECK_OR_ERROR(
-            SMVM_PREPARE_IS_INSTR(b),
-            SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
-    }]),
+    CHECK_CALL_TARGET(SMVM_PREPARE_ARG_AS(1,sizet)),
     NO_IMPL_SUFFIX,
     IMPL([SMVM_MI_CALL(SMVM_MI_ARG_AS(1, sizet),NULL,1)]),
+    NO_DISPATCH, PREPARE_FINISH)
+
+INSTR_DEFINE([common.proc.call_imm_reg],
+    CODE(0x00, 0x02, 0x00, 0x01, 0x02, 0x00, 0x00, 0x00),
+    NO_ARGS,
+    CHECK_CALL_TARGET(SMVM_PREPARE_ARG_AS(1,sizet)),
+    NO_IMPL_SUFFIX,
+    IMPL([
+        union SM_CodeBlock * rv;
+        SMVM_MI_GET_reg(rv, SMVM_MI_ARG_AS(2, sizet));
+        SMVM_MI_CALL(SMVM_MI_ARG_AS(1, sizet),NULL,1)]),
+    NO_DISPATCH, PREPARE_FINISH)
+
+INSTR_DEFINE([common.proc.call_imm_stack],
+    CODE(0x00, 0x02, 0x00, 0x01, 0x03, 0x00, 0x00, 0x00),
+    NO_ARGS,
+    CHECK_CALL_TARGET(SMVM_PREPARE_ARG_AS(1,sizet)),
+    NO_IMPL_SUFFIX,
+    IMPL([
+        union SM_CodeBlock * rv;
+        SMVM_MI_GET_stack(rv, SMVM_MI_ARG_AS(2, sizet));
+        SMVM_MI_CALL(SMVM_MI_ARG_AS(1, sizet),NULL,1)]),
     NO_DISPATCH, PREPARE_FINISH)
 
 INSTR_DEFINE([common.proc.return_imm],
