@@ -148,7 +148,7 @@ m4_define([CHECK_CALL_TARGET], [SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_IS_INST
 
 INSTR_DEFINE([common.proc.call_imm_imm],
     CODE(0x00, 0x02, 0x00, 0x01, 0x01, 0x00, 0x00, 0x00),
-    NO_ARGS,
+    ARGS(1),
     CHECK_CALL_TARGET(SMVM_PREPARE_ARG_AS(1,sizet)),
     NO_IMPL_SUFFIX,
     IMPL([SMVM_MI_CALL(SMVM_MI_ARG_AS(1, sizet),NULL,1)]),
@@ -156,7 +156,7 @@ INSTR_DEFINE([common.proc.call_imm_imm],
 
 INSTR_DEFINE([common.proc.call_imm_reg],
     CODE(0x00, 0x02, 0x00, 0x01, 0x02, 0x00, 0x00, 0x00),
-    NO_ARGS,
+    ARGS(2),
     CHECK_CALL_TARGET(SMVM_PREPARE_ARG_AS(1,sizet)),
     NO_IMPL_SUFFIX,
     IMPL([
@@ -167,7 +167,7 @@ INSTR_DEFINE([common.proc.call_imm_reg],
 
 INSTR_DEFINE([common.proc.call_imm_stack],
     CODE(0x00, 0x02, 0x00, 0x01, 0x03, 0x00, 0x00, 0x00),
-    NO_ARGS,
+    ARGS(2),
     CHECK_CALL_TARGET(SMVM_PREPARE_ARG_AS(1,sizet)),
     NO_IMPL_SUFFIX,
     IMPL([
@@ -178,13 +178,13 @@ INSTR_DEFINE([common.proc.call_imm_stack],
 
 INSTR_DEFINE([common.proc.return_imm],
     CODE(0x00, 0x02, 0x03, 0x01, 0x00, 0x00, 0x00, 0x00),
-    NO_ARGS, NO_PREPARATION, NO_IMPL_SUFFIX,
+    ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX,
     IMPL([SMVM_MI_RETURN(SMVM_MI_ARG(1))]),
     NO_DISPATCH, PREPARE_FINISH)
 
 INSTR_DEFINE([common.proc.return_reg],
     CODE(0x00, 0x02, 0x03, 0x02, 0x00, 0x00, 0x00, 0x00),
-    NO_ARGS, NO_PREPARATION, NO_IMPL_SUFFIX,
+    ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX,
     IMPL([
         union SM_CodeBlock * v;
         SMVM_MI_GET_reg(v, SMVM_MI_ARG_AS(1, sizet));
@@ -193,7 +193,7 @@ INSTR_DEFINE([common.proc.return_reg],
 
 INSTR_DEFINE([common.proc.return_stack],
     CODE(0x00, 0x02, 0x03, 0x03, 0x00, 0x00, 0x00, 0x00),
-    NO_ARGS, NO_PREPARATION, NO_IMPL_SUFFIX,
+    ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX,
     IMPL([
         union SM_CodeBlock * v;
         SMVM_MI_GET_stack(v, SMVM_MI_ARG_AS(1, sizet));
