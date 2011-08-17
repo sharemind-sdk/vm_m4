@@ -15,6 +15,11 @@ m4_include([product.m4])
 m4_include([datatypebyte.m4])
 m4_include([operandlocationbyte.m4])
 
+m4_define([_ARG1],[$1])
+m4_define([_ARG2],[$2])
+m4_define([_ARG3],[$3])
+m4_define([_ARG4],[$4])
+
 # (value)
 m4_define([DEC_TO_HEX], [_$0(m4_eval([$1 % 16]))[]m4_ifelse(m4_eval([$1 >= 16]),
                                                             [1],
@@ -146,35 +151,29 @@ INSTR_DEFINE([common.mov_stack_stack],
 
 m4_define([CHECK_CALL_TARGET], [SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_IS_INSTR($1), SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);])
 
-INSTR_DEFINE([common.proc.call_imm_imm],
-    CODE(0x00, 0x02, 0x00, 0x01, 0x01, 0x00, 0x00, 0x00),
-    ARGS(1),
-    CHECK_CALL_TARGET(SMVM_PREPARE_ARG_AS(1,sizet)),
-    NO_IMPL_SUFFIX,
-    IMPL([SMVM_MI_CALL(SMVM_MI_ARG_AS(1, sizet),NULL,1)]),
-    NO_DISPATCH, PREPARE_FINISH)
+m4_define([_CALL_DEFINE], [
+    INSTR_DEFINE([common.proc.call_$1_$2],
+        CODE(0x00, 0x02, 0x00, OLB_CODE_$1, OLB_CODE_$2, 0x00, 0x00, 0x00),
+        ARGS(m4_ifelse($2, [imm], 1, 2)),
+        m4_ifelse($1, [imm], CHECK_CALL_TARGET(SMVM_PREPARE_ARG_AS(1,sizet)), NO_PREPARATION),
+        NO_IMPL_SUFFIX,
+        IMPL([
+            m4_ifelse($1, [imm],,[
+                union SM_CodeBlock * addr;
+                SMVM_MI_GET_$1(addr, SMVM_MI_ARG_AS(1, sizet));])
+            m4_ifelse($2, [imm],,[
+                union SM_CodeBlock * rv;
+                SMVM_MI_GET_$2(rv, SMVM_MI_ARG_AS(2, sizet));])
+            m4_ifelse($1, [imm],
+                [SMVM_MI_CALL(SMVM_MI_ARG_AS(1, sizet),m4_ifelse($2, [imm], [NULL], [rv]), m4_ifelse($2, [imm], [1], [2]))],
+                [SMVM_MI_CHECK_CALL(addr,m4_ifelse($2, [imm], [NULL], [rv]), m4_ifelse($2, [imm], [1], [2]))])]),
+        NO_DISPATCH, PREPARE_FINISH)
+])
+m4_define([CALL_DEFINE], [_CALL_DEFINE(_ARG1$1, _ARG2$1)])
 
-INSTR_DEFINE([common.proc.call_imm_reg],
-    CODE(0x00, 0x02, 0x00, 0x01, 0x02, 0x00, 0x00, 0x00),
-    ARGS(2),
-    CHECK_CALL_TARGET(SMVM_PREPARE_ARG_AS(1,sizet)),
-    NO_IMPL_SUFFIX,
-    IMPL([
-        union SM_CodeBlock * rv;
-        SMVM_MI_GET_reg(rv, SMVM_MI_ARG_AS(2, sizet));
-        SMVM_MI_CALL(SMVM_MI_ARG_AS(1, sizet),NULL,1)]),
-    NO_DISPATCH, PREPARE_FINISH)
+foreach([CALL_DEFINE], (product(([[imm]], [[reg]], [[stack]]),([[imm]], [[reg]], [[stack]]))))
 
-INSTR_DEFINE([common.proc.call_imm_stack],
-    CODE(0x00, 0x02, 0x00, 0x01, 0x03, 0x00, 0x00, 0x00),
-    ARGS(2),
-    CHECK_CALL_TARGET(SMVM_PREPARE_ARG_AS(1,sizet)),
-    NO_IMPL_SUFFIX,
-    IMPL([
-        union SM_CodeBlock * rv;
-        SMVM_MI_GET_stack(rv, SMVM_MI_ARG_AS(2, sizet));
-        SMVM_MI_CALL(SMVM_MI_ARG_AS(1, sizet),NULL,1)]),
-    NO_DISPATCH, PREPARE_FINISH)
+
 
 INSTR_DEFINE([common.proc.return_imm],
     CODE(0x00, 0x02, 0x03, 0x01, 0x00, 0x00, 0x00, 0x00),
@@ -284,12 +283,6 @@ m4_define([INSTR_JUMP_DEFINE], [
 ])
 
 INSTR_JUMP_DEFINE([jump.jmp], [], 0x00, 0x00, 0x00, 0x00, 0x00, 1, NO_PREPARATION, NO_JUMP_PRECODE, NO_JUMP_CONDITION, NO_DISPATCH)
-
-
-m4_define([_ARG1],[$1])
-m4_define([_ARG2],[$2])
-m4_define([_ARG3],[$3])
-m4_define([_ARG4],[$4])
 
 # (name, code, cond, dtb, olb)
 m4_define([INSTR_JUMP_COND_1_DEFINE], [
