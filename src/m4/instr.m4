@@ -170,10 +170,7 @@ m4_define([_CALL_DEFINE], [
         NO_DISPATCH, PREPARE_FINISH)
 ])
 m4_define([CALL_DEFINE], [_CALL_DEFINE(_ARG1$1, _ARG2$1)])
-
 foreach([CALL_DEFINE], (product(([[imm]], [[reg]], [[stack]]),([[imm]], [[reg]], [[stack]]))))
-
-
 
 INSTR_DEFINE([common.proc.return_imm],
     CODE(0x00, 0x02, 0x03, 0x01, 0x00, 0x00, 0x00, 0x00),
@@ -224,6 +221,33 @@ INSTR_DEFINE([common.proc.clearstack],
 INSTR_DEFINE([common.proc.resizestack],
     CODE(0x00, 0x02, 0x0a, 0x00, 0x00, 0x00, 0x00, 0x00),
     ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([SMVM_MI_RESIZE_STACK(SMVM_MI_ARG_AS(1, uint64))]), DO_DISPATCH, PREPARE_FINISH)
+
+m4_define([_MEM_ALLOC_DEFINE], [
+    INSTR_DEFINE([common.mem.alloc_$1_$2],
+        CODE(0x00, 0x03, 0x00, OLB_CODE_$1, OLB_CODE_$2, 0x00, 0x00, 0x00),
+        ARGS(2), NO_PREPARATION, NO_IMPL_SUFFIX,
+        IMPL([
+            union SM_CodeBlock * ptrDest;
+            SMVM_MI_GET_$1(ptrDest, SMVM_MI_ARG_AS(1, sizet));
+            m4_ifelse($2, [imm],,
+                [union SM_CodeBlock * sizeReg;
+                 SMVM_MI_GET_$2(sizeReg, SMVM_MI_ARG_AS(2, sizet));])
+            SMVM_MI_MEM_ALLOC(ptrDest,m4_ifelse($2, [imm], [SMVM_MI_ARG_P(2)], [sizeReg]))]),
+        DO_DISPATCH, PREPARE_FINISH)])
+m4_define([MEM_ALLOC_DEFINE], [_MEM_ALLOC_DEFINE(_ARG1$1, _ARG2$1)])
+foreach([MEM_ALLOC_DEFINE], (product(([[reg]], [[stack]]),([[imm]], [[reg]], [[stack]]))))
+
+m4_define([MEM_FREE_DEFINE], [
+    INSTR_DEFINE([common.mem.free_$1],
+        CODE(0x00, 0x03, 0x01, OLB_CODE_$1, 0x00, 0x00, 0x00, 0x00),
+        ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX,
+        IMPL([
+            union SM_CodeBlock * ptr;
+            SMVM_MI_GET_$1(ptr, SMVM_MI_ARG_AS(1, sizet));
+            SMVM_MI_MEM_FREE(ptr)]),
+        DO_DISPATCH, PREPARE_FINISH)])
+MEM_FREE_DEFINE([reg])
+MEM_FREE_DEFINE([stack])
 
 INSTR_DEFINE([common.halt],
     CODE(0x00, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00),
