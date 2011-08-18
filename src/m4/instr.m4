@@ -249,9 +249,19 @@ m4_define([MEM_FREE_DEFINE], [
 MEM_FREE_DEFINE([reg])
 MEM_FREE_DEFINE([stack])
 
-INSTR_DEFINE([common.halt],
-    CODE(0x00, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00),
-    ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([SMVM_MI_HALT(SMVM_MI_ARG(1))]), DO_DISPATCH, PREPARE_FINISH)
+m4_define([HALT_DEFINE], [
+    INSTR_DEFINE([common.halt_$1],
+        CODE(0x00, 0xff, 0x00, OLB_CODE_$1, 0x00, 0x00, 0x00, 0x00),
+        ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX,
+        IMPL([
+            m4_ifelse($1, [imm],,
+                [union SM_CodeBlock * haltCode;
+                 SMVM_MI_GET_$1(haltCode, SMVM_MI_ARG_AS(1, sizet));])
+            SMVM_MI_HALT(m4_ifelse($1, [imm], [SMVM_MI_ARG(1)], [*haltCode]))]),
+        NO_DISPATCH, PREPARE_FINISH])
+HALT_DEFINE([imm])
+HALT_DEFINE([reg])
+HALT_DEFINE([stack])
 
 INSTR_DEFINE([common.except],
     CODE(0x00, 0xff, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00),
