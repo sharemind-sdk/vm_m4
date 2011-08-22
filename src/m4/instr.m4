@@ -249,6 +249,23 @@ m4_define([MEM_FREE_DEFINE], [
 MEM_FREE_DEFINE([reg])
 MEM_FREE_DEFINE([stack])
 
+m4_define([MEM_GETSIZE_DEFINE], [
+    INSTR_DEFINE([common.mem.getsize_$1_$2],
+        CODE(0x00, 0x03, 0x02, OLB_CODE_$1, OLB_CODE_$2, 0x00, 0x00, 0x00),
+        ARGS(2), NO_PREPARATION, NO_IMPL_SUFFIX,
+        IMPL([
+            union SM_CodeBlock * ptr;
+            SMVM_MI_GET_$1(ptr, SMVM_MI_ARG_AS(1, sizet));
+            union SM_CodeBlock * sizedest;
+            SMVM_MI_GET_$2(sizedest, SMVM_MI_ARG_AS(2, sizet));
+            SMVM_MI_MEM_GETSIZE(ptr,sizedest);]),
+        DO_DISPATCH, PREPARE_FINISH
+    )])
+MEM_GETSIZE_DEFINE([reg],[reg])
+MEM_GETSIZE_DEFINE([reg],[stack])
+MEM_GETSIZE_DEFINE([stack],[reg])
+MEM_GETSIZE_DEFINE([stack],[stack])
+
 m4_define([HALT_DEFINE], [
     INSTR_DEFINE([common.halt_$1],
         CODE(0x00, 0xff, 0x00, OLB_CODE_$1, 0x00, 0x00, 0x00, 0x00),
