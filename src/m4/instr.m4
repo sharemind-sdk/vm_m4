@@ -94,49 +94,21 @@ INSTR_DEFINE([common.trap],
     CODE(0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00),
     NO_ARGS, NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([SMVM_MI_TRAP]), DO_DISPATCH, PREPARE_FINISH)
 
-INSTR_DEFINE([common.mov_imm_reg],
-    CODE(0x00, 0x01, OLB_CODE_imm, OLB_CODE_reg, 0xff, 0x00, 0x00, 0x00),
-    ARGS(2), NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([
-        union SM_CodeBlock * restrict d;
-        SMVM_MI_GET_reg(d, SMVM_MI_ARG_AS(2, sizet));
-        *d = SMVM_MI_ARG(1);]), DO_DISPATCH, PREPARE_FINISH)
-
-INSTR_DEFINE([common.mov_imm_stack],
-    CODE(0x00, 0x01, OLB_CODE_imm, OLB_CODE_stack, 0xff, 0x00, 0x00, 0x00),
-    ARGS(2), NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([
-        union SM_CodeBlock * restrict d;
-        SMVM_MI_GET_stack(d, SMVM_MI_ARG_AS(2, sizet));
-        *d = SMVM_MI_ARG(1);]), DO_DISPATCH, PREPARE_FINISH)
-
-INSTR_DEFINE([common.mov_reg_reg],
-    CODE(0x00, 0x01, OLB_CODE_reg, OLB_CODE_reg, 0xff, 0x00, 0x00, 0x00),
-    ARGS(2), PREPARATION([
-        SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(1,uint64) != SMVM_PREPARE_ARG_AS(2,uint64),
-                                    SMVM_PREPARE_ERROR_INVALID_ARGUMENTS)]),
-    NO_IMPL_SUFFIX, IMPL([
-        union SM_CodeBlock * restrict s;
-        SMVM_MI_GET_reg(s, SMVM_MI_ARG_AS(1, sizet));
-        union SM_CodeBlock * restrict d;
-        SMVM_MI_GET_reg(d, SMVM_MI_ARG_AS(2, sizet));
-        *d = *s;]), DO_DISPATCH, PREPARE_FINISH)
-
-INSTR_DEFINE([common.mov_reg_stack],
-    CODE(0x00, 0x01, OLB_CODE_reg, OLB_CODE_stack, 0xff, 0x00, 0x00, 0x00),
-    ARGS(2), NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([
-        union SM_CodeBlock * s;
-        SMVM_MI_GET_reg(s, SMVM_MI_ARG_AS(1, sizet));
-        union SM_CodeBlock * d;
-        SMVM_MI_GET_stack(d, SMVM_MI_ARG_AS(2, sizet));
-        *d = *s;]), DO_DISPATCH, PREPARE_FINISH)
-
-INSTR_DEFINE([common.mov_stack_reg],
-    CODE(0x00, 0x01, OLB_CODE_stack, OLB_CODE_reg, 0xff, 0x00, 0x00, 0x00),
-    ARGS(2), NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([
-        union SM_CodeBlock * s;
-        SMVM_MI_GET_stack(s, SMVM_MI_ARG_AS(1, sizet));
-        union SM_CodeBlock * d;
-        SMVM_MI_GET_reg(d, SMVM_MI_ARG_AS(2, sizet));
-        *d = *s;]), DO_DISPATCH, PREPARE_FINISH)
+m4_define([_MOV_REGS_DEFINE], [
+    INSTR_DEFINE([common.mov_$1_$2],
+        CODE(0x00, 0x01, OLB_CODE_$1, OLB_CODE_$2, 0x00, 0x00, 0x00, 0x00),
+        ARGS(2), NO_PREPARATION, NO_IMPL_SUFFIX,
+        IMPL([
+            union SM_CodeBlock * s;
+            m4_ifelse($1, [imm],
+                      [s = SMVM_MI_ARG_P(1);],
+                      [SMVM_MI_GET_$1(s, SMVM_MI_ARG_AS(1, sizet));])
+            union SM_CodeBlock * d;
+            SMVM_MI_GET_$2(d, SMVM_MI_ARG_AS(2, sizet));
+            (*d) = *s;]),
+        DO_DISPATCH, PREPARE_FINISH)])
+m4_define([MOV_REGS_DEFINE], [_MOV_REGS_DEFINE(_ARG1$1, _ARG2$1)])
+foreach([MOV_REGS_DEFINE], (product(([imm], [reg], [stack]), ([reg], [stack]))))
 
 m4_define([_MOV_FROM_MEM_DEFINE], [
     INSTR_DEFINE([common.mov_mem_$1_$2_$3_$4],
