@@ -251,23 +251,19 @@ INSTR_DEFINE([common.proc.return_stack],
         SMVM_MI_RETURN(*v);]),
     NO_DISPATCH, PREPARE_FINISH)
 
-INSTR_DEFINE([common.proc.push_imm],
-    CODE(0x00, 0x02, 0x04, OLB_CODE_imm, 0x00, 0x00, 0x00, 0x00),
-    ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([SMVM_MI_PUSH(SMVM_MI_ARG(1))]), DO_DISPATCH, PREPARE_FINISH)
-
-INSTR_DEFINE([common.proc.push_reg],
-    CODE(0x00, 0x02, 0x04, OLB_CODE_reg, 0x00, 0x00, 0x00, 0x00),
-    ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([
-            union SM_CodeBlock * restrict d;
-            SMVM_MI_GET_reg(d, SMVM_MI_ARG_AS(1, sizet));
-            SMVM_MI_PUSH(*d);]), DO_DISPATCH, PREPARE_FINISH)
-
-INSTR_DEFINE([common.proc.push_stack],
-    CODE(0x00, 0x02, 0x04, OLB_CODE_stack, 0x00, 0x00, 0x00, 0x00),
-    ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([
-        union SM_CodeBlock * restrict d;
-        SMVM_MI_GET_stack(d, SMVM_MI_ARG_AS(1, sizet));
-        SMVM_MI_PUSH(*d);]), DO_DISPATCH, PREPARE_FINISH)
+m4_define([PUSH_DEFINE], [
+    INSTR_DEFINE([common.proc.push_$1],
+        CODE(0x00, 0x02, 0x04, OLB_CODE_$1, 0x00, 0x00, 0x00, 0x00),
+        ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX,
+        IMPL(m4_ifelse($1, [imm],
+                       [SMVM_MI_PUSH(SMVM_MI_ARG(1))],
+                       [union SM_CodeBlock * restrict d;
+                        SMVM_MI_GET_$1(d, SMVM_MI_ARG_AS(1, sizet));
+                        SMVM_MI_PUSH(*d);])),
+        DO_DISPATCH, PREPARE_FINISH)])
+PUSH_DEFINE([imm])
+PUSH_DEFINE([reg])
+PUSH_DEFINE([stack])
 
 INSTR_DEFINE([common.proc.clearstack],
     CODE(0x00, 0x02, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00),
