@@ -133,7 +133,7 @@ INSTR_DEFINE([common.mov_stack_reg],
     CODE(0x00, 0x01, OLB_CODE_stack, OLB_CODE_reg, 0xff, 0x00, 0x00, 0x00),
     ARGS(2), NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([
         union SM_CodeBlock * s;
-        SMVM_MI_GET_reg(s, SMVM_MI_ARG_AS(1, sizet));
+        SMVM_MI_GET_stack(s, SMVM_MI_ARG_AS(1, sizet));
         union SM_CodeBlock * d;
         SMVM_MI_GET_reg(d, SMVM_MI_ARG_AS(2, sizet));
         *d = *s;]), DO_DISPATCH, PREPARE_FINISH)
