@@ -113,28 +113,33 @@ foreach([MOV_REGS_DEFINE], (product(([imm], [reg], [stack]), ([reg], [stack]))))
 m4_define([_MOV_FROM_MEM_DEFINE], [
     INSTR_DEFINE([common.mov_mem_$1_$2_$3_$4],
         CODE(0x00, 0x01, OLB_CODE_mem_$1_$2, OLB_CODE_$3, OLB_CODE_$4, 0x00, 0x00, 0x00),
-        ARGS(4), PREPARATION([
-            SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(4,uint64) > 0u,
-                                        SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
-            SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(4,uint64) <= 8u,
-                                        SMVM_PREPARE_ERROR_INVALID_ARGUMENTS)]),
+        ARGS(4),
+        m4_ifelse($4, [imm],
+                  [PREPARATION([
+                      SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(4,uint64) > 0u,
+                                                  SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
+                      SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(4,uint64) <= 8u,
+                                                  SMVM_PREPARE_ERROR_INVALID_ARGUMENTS)])],
+                  [NO_PREPARATION]),
         NO_IMPL_SUFFIX, IMPL([
-            union SM_CodeBlock * restrict ptr;
+            union SM_CodeBlock * ptr;
+            union SM_CodeBlock * m4_ifelse($2, [imm], [restrict]) offset;
+            union SM_CodeBlock * dest;
+            union SM_CodeBlock * m4_ifelse($4, [imm], [restrict]) numBytes;
+            struct SMVM_MemorySlot * restrict slot;
+            m4_ifelse($4, [imm], [],
+                      [SMVM_MI_GET_$4(numBytes, SMVM_MI_ARG_AS(4,sizet));
+                       SMVM_MI_TRY_EXCEPT(SMVM_MI_BLOCK_AS(numBytes,sizet) > 0u && SMVM_MI_BLOCK_AS(numBytes,sizet) <= 8u,
+                                          SMVM_E_OUT_OF_BOUNDS_WRITE);])
             SMVM_MI_GET_$1(ptr, SMVM_MI_ARG_AS(1, sizet));
-            struct SMVM_MemorySlot * restrict slot; \
             SMVM_MI_MEM_GET_SLOT_OR_EXCEPT(SMVM_MI_BLOCK_AS(ptr,uint64), slot);
-            union SM_CodeBlock * restrict dest;
             SMVM_MI_GET_$3(dest, SMVM_MI_ARG_AS(3, sizet));
-            union SM_CodeBlock * restrict offset;
             m4_ifelse($2, [imm],
                       [offset = SMVM_MI_ARG_P(2);],
                       [SMVM_MI_GET_$2(offset, SMVM_MI_ARG_AS(2, sizet));])
-            union SM_CodeBlock * readSize;
-            m4_ifelse($4, [imm],
-                      [readSize = SMVM_MI_ARG_P(4);],
-                      [SMVM_MI_GET_$4(readSize, SMVM_MI_ARG_AS(4, sizet));])
-            SMVM_MI_TRY_EXCEPT(slot->size - SMVM_MI_BLOCK_AS(offset,uint64) >= SMVM_MI_BLOCK_AS(readSize,sizet), SMVM_E_INVALID_MEMORY_READ);
-            SMVM_MI_MEMCPY(&(SMVM_MI_BLOCK_AS(dest,uint64)), slot->pData + SMVM_MI_BLOCK_AS(offset,uint64), SMVM_MI_BLOCK_AS(readSize,sizet));]),
+            m4_ifelse($4, [imm], [numBytes = SMVM_MI_ARG_P(4);])
+            SMVM_MI_TRY_EXCEPT(slot->size - SMVM_MI_BLOCK_AS(offset,uint64) >= SMVM_MI_BLOCK_AS(numBytes,sizet), SMVM_E_OUT_OF_BOUNDS_READ);
+            SMVM_MI_MEMCPY(&(SMVM_MI_BLOCK_AS(dest,uint64)), slot->pData + SMVM_MI_BLOCK_AS(offset,uint64), SMVM_MI_BLOCK_AS(numBytes,sizet));]),
         DO_DISPATCH, PREPARE_FINISH)])
 m4_define([MOV_FROM_MEM_DEFINE], [_MOV_FROM_MEM_DEFINE(_ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1)])
 foreach([MOV_FROM_MEM_DEFINE], (product(([reg], [stack]), ([imm], [reg], [stack]), ([reg], [stack]), ([imm], [reg], [stack]))))
@@ -142,30 +147,34 @@ foreach([MOV_FROM_MEM_DEFINE], (product(([reg], [stack]), ([imm], [reg], [stack]
 m4_define([_MOV_TO_MEM_DEFINE], [
     INSTR_DEFINE([common.mov_$1_mem_$2_$3_$4],
         CODE(0x00, 0x01, OLB_CODE_$1, OLB_CODE_mem_$2_$3, OLB_CODE_$4, 0x00, 0x00, 0x00),
-        ARGS(4), PREPARATION([
-            SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(4,uint64) > 0u,
-                                        SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
-            SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(4,uint64) <= 8u,
-                                        SMVM_PREPARE_ERROR_INVALID_ARGUMENTS)]),
+        ARGS(4),
+        m4_ifelse($4, [imm],
+                  [PREPARATION([
+                      SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(4,uint64) > 0u,
+                                                  SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
+                      SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(4,uint64) <= 8u,
+                                                  SMVM_PREPARE_ERROR_INVALID_ARGUMENTS)])],
+                  [NO_PREPARATION]),
         NO_IMPL_SUFFIX, IMPL([
-            union SM_CodeBlock * restrict src;
-            m4_ifelse($1, [imm],
-                      [src = SMVM_MI_ARG_P(1);],
-                      [SMVM_MI_GET_$1(src, SMVM_MI_ARG_AS(1, sizet));])
+            union SM_CodeBlock * m4_ifelse($1, [imm], [restrict]) src;
             union SM_CodeBlock * restrict ptr;
+            union SM_CodeBlock * m4_ifelse($3, [imm], [restrict]) offset;
+            union SM_CodeBlock * m4_ifelse($4, [imm], [restrict]) numBytes;
+            struct SMVM_MemorySlot * restrict slot;
+            m4_ifelse($4, [imm], [],
+                      [SMVM_MI_GET_$4(numBytes, SMVM_MI_ARG_AS(4,sizet));
+                       SMVM_MI_TRY_EXCEPT(SMVM_MI_BLOCK_AS(numBytes,sizet) > 0u && SMVM_MI_BLOCK_AS(numBytes,sizet) <= 8u,
+                                          SMVM_E_OUT_OF_BOUNDS_READ);])
+            m4_ifelse($1, [imm], [], [SMVM_MI_GET_$1(src, SMVM_MI_ARG_AS(1, sizet));])
             SMVM_MI_GET_$2(ptr, SMVM_MI_ARG_AS(2, sizet));
-            struct SMVM_MemorySlot * restrict slot; \
             SMVM_MI_MEM_GET_SLOT_OR_EXCEPT(SMVM_MI_BLOCK_AS(ptr,uint64), slot);
-            union SM_CodeBlock * restrict offset;
             m4_ifelse($3, [imm],
                       [offset = SMVM_MI_ARG_P(3);],
                       [SMVM_MI_GET_$3(offset, SMVM_MI_ARG_AS(3, sizet));])
-            union SM_CodeBlock * writeSize;
-            m4_ifelse($4, [imm],
-                      [writeSize = SMVM_MI_ARG_P(4);],
-                      [SMVM_MI_GET_$4(writeSize, SMVM_MI_ARG_AS(4, sizet));])
-            SMVM_MI_TRY_EXCEPT(slot->size - SMVM_MI_BLOCK_AS(offset,uint64) >= SMVM_MI_BLOCK_AS(writeSize,sizet), SMVM_E_INVALID_MEMORY_WRITE);
-            SMVM_MI_MEMCPY(slot->pData + SMVM_MI_BLOCK_AS(offset,uint64), &(SMVM_MI_BLOCK_AS(src,uint64)), SMVM_MI_BLOCK_AS(writeSize,sizet));]),
+            m4_ifelse($4, [imm], [numBytes = SMVM_MI_ARG_P(4);])
+            SMVM_MI_TRY_EXCEPT(slot->size - SMVM_MI_BLOCK_AS(offset,uint64) >= SMVM_MI_BLOCK_AS(numBytes,sizet), SMVM_E_OUT_OF_BOUNDS_WRITE);
+            m4_ifelse($1, [imm], [src = SMVM_MI_ARG_P(1);])
+            SMVM_MI_MEMCPY(slot->pData + SMVM_MI_BLOCK_AS(offset,uint64), &(SMVM_MI_BLOCK_AS(src,uint64)), SMVM_MI_BLOCK_AS(numBytes,sizet));]),
         DO_DISPATCH, PREPARE_FINISH)])
 m4_define([MOV_TO_MEM_DEFINE], [_MOV_TO_MEM_DEFINE(_ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1)])
 foreach([MOV_TO_MEM_DEFINE], (product(([imm], [reg], [stack]), ([reg], [stack]), ([imm], [reg], [stack]), ([imm], [reg], [stack]))))
@@ -175,34 +184,75 @@ m4_define([_MOV_MEM_TO_MEM_DEFINE], [
         CODE(0x00, 0x01, OLB_CODE_mem_$1_$2, OLB_CODE_mem_$3_$4, OLB_CODE_$5, 0x00, 0x00, 0x00),
         ARGS(5), NO_PREPARATION, NO_IMPL_SUFFIX,
         IMPL([
-            union SM_CodeBlock * restrict srcPtr;
+            union SM_CodeBlock * srcPtr;
+            union SM_CodeBlock * m4_ifelse($2, [imm], [restrict]) srcOffset;
+            union SM_CodeBlock * dstPtr;
+            union SM_CodeBlock * m4_ifelse($4, [imm], [restrict]) dstOffset;
+            union SM_CodeBlock * m4_ifelse($5, [imm], [restrict]) numBytes;
+            struct SMVM_MemorySlot * srcSlot;
+            struct SMVM_MemorySlot * dstSlot;
             SMVM_MI_GET_$1(srcPtr, SMVM_MI_ARG_AS(1, sizet));
-            struct SMVM_MemorySlot * restrict srcSlot; \
+            SMVM_MI_GET_$3(dstPtr, SMVM_MI_ARG_AS(3, sizet));
             SMVM_MI_MEM_GET_SLOT_OR_EXCEPT(SMVM_MI_BLOCK_AS(srcPtr,uint64), srcSlot);
-            union SM_CodeBlock * restrict srcOffset;
+            SMVM_MI_MEM_GET_SLOT_OR_EXCEPT(SMVM_MI_BLOCK_AS(dstPtr,uint64), dstSlot);
             m4_ifelse($2, [imm],
                       [srcOffset = SMVM_MI_ARG_P(2);],
                       [SMVM_MI_GET_$2(srcOffset, SMVM_MI_ARG_AS(2, sizet));])
-            union SM_CodeBlock * writeSize;
             m4_ifelse($5, [imm],
-                      [writeSize = SMVM_MI_ARG_P(5);],
-                      [SMVM_MI_GET_$5(writeSize, SMVM_MI_ARG_AS(5, sizet));])
-            SMVM_MI_TRY_EXCEPT(srcSlot->size - SMVM_MI_BLOCK_AS(srcOffset,uint64) >= SMVM_MI_BLOCK_AS(writeSize,sizet), SMVM_E_INVALID_MEMORY_READ);
-            union SM_CodeBlock * restrict dstPtr;
-            SMVM_MI_GET_$3(dstPtr, SMVM_MI_ARG_AS(3, sizet));
-            struct SMVM_MemorySlot * restrict dstSlot; \
-            SMVM_MI_MEM_GET_SLOT_OR_EXCEPT(SMVM_MI_BLOCK_AS(dstPtr,uint64), dstSlot);
-            union SM_CodeBlock * restrict dstOffset;
+                      [numBytes = SMVM_MI_ARG_P(5);],
+                      [SMVM_MI_GET_$5(numBytes, SMVM_MI_ARG_AS(5, sizet));])
+            SMVM_MI_TRY_EXCEPT(srcSlot->size - SMVM_MI_BLOCK_AS(srcOffset,uint64) >= SMVM_MI_BLOCK_AS(numBytes,sizet), SMVM_E_OUT_OF_BOUNDS_READ);
             m4_ifelse($4, [imm],
                       [dstOffset = SMVM_MI_ARG_P(4);],
                       [SMVM_MI_GET_$4(dstOffset, SMVM_MI_ARG_AS(4, sizet));])
-            SMVM_MI_TRY_EXCEPT(dstSlot->size - SMVM_MI_BLOCK_AS(dstOffset,uint64) >= SMVM_MI_BLOCK_AS(writeSize,sizet), SMVM_E_INVALID_MEMORY_WRITE);
-            SMVM_MI_MEMCPY(dstSlot->pData + SMVM_MI_BLOCK_AS(dstOffset,uint64),
-                           srcSlot->pData + SMVM_MI_BLOCK_AS(srcOffset,uint64),
-                           SMVM_MI_BLOCK_AS(writeSize,sizet));]),
+            SMVM_MI_TRY_EXCEPT(dstSlot->size - SMVM_MI_BLOCK_AS(dstOffset,uint64) >= SMVM_MI_BLOCK_AS(numBytes,sizet), SMVM_E_OUT_OF_BOUNDS_WRITE);
+            if (srcSlot != dstSlot) {
+                SMVM_MI_MEMCPY(dstSlot->pData + SMVM_MI_BLOCK_AS(dstOffset,uint64),
+                               srcSlot->pData + SMVM_MI_BLOCK_AS(srcOffset,uint64),
+                               SMVM_MI_BLOCK_AS(numBytes,sizet));
+            } else {
+                SMVM_MI_MEMMOVE(dstSlot->pData + SMVM_MI_BLOCK_AS(dstOffset,uint64),
+                                srcSlot->pData + SMVM_MI_BLOCK_AS(srcOffset,uint64),
+                                SMVM_MI_BLOCK_AS(numBytes,sizet));
+            }]),
         DO_DISPATCH, PREPARE_FINISH)])
 m4_define([MOV_MEM_TO_MEM_DEFINE], [_MOV_MEM_TO_MEM_DEFINE(_ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, _ARG5$1)])
 foreach([MOV_MEM_TO_MEM_DEFINE], (product(([reg], [stack]), ([imm], [reg], [stack]), ([reg], [stack]), ([imm], [reg], [stack]), ([imm], [reg], [stack]))))
+
+m4_define([_MOV_FROM_REF_DEFINE], [
+    INSTR_DEFINE([common.mov_$1_$2_$3_$4],
+        CODE(0x00, 0x01, OLB_CODE_$1_$2, OLB_CODE_$3, OLB_CODE_$4, 0x00, 0x00, 0x00),
+        ARGS(4),
+        m4_ifelse($4, [imm],
+                  [PREPARATION([
+                      SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(4,uint64) > 0u,
+                                                  SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
+                      SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(4,uint64) <= 8u,
+                                                  SMVM_PREPARE_ERROR_INVALID_ARGUMENTS)])],
+                  [NO_PREPARATION]),
+        NO_IMPL_SUFFIX, IMPL([
+            struct SMVM_Reference * restrict srcRef;
+            union SM_CodeBlock * m4_ifelse($2, [imm], [restrict]) srcOffset;
+            union SM_CodeBlock * dest;
+            union SM_CodeBlock * m4_ifelse($4, [imm], [restrict]) numBytes;
+            m4_ifelse($4, [imm], [],
+                      [SMVM_MI_GET_$4(numBytes, SMVM_MI_ARG_AS(4,sizet));
+                       SMVM_MI_TRY_EXCEPT(SMVM_MI_BLOCK_AS(numBytes,sizet) > 0u && SMVM_MI_BLOCK_AS(numBytes,sizet) <= 8u,
+                                          SMVM_E_OUT_OF_BOUNDS_WRITE);])
+            SMVM_MI_GET_$1(srcRef, SMVM_MI_ARG_AS(1, sizet));
+            SMVM_MI_GET_$3(dest, SMVM_MI_ARG_AS(3, sizet));
+            m4_ifelse($2, [imm],
+                      [srcOffset = SMVM_MI_ARG_P(2);],
+                      [SMVM_MI_GET_$2(srcOffset, SMVM_MI_ARG_AS(2, sizet));])
+            m4_ifelse($4, [imm], [numBytes = SMVM_MI_ARG_P(4);])
+            SMVM_MI_TRY_EXCEPT(SMVM_MI_REFERENCE_GET_SIZE(srcRef) - SMVM_MI_BLOCK_AS(srcOffset,uint64) >= SMVM_MI_BLOCK_AS(numBytes,sizet),
+                               SMVM_E_OUT_OF_BOUNDS_READ);
+            m4_ifelse($3, [stack], [SMVM_MI_MEMCPY], [SMVM_MI_MEMMOVE])(&(SMVM_MI_BLOCK_AS(dest,uint64)),
+                           SMVM_MI_REFERENCE_GET_PTR(srcRef) + SMVM_MI_BLOCK_AS(srcOffset,uint64), SMVM_MI_BLOCK_AS(numBytes,sizet));]),
+        DO_DISPATCH, PREPARE_FINISH)])
+m4_define([MOV_FROM_REF_DEFINE], [_MOV_FROM_REF_DEFINE(_ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1)])
+foreach([MOV_FROM_REF_DEFINE], (product(([cref], [ref]), ([imm], [reg], [stack]), ([reg], [stack]), ([imm], [reg], [stack]))))
+
 
 m4_define([CHECK_CALL_TARGET], [SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_IS_INSTR($1), SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);])
 
