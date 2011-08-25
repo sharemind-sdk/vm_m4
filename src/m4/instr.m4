@@ -255,9 +255,29 @@ PUSH_DEFINE([imm])
 PUSH_DEFINE([reg])
 PUSH_DEFINE([stack])
 
+m4_define([_PUSHREF_BLOCK_DEFINE], [
+    INSTR_DEFINE([common.proc.push$1_$2],
+        CODE(0x00, 0x02, m4_ifelse($1, [ref], [0x05], [0x07]), OLB_CODE_$2, 0x00, 0x00, 0x00, 0x00),
+        ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX,
+        IMPL([
+            union SM_CodeBlock * restrict b;
+            m4_ifelse($2, [imm],
+                      [b = SMVM_MI_ARG_P(1);],
+                      [SMVM_MI_GET_$2(b, SMVM_MI_ARG_AS(1, sizet));])
+            SMVM_MI_PUSHREF_BLOCK_$1(b);]),
+        DO_DISPATCH, PREPARE_FINISH)])
+m4_define([PUSHREF_BLOCK_DEFINE], [_PUSHREF_BLOCK_DEFINE(_ARG1$1, _ARG2$1)])
+foreach([PUSHREF_BLOCK_DEFINE], (product(([cref], [ref]), ([reg], [stack]))))
+_PUSHREF_BLOCK_DEFINE([cref], [imm])
+
 INSTR_DEFINE([common.proc.clearstack],
     CODE(0x00, 0x02, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00),
-    NO_ARGS, NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([SMVM_MI_CLEAR_STACK]), DO_DISPATCH, PREPARE_FINISH)
+    NO_ARGS, NO_PREPARATION, NO_IMPL_SUFFIX,
+    IMPL([
+        if (likely(SMVM_MI_HAS_STACK)) {
+            SMVM_MI_CLEAR_STACK;
+        } else (void) 0]),
+    DO_DISPATCH, PREPARE_FINISH)
 
 INSTR_DEFINE([common.proc.resizestack],
     CODE(0x00, 0x02, 0x0a, 0x00, 0x00, 0x00, 0x00, 0x00),
