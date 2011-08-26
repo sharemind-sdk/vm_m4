@@ -28,6 +28,7 @@ cleanlib:
 
 instr.m4f: instr.m4
 	$(M4) $< --freeze-state=$@
+	@$(M4) --reload-state=instr.m4f stats.m4
 
 $(M4_2_H_TARGETS): %.h: %.m4 instr.m4f
 	$(M4) --reload-state=instr.m4f $< > $@
