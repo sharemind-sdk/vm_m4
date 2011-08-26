@@ -15,7 +15,7 @@ m4_define([CC_DEFINE], [m4_define([CC_COUNT],m4_incr(CC_COUNT))
                         m4_define([CC_]CC_COUNT,[$1, $2, $3])])
 
 m4_define([CCS],[forloop([i], 1, CC_COUNT, [m4_ifelse(i, [1], [], [, ])(CC(i))])])
-m4_define([CC_FOREACH],[forloop([i], 1, CC_COUNT, [m4_indir([$1],_INSTR_EXPAND(CC(CC(i))))])])
+m4_define([CC_FOREACH],[forloop([i], 1, CC_COUNT, [m4_indir([$1],_ARG1(CC(CC(i))))])])
 
 # (fu.ll.name) -> (fu.ll.name, ll.name, name)
 m4_define([CODE_CASE_NAMES], [[[$1]]m4_pushdef([A], STRIP_TOP_NAMESPACE($1))m4_ifelse(A, [$1], [], [, CODE_CASE_NAMES(A)])m4_popdef([A])])

@@ -8,27 +8,35 @@ m4_divert(-1)
 # code is subject to the appropriate license agreement.
 #
 
-m4_changequote([,])
+m4_changequote([,]) # use [ and ] instead of ` and '
+
+
+################################################################################
+##  MACROS                                                                    ##
+################################################################################
+##    Here we define some macros used by the instruction definitions below and #
+#     m4 files depending these instruction definitions.                        #
+################################################################################
+
 m4_include([forloop.m4])
 m4_include([foreach.m4])
 m4_include([product.m4])
 m4_include([datatypebyte.m4])
 m4_include([operandlocationbyte.m4])
 
-m4_define([_ARG1],[$1])
-m4_define([_ARG2],[$2])
-m4_define([_ARG3],[$3])
-m4_define([_ARG4],[$4])
-m4_define([_ARG5],[$5])
 
-# (value)
+m4_define([_ARG1],[$1]) # _ARG1(a1,a2,...) -> a1
+m4_define([_ARG2],[$2]) # _ARG1(a1,a2,...) -> a2
+m4_define([_ARG3],[$3]) # _ARG1(a1,a2,...) -> a3
+m4_define([_ARG4],[$4]) # _ARG1(a1,a2,...) -> a4
+m4_define([_ARG5],[$5]) # _ARG1(a1,a2,...) -> a5
+
+# DEC_TO_HEX(value) changes the representation of value for decimal base to hexadecimal
 m4_define([DEC_TO_HEX], [_$0(m4_eval([$1 % 16]))[]m4_ifelse(m4_eval([$1 >= 16]),
                                                             [1],
                                                             [$0(m4_eval([$1 / 16]))])])
 m4_define([_DEC_TO_HEX], [m4_ifelse([$1], [15], [f], [$1], [14], [e], [$1], [13], [d],
                                     [$1], [12], [c], [$1], [11], [b], [$1], [10], [a], [$1])])
-
-m4_define([_INSTR_EXPAND],[$1])
 
 m4_define([INSTR_COUNT],0)
 m4_define([INSTR], [m4_defn(m4_format([[INSTR_%s]], [$1]))])
@@ -37,7 +45,7 @@ m4_define([INSTR_DEFINE], [m4_define(m4_format([[INSTR_%s]], [$1]), [$1, $2, $3,
                         m4_define([INSTR_]INSTR_COUNT,[$1])])
 
 m4_define([INSTRS],[forloop([i], 1, INSTR_COUNT, [m4_ifelse(i, [1], [], [, ])(INSTR(INSTR(i)))])])
-m4_define([INSTR_FOREACH],[forloop([i], 1, INSTR_COUNT, [m4_indir([$1],_INSTR_EXPAND(INSTR(INSTR(i))))])])
+m4_define([INSTR_FOREACH],[forloop([i], 1, INSTR_COUNT, [m4_indir([$1],_ARG1(INSTR(INSTR(i))))])])
 
 m4_define([STRIP_NAME], [m4_patsubst($1, [\.[^.]*$])])
 m4_define([STRIP_TOP_NAMESPACE], [m4_patsubst($1, [^[^.]*\.])])
@@ -67,7 +75,7 @@ m4_define([EMPTY_IMPL_DEFINE], [m4_define(m4_format([[EMPTY_IMPL_%s]], [$1]), [$
                         m4_define([EMPTY_IMPL_]EMPTY_IMPL_COUNT,[$1])])
 
 m4_define([EMPTY_IMPLS],[forloop([i], 1, EMPTY_IMPL_COUNT, [m4_ifelse(i, [1], [], [, ])(EMPTY_IMPL(EMPTY_IMPL(i)))])])
-m4_define([EMPTY_IMPL_FOREACH],[forloop([i], 1, EMPTY_IMPL_COUNT, [m4_indir([$1],_INSTR_EXPAND(EMPTY_IMPL(EMPTY_IMPL(i))))])])
+m4_define([EMPTY_IMPL_FOREACH],[forloop([i], 1, EMPTY_IMPL_COUNT, [m4_indir([$1],_ARG1(EMPTY_IMPL(EMPTY_IMPL(i))))])])
 
 m4_define([EMPTY_IMPL_FULLLABEL], $1)
 m4_define([EMPTY_IMPL_LABEL], [STRIP_NAMESPACE($1)])
@@ -85,6 +93,24 @@ m4_define([PREPARATION], [m4_ifelse([$1], [NO_PREPARATION], [], [$1])])
 m4_define([IMPL_SUFFIX], [$1])
 m4_define([NO_IMPL_SUFFIX], [])
 m4_define([IMPL], [$1])
+
+m4_define([REVERSE_2], [$2, $1])
+m4_define([REVERSE_4], [$4, $3, $2, $1])
+m4_define([REVERSE_8], [$8, $7, $6, $5, $4, $3, $2, $1])
+m4_define([BYTES_TO_UINT16_BE], [m4_format([0x%02x%02x],m4_eval($2),m4_eval($1))])
+m4_define([BYTES_TO_UINT16_LE], [BYTES_TO_UINT16_BE(REVERSE_2($@))])
+m4_define([BYTES_TO_UINT32_BE], [m4_format([0x%02x%02x%02x%02x],m4_eval($4),m4_eval($3),m4_eval($2),m4_eval($1))])
+m4_define([BYTES_TO_UINT32_LE], [BYTES_TO_UINT32_BE(REVERSE_4($@))])
+m4_define([BYTES_TO_UINT64_BE], [m4_format([0x%02x%02x%02x%02x%02x%02x%02x%02x],m4_eval($8),m4_eval($7),m4_eval($6),m4_eval($5),m4_eval($4),m4_eval($3),m4_eval($2),m4_eval($1))])
+m4_define([BYTES_TO_UINT64_LE], [BYTES_TO_UINT64_BE(REVERSE_8($@))])
+
+m4_define([INSTR_CODE_TO_BYTECODE], [BYTES_TO_UINT64_BE($@)])
+m4_define([COMPOSE], [$1$2])
+
+
+################################################################################
+##  INSTRUCTION DEFINITIONS                                                   ##
+################################################################################
 
 INSTR_DEFINE([common.nop],
     CODE(0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00),
@@ -512,23 +538,3 @@ foreach([INSTR_JUMP_JLE_DEFINE], (product(([[uint8]], [[uint16]], [[uint32]], [[
 m4_define([INSTR_JUMP_JLT_DEFINE],
           [INSTR_JUMP_COND_2_DEFINE([jlt],0x0a,((*c1) < (*c2)),_ARG1$1,_ARG2$1,_ARG3$1,_ARG4$1)])
 foreach([INSTR_JUMP_JLT_DEFINE], (product(([[uint8]], [[uint16]], [[uint32]], [[uint64]], [[float32]]),([[imm]], [[reg]], [[stack]]),([[uint8]], [[uint16]], [[uint32]], [[uint64]], [[float32]]),([[reg]], [[stack]]))))
-
-m4_define([REVERSE_2], [$2, $1])
-m4_define([REVERSE_4], [$4, $3, $2, $1])
-m4_define([REVERSE_8], [$8, $7, $6, $5, $4, $3, $2, $1])
-m4_define([BYTES_TO_UINT16_BE], [m4_format([0x%02x%02x],m4_eval($2),m4_eval($1))])
-m4_define([BYTES_TO_UINT16_LE], [BYTES_TO_UINT16_BE(REVERSE_2($@))])
-m4_define([BYTES_TO_UINT32_BE], [m4_format([0x%02x%02x%02x%02x],m4_eval($4),m4_eval($3),m4_eval($2),m4_eval($1))])
-m4_define([BYTES_TO_UINT32_LE], [BYTES_TO_UINT32_BE(REVERSE_4($@))])
-m4_define([BYTES_TO_UINT64_BE], [m4_format([0x%02x%02x%02x%02x%02x%02x%02x%02x],m4_eval($8),m4_eval($7),m4_eval($6),m4_eval($5),m4_eval($4),m4_eval($3),m4_eval($2),m4_eval($1))])
-m4_define([BYTES_TO_UINT64_LE], [BYTES_TO_UINT64_BE(REVERSE_8($@))])
-
-m4_define([INSTR_CODE_TO_BYTECODE], [BYTES_TO_UINT64_BE($@)])
-m4_define([COMPOSE], [$1$2])
-
-#m4_define([PRINT], [print($1)])
-#m4_define([NUMBRID], [([[yks]], [[kaks]], [[kolm]])])
-#foreach([PRINT], NUMBRID)
-#m4_define([PRINT2], [print(ARG1$1 = ARG2$1)])
-#product(NUMBRID,NUMBRID)
-#foreach([PRINT2], (product(NUMBRID,NUMBRID)))
