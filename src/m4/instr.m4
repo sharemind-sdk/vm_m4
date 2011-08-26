@@ -273,8 +273,18 @@ m4_define([_MOV_FROM_REF_DEFINE], [
             m4_ifelse($4, [imm], [numBytes = SMVM_MI_ARG_P(4);])
             SMVM_MI_TRY_EXCEPT(SMVM_MI_REFERENCE_GET_SIZE(srcRef) - SMVM_MI_BLOCK_AS(srcOffset,uint64) >= SMVM_MI_BLOCK_AS(numBytes,sizet),
                                SMVM_E_OUT_OF_BOUNDS_READ);
-            m4_ifelse($3, [stack], [SMVM_MI_MEMCPY], [SMVM_MI_MEMMOVE])(&(SMVM_MI_BLOCK_AS(dest,uint64)),
-                           SMVM_MI_REFERENCE_GET_PTR(srcRef) + SMVM_MI_BLOCK_AS(srcOffset,uint64), SMVM_MI_BLOCK_AS(numBytes,sizet));]),
+            m4_ifelse($3, [stack],
+                      [SMVM_MI_MEMCPY(&(SMVM_MI_BLOCK_AS(dest,uint64)),
+                                      SMVM_MI_REFERENCE_GET_PTR(srcRef) + SMVM_MI_REFERENCE_GET_OFFSET(srcRef) + SMVM_MI_BLOCK_AS(srcOffset,uint64), SMVM_MI_BLOCK_AS(numBytes,sizet));],
+                      [if (SMVM_MI_REFERENCE_GET_PTR(srcRef) != &(SMVM_MI_BLOCK_AS(dest,uint64))) {
+                           SMVM_MI_MEMCPY(&(SMVM_MI_BLOCK_AS(dest,uint64)),
+                                          SMVM_MI_REFERENCE_GET_PTR(srcRef) + SMVM_MI_REFERENCE_GET_OFFSET(srcRef) + SMVM_MI_BLOCK_AS(srcOffset,uint64),
+                                          SMVM_MI_BLOCK_AS(numBytes,sizet));
+                       } else {
+                           SMVM_MI_MEMMOVE(&(SMVM_MI_BLOCK_AS(dest,uint64)),
+                                           SMVM_MI_REFERENCE_GET_PTR(srcRef) + SMVM_MI_REFERENCE_GET_OFFSET(srcRef) + SMVM_MI_BLOCK_AS(srcOffset,uint64),
+                                           SMVM_MI_BLOCK_AS(numBytes,sizet));
+                       }])]),
         DO_DISPATCH, PREPARE_FINISH)])
 m4_define([MOV_FROM_REF_DEFINE], [_MOV_FROM_REF_DEFINE(_ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1)])
 foreach([MOV_FROM_REF_DEFINE], (product(([cref], [ref]), ([imm], [reg], [stack]), ([reg], [stack]), ([imm], [reg], [stack]))))
@@ -309,7 +319,19 @@ m4_define([_MOV_TO_REF_DEFINE], [
             m4_ifelse($3, [imm], [numBytes = SMVM_MI_ARG_P(4);])
             SMVM_MI_TRY_EXCEPT(SMVM_MI_REFERENCE_GET_SIZE(dstRef) - SMVM_MI_BLOCK_AS(dstOffset,uint64) >= SMVM_MI_BLOCK_AS(numBytes,sizet),
                                SMVM_E_OUT_OF_BOUNDS_WRITE);
-            m4_ifelse($1, [reg], [SMVM_MI_MEMMOVE], [SMVM_MI_MEMCPY])(SMVM_MI_REFERENCE_GET_PTR(dstRef) + SMVM_MI_BLOCK_AS(dstOffset,uint64),&(SMVM_MI_BLOCK_AS(src,uint64)),SMVM_MI_BLOCK_AS(numBytes,sizet));]),
+            m4_ifelse($1, [reg],
+                      [if (SMVM_MI_REFERENCE_GET_PTR(dstRef) != &(SMVM_MI_BLOCK_AS(src,uint64))) {
+                           SMVM_MI_MEMCPY(SMVM_MI_REFERENCE_GET_PTR(dstRef) + SMVM_MI_REFERENCE_GET_OFFSET(dstRef) + SMVM_MI_BLOCK_AS(dstOffset,uint64),
+                                          &(SMVM_MI_BLOCK_AS(src,uint64)),
+                                          SMVM_MI_BLOCK_AS(numBytes,sizet));
+                       } else {
+                           SMVM_MI_MEMMOVE(SMVM_MI_REFERENCE_GET_PTR(dstRef) + SMVM_MI_REFERENCE_GET_OFFSET(dstRef) + SMVM_MI_BLOCK_AS(dstOffset,uint64),
+                                           &(SMVM_MI_BLOCK_AS(src,uint64)),
+                                           SMVM_MI_BLOCK_AS(numBytes,sizet));
+                       }],
+                      [SMVM_MI_MEMCPY(SMVM_MI_REFERENCE_GET_PTR(dstRef) + SMVM_MI_REFERENCE_GET_OFFSET(dstRef) + SMVM_MI_BLOCK_AS(dstOffset,uint64),
+                                      &(SMVM_MI_BLOCK_AS(src,uint64)),
+                                      SMVM_MI_BLOCK_AS(numBytes,sizet));])]),
         DO_DISPATCH, PREPARE_FINISH)])
 m4_define([MOV_TO_REF_DEFINE], [_MOV_TO_REF_DEFINE(_ARG1$1, _ARG2$1, _ARG3$1)])
 foreach([MOV_TO_REF_DEFINE], (product(([imm], [reg], [stack]), ([reg], [stack]), ([imm], [reg], [stack]))))
