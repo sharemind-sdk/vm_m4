@@ -1,3 +1,6 @@
 m4_divert[]
-Number of instructions being processed: INSTR_COUNT
+INSTRUCTION STATISTICS:
+----------------------------------------------------
+  Instructions being processed: INSTR_COUNT
+  Extra dispatches: EMPTY_IMPL_COUNT
 
