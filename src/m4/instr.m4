@@ -279,6 +279,41 @@ m4_define([_MOV_FROM_REF_DEFINE], [
 m4_define([MOV_FROM_REF_DEFINE], [_MOV_FROM_REF_DEFINE(_ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1)])
 foreach([MOV_FROM_REF_DEFINE], (product(([cref], [ref]), ([imm], [reg], [stack]), ([reg], [stack]), ([imm], [reg], [stack]))))
 
+m4_define([_MOV_TO_REF_DEFINE], [
+    INSTR_DEFINE([common.mov_$1_ref_$2_$3],
+        CODE(0x00, 0x01, OLB_CODE_$1, OLB_CODE_ref_$2, OLB_CODE_$3, 0x00, 0x00, 0x00),
+        ARGS(4),
+        m4_ifelse($3, [imm],
+                  [PREPARATION([
+                      SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(4,uint64) > 0u,
+                                                  SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
+                      SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(4,uint64) <= 8u,
+                                                  SMVM_PREPARE_ERROR_INVALID_ARGUMENTS)])],
+                  [NO_PREPARATION]),
+        NO_IMPL_SUFFIX, IMPL([
+            union SM_CodeBlock * m4_ifelse($1, [imm], [restrict]) src;
+            struct SMVM_Reference * restrict dstRef;
+            union SM_CodeBlock * m4_ifelse($2, [imm], [restrict]) dstOffset;
+            union SM_CodeBlock * m4_ifelse($3, [imm], [restrict]) numBytes;
+            m4_ifelse($3, [imm], [],
+                      [SMVM_MI_GET_$3(numBytes, SMVM_MI_ARG_AS(4,sizet));
+                       SMVM_MI_TRY_EXCEPT(SMVM_MI_BLOCK_AS(numBytes,sizet) > 0u && SMVM_MI_BLOCK_AS(numBytes,sizet) <= 8u,
+                                          SMVM_E_OUT_OF_BOUNDS_READ);])
+            m4_ifelse($1, [imm],
+                      [src = SMVM_MI_ARG_P(1);],
+                      [SMVM_MI_GET_$1(src, SMVM_MI_ARG_AS(1, sizet));])
+            SMVM_MI_GET_ref(dstRef, SMVM_MI_ARG_AS(2, sizet));
+            m4_ifelse($2, [imm],
+                      [dstOffset = SMVM_MI_ARG_P(3);],
+                      [SMVM_MI_GET_$2(dstOffset, SMVM_MI_ARG_AS(3, sizet));])
+            m4_ifelse($3, [imm], [numBytes = SMVM_MI_ARG_P(4);])
+            SMVM_MI_TRY_EXCEPT(SMVM_MI_REFERENCE_GET_SIZE(dstRef) - SMVM_MI_BLOCK_AS(dstOffset,uint64) >= SMVM_MI_BLOCK_AS(numBytes,sizet),
+                               SMVM_E_OUT_OF_BOUNDS_WRITE);
+            m4_ifelse($1, [reg], [SMVM_MI_MEMMOVE], [SMVM_MI_MEMCPY])(SMVM_MI_REFERENCE_GET_PTR(dstRef) + SMVM_MI_BLOCK_AS(dstOffset,uint64),&(SMVM_MI_BLOCK_AS(src,uint64)),SMVM_MI_BLOCK_AS(numBytes,sizet));]),
+        DO_DISPATCH, PREPARE_FINISH)])
+m4_define([MOV_TO_REF_DEFINE], [_MOV_TO_REF_DEFINE(_ARG1$1, _ARG2$1, _ARG3$1)])
+foreach([MOV_TO_REF_DEFINE], (product(([imm], [reg], [stack]), ([reg], [stack]), ([imm], [reg], [stack]))))
+
 
 m4_define([CHECK_CALL_TARGET], [SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_IS_INSTR($1), SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);])
 
