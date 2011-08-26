@@ -367,6 +367,41 @@ m4_define([_MOV_REF_TO_REF_DEFINE], [
 m4_define([MOV_REF_TO_REF_DEFINE], [_MOV_REF_TO_REF_DEFINE(_ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1)])
 foreach([MOV_REF_TO_REF_DEFINE], (product(([cref], [ref]), ([imm], [reg], [stack]), ([imm], [reg], [stack]), ([imm], [reg], [stack]))))
 
+m4_define([_MOV_REF_TO_MEM_DEFINE], [
+    INSTR_DEFINE([common.mov_$1_$2_mem_$3_$4_$5],
+        CODE(0x00, 0x01, OLB_CODE_$1_$2, OLB_CODE_mem_$3_$4, OLB_CODE_$5, 0x00, 0x00, 0x00),
+        ARGS(5), NO_PREPARATION, NO_IMPL_SUFFIX,
+        IMPL([
+            struct SMVM_Reference * restrict srcRef;
+            union SM_CodeBlock * m4_ifelse($2, [imm], [restrict]) srcOffset;
+            union SM_CodeBlock * restrict dstPtr;
+            union SM_CodeBlock * m4_ifelse($4, [imm], [restrict]) dstOffset;
+            union SM_CodeBlock * m4_ifelse($5, [imm], [restrict]) numBytes;
+            struct SMVM_MemorySlot * restrict dstSlot;
+            SMVM_MI_GET_$1(srcRef, SMVM_MI_ARG_AS(1, sizet));
+            m4_ifelse($2, [imm], [], [SMVM_MI_GET_$2(srcOffset, SMVM_MI_ARG_AS(2, sizet));])
+            SMVM_MI_GET_$3(dstPtr, SMVM_MI_ARG_AS(3, sizet));
+            SMVM_MI_MEM_GET_SLOT_OR_EXCEPT(SMVM_MI_BLOCK_AS(dstPtr,uint64), dstSlot);
+            m4_ifelse($4, [imm], [], [SMVM_MI_GET_$4(dstOffset, SMVM_MI_ARG_AS(4, sizet));])
+            m4_ifelse($5, [imm], [numBytes = SMVM_MI_ARG_P(5);], [SMVM_MI_GET_$5(numBytes, SMVM_MI_ARG_AS(5,sizet));])
+            m4_ifelse($2, [imm], [srcOffset = SMVM_MI_ARG_P(2);])
+            SMVM_MI_TRY_EXCEPT(SMVM_MI_REFERENCE_GET_SIZE(srcRef) - SMVM_MI_BLOCK_AS(srcOffset,uint64) >= SMVM_MI_BLOCK_AS(numBytes,sizet),
+                               SMVM_E_OUT_OF_BOUNDS_READ);
+            m4_ifelse($4, [imm], [dstOffset = SMVM_MI_ARG_P(4);])
+            SMVM_MI_TRY_EXCEPT(dstSlot->size - SMVM_MI_BLOCK_AS(dstOffset,uint64) >= SMVM_MI_BLOCK_AS(numBytes,sizet),
+                               SMVM_E_OUT_OF_BOUNDS_WRITE);
+            m4_pushdef([CPY_ARGS], [dstSlot->pData + SMVM_MI_BLOCK_AS(dstOffset,uint64),
+                                    SMVM_MI_REFERENCE_GET_PTR(srcRef) + SMVM_MI_REFERENCE_GET_OFFSET(srcRef) + SMVM_MI_BLOCK_AS(srcOffset,uint64),
+                                    SMVM_MI_BLOCK_AS(numBytes,sizet)])
+            if (SMVM_MI_REFERENCE_GET_PTR(srcRef) != dstSlot->pData) {
+                SMVM_MI_MEMCPY(CPY_ARGS);
+            } else {
+                SMVM_MI_MEMMOVE(CPY_ARGS);
+            }
+            m4_popdef([CPY_ARGS])]),
+        DO_DISPATCH, PREPARE_FINISH)])
+m4_define([MOV_REF_TO_MEM_DEFINE], [_MOV_REF_TO_MEM_DEFINE(_ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, _ARG5$1)])
+foreach([MOV_REF_TO_MEM_DEFINE], (product(([cref], [ref]), ([imm], [reg], [stack]), ([reg], [stack]), ([imm], [reg], [stack]), ([imm], [reg], [stack]))))
 
 m4_define([CHECK_CALL_TARGET], [SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_IS_INSTR($1), SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);])
 
