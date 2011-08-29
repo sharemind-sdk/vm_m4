@@ -120,7 +120,8 @@ INSTR_DEFINE([common.trap],
     CODE(0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00),
     NO_ARGS, NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([SMVM_MI_TRAP]), DO_DISPATCH, PREPARE_FINISH)
 
-m4_define([_MOV_REGS_DEFINE], [
+# common.mov (imm, reg, stack) >> (reg, stack)
+m4_define([_MOV_REGS_TO_REGS_DEFINE], [
     INSTR_DEFINE([common.mov_$1_$2],
         CODE(0x00, 0x01, OLB_CODE_$1, OLB_CODE_$2, 0x00, 0x00, 0x00, 0x00),
         ARGS(2), NO_PREPARATION, NO_IMPL_SUFFIX,
@@ -133,10 +134,11 @@ m4_define([_MOV_REGS_DEFINE], [
             SMVM_MI_GET_$2(d, SMVM_MI_ARG_AS(2, sizet));
             (*d) = *s;]),
         DO_DISPATCH, PREPARE_FINISH)])
-m4_define([MOV_REGS_DEFINE], [_MOV_REGS_DEFINE(_ARG1$1, _ARG2$1)])
-foreach([MOV_REGS_DEFINE], (product(([imm], [reg], [stack]), ([reg], [stack]))))
+m4_define([MOV_REGS_TO_REGS_DEFINE], [_MOV_REGS_TO_REGS_DEFINE(_ARG1$1, _ARG2$1)])
+foreach([MOV_REGS_TO_REGS_DEFINE], (product(([imm], [reg], [stack]), ([reg], [stack]))))
 
-m4_define([_MOV_FROM_MEM_DEFINE], [
+# common.mov (mem) >> (reg, stack)
+m4_define([_MOV_MEM_TO_REGS_DEFINE], [
     INSTR_DEFINE([common.mov_mem_$1_$2_$3_$4],
         CODE(0x00, 0x01, OLB_CODE_mem_$1_$2, OLB_CODE_$3, OLB_CODE_$4, 0x00, 0x00, 0x00),
         ARGS(4),
@@ -167,10 +169,11 @@ m4_define([_MOV_FROM_MEM_DEFINE], [
             SMVM_MI_TRY_EXCEPT(slot->size - SMVM_MI_BLOCK_AS(offset,uint64) >= SMVM_MI_BLOCK_AS(numBytes,sizet), SMVM_E_OUT_OF_BOUNDS_READ);
             SMVM_MI_MEMCPY(&(SMVM_MI_BLOCK_AS(dest,uint64)), slot->pData + SMVM_MI_BLOCK_AS(offset,uint64), SMVM_MI_BLOCK_AS(numBytes,sizet));]),
         DO_DISPATCH, PREPARE_FINISH)])
-m4_define([MOV_FROM_MEM_DEFINE], [_MOV_FROM_MEM_DEFINE(_ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1)])
-foreach([MOV_FROM_MEM_DEFINE], (product(([reg], [stack]), ([imm], [reg], [stack]), ([reg], [stack]), ([imm], [reg], [stack]))))
+m4_define([MOV_MEM_TO_REGS_DEFINE], [_MOV_MEM_TO_REGS_DEFINE(_ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1)])
+foreach([MOV_MEM_TO_REGS_DEFINE], (product(([reg], [stack]), ([imm], [reg], [stack]), ([reg], [stack]), ([imm], [reg], [stack]))))
 
-m4_define([_MOV_TO_MEM_DEFINE], [
+# common.mov (imm, reg, stack) >> (mem)
+m4_define([_MOV_REGS_TO_MEM_DEFINE], [
     INSTR_DEFINE([common.mov_$1_mem_$2_$3_$4],
         CODE(0x00, 0x01, OLB_CODE_$1, OLB_CODE_mem_$2_$3, OLB_CODE_$4, 0x00, 0x00, 0x00),
         ARGS(4),
@@ -202,9 +205,10 @@ m4_define([_MOV_TO_MEM_DEFINE], [
             m4_ifelse($1, [imm], [src = SMVM_MI_ARG_P(1);])
             SMVM_MI_MEMCPY(slot->pData + SMVM_MI_BLOCK_AS(offset,uint64), &(SMVM_MI_BLOCK_AS(src,uint64)), SMVM_MI_BLOCK_AS(numBytes,sizet));]),
         DO_DISPATCH, PREPARE_FINISH)])
-m4_define([MOV_TO_MEM_DEFINE], [_MOV_TO_MEM_DEFINE(_ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1)])
-foreach([MOV_TO_MEM_DEFINE], (product(([imm], [reg], [stack]), ([reg], [stack]), ([imm], [reg], [stack]), ([imm], [reg], [stack]))))
+m4_define([MOV_REGS_TO_MEM_DEFINE], [_MOV_REGS_TO_MEM_DEFINE(_ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1)])
+foreach([MOV_REGS_TO_MEM_DEFINE], (product(([imm], [reg], [stack]), ([reg], [stack]), ([imm], [reg], [stack]), ([imm], [reg], [stack]))))
 
+# common.mov (mem) >> (mem)
 m4_define([_MOV_MEM_TO_MEM_DEFINE], [
     INSTR_DEFINE([common.mov_mem_$1_$2_mem_$3_$4_$5],
         CODE(0x00, 0x01, OLB_CODE_mem_$1_$2, OLB_CODE_mem_$3_$4, OLB_CODE_$5, 0x00, 0x00, 0x00),
@@ -245,7 +249,8 @@ m4_define([_MOV_MEM_TO_MEM_DEFINE], [
 m4_define([MOV_MEM_TO_MEM_DEFINE], [_MOV_MEM_TO_MEM_DEFINE(_ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, _ARG5$1)])
 foreach([MOV_MEM_TO_MEM_DEFINE], (product(([reg], [stack]), ([imm], [reg], [stack]), ([reg], [stack]), ([imm], [reg], [stack]), ([imm], [reg], [stack]))))
 
-m4_define([_MOV_FROM_REF_DEFINE], [
+# common.mov (ref, cref) >> (reg, stack)
+m4_define([_MOV_REF_TO_REGS_DEFINE], [
     INSTR_DEFINE([common.mov_$1_$2_$3_$4],
         CODE(0x00, 0x01, OLB_CODE_$1_$2, OLB_CODE_$3, OLB_CODE_$4, 0x00, 0x00, 0x00),
         ARGS(4),
@@ -285,10 +290,11 @@ m4_define([_MOV_FROM_REF_DEFINE], [
                        }])
             m4_popdef([CPY_ARGS])]),
         DO_DISPATCH, PREPARE_FINISH)])
-m4_define([MOV_FROM_REF_DEFINE], [_MOV_FROM_REF_DEFINE(_ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1)])
-foreach([MOV_FROM_REF_DEFINE], (product(([cref], [ref]), ([imm], [reg], [stack]), ([reg], [stack]), ([imm], [reg], [stack]))))
+m4_define([MOV_REF_TO_REGS_DEFINE], [_MOV_REF_TO_REGS_DEFINE(_ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1)])
+foreach([MOV_REF_TO_REGS_DEFINE], (product(([cref], [ref]), ([imm], [reg], [stack]), ([reg], [stack]), ([imm], [reg], [stack]))))
 
-m4_define([_MOV_TO_REF_DEFINE], [
+# common.mov (imm, reg, stack) >> (ref)
+m4_define([_MOV_REGS_TO_REF_DEFINE], [
     INSTR_DEFINE([common.mov_$1_ref_$2_$3],
         CODE(0x00, 0x01, OLB_CODE_$1, OLB_CODE_ref_$2, OLB_CODE_$3, 0x00, 0x00, 0x00),
         ARGS(4),
@@ -330,9 +336,10 @@ m4_define([_MOV_TO_REF_DEFINE], [
                       [SMVM_MI_MEMCPY(CPY_ARGS);])
             m4_popdef([CPY_ARGS])]),
         DO_DISPATCH, PREPARE_FINISH)])
-m4_define([MOV_TO_REF_DEFINE], [_MOV_TO_REF_DEFINE(_ARG1$1, _ARG2$1, _ARG3$1)])
-foreach([MOV_TO_REF_DEFINE], (product(([imm], [reg], [stack]), ([reg], [stack]), ([imm], [reg], [stack]))))
+m4_define([MOV_REGS_TO_REF_DEFINE], [_MOV_REGS_TO_REF_DEFINE(_ARG1$1, _ARG2$1, _ARG3$1)])
+foreach([MOV_REGS_TO_REF_DEFINE], (product(([imm], [reg], [stack]), ([reg], [stack]), ([imm], [reg], [stack]))))
 
+# common.mov (cref, ref) >> (ref)
 m4_define([_MOV_REF_TO_REF_DEFINE], [
     INSTR_DEFINE([common.mov_$1_$2_ref_$3_$4],
         CODE(0x00, 0x01, OLB_CODE_$1_$2, OLB_CODE_ref_$3, OLB_CODE_$4, 0x00, 0x00, 0x00),
@@ -367,6 +374,7 @@ m4_define([_MOV_REF_TO_REF_DEFINE], [
 m4_define([MOV_REF_TO_REF_DEFINE], [_MOV_REF_TO_REF_DEFINE(_ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1)])
 foreach([MOV_REF_TO_REF_DEFINE], (product(([cref], [ref]), ([imm], [reg], [stack]), ([imm], [reg], [stack]), ([imm], [reg], [stack]))))
 
+# common.mov (cref, ref) >> (mem)
 m4_define([_MOV_REF_TO_MEM_DEFINE], [
     INSTR_DEFINE([common.mov_$1_$2_mem_$3_$4_$5],
         CODE(0x00, 0x01, OLB_CODE_$1_$2, OLB_CODE_mem_$3_$4, OLB_CODE_$5, 0x00, 0x00, 0x00),
@@ -403,6 +411,7 @@ m4_define([_MOV_REF_TO_MEM_DEFINE], [
 m4_define([MOV_REF_TO_MEM_DEFINE], [_MOV_REF_TO_MEM_DEFINE(_ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, _ARG5$1)])
 foreach([MOV_REF_TO_MEM_DEFINE], (product(([cref], [ref]), ([imm], [reg], [stack]), ([reg], [stack]), ([imm], [reg], [stack]), ([imm], [reg], [stack]))))
 
+# common.mov (mem) >> (ref)
 m4_define([_MOV_MEM_TO_REF_DEFINE], [
     INSTR_DEFINE([common.mov_mem_$1_$2_ref_$3_$4],
         CODE(0x00, 0x01, OLB_CODE_mem_$1_$2, OLB_CODE_ref_$3, OLB_CODE_$4, 0x00, 0x00, 0x00),
@@ -441,6 +450,7 @@ foreach([MOV_MEM_TO_REF_DEFINE], (product(([reg], [stack]), ([imm], [reg], [stac
 
 m4_define([CHECK_CALL_TARGET], [SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_IS_INSTR($1), SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);])
 
+# common.proc.call
 m4_define([_CALL_DEFINE], [
     INSTR_DEFINE([common.proc.call_$1_$2],
         CODE(0x00, 0x02, 0x00, OLB_CODE_$1, OLB_CODE_$2, 0x00, 0x00, 0x00),
@@ -462,6 +472,7 @@ m4_define([_CALL_DEFINE], [
 m4_define([CALL_DEFINE], [_CALL_DEFINE(_ARG1$1, _ARG2$1)])
 foreach([CALL_DEFINE], (product(([[imm]], [[reg]], [[stack]]),([[imm]], [[reg]], [[stack]]))))
 
+# common.proc.return
 m4_define([RETURN_DEFINE], [
     INSTR_DEFINE([common.proc.return_$1],
         CODE(0x00, 0x02, 0x03, OLB_CODE_$1, 0x00, 0x00, 0x00, 0x00),
@@ -476,6 +487,7 @@ RETURN_DEFINE([imm])
 RETURN_DEFINE([reg])
 RETURN_DEFINE([stack])
 
+# common.proc.push
 m4_define([PUSH_DEFINE], [
     INSTR_DEFINE([common.proc.push_$1],
         CODE(0x00, 0x02, 0x04, OLB_CODE_$1, 0x00, 0x00, 0x00, 0x00),
@@ -490,6 +502,7 @@ PUSH_DEFINE([imm])
 PUSH_DEFINE([reg])
 PUSH_DEFINE([stack])
 
+# common.proc.pushref
 m4_define([_PUSHREF_BLOCK_DEFINE], [
     INSTR_DEFINE([common.proc.push$1_$2],
         CODE(0x00, 0x02, m4_ifelse($1, [ref], [0x05], [0x07]), OLB_CODE_$2, 0x00, 0x00, 0x00, 0x00),
@@ -518,6 +531,7 @@ INSTR_DEFINE([common.proc.resizestack],
     CODE(0x00, 0x02, 0x0a, 0x00, 0x00, 0x00, 0x00, 0x00),
     ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([SMVM_MI_RESIZE_STACK(SMVM_MI_ARG_AS(1, uint64))]), DO_DISPATCH, PREPARE_FINISH)
 
+# common.mem.alloc
 m4_define([_MEM_ALLOC_DEFINE], [
     INSTR_DEFINE([common.mem.alloc_$1_$2],
         CODE(0x00, 0x03, 0x00, OLB_CODE_$1, OLB_CODE_$2, 0x00, 0x00, 0x00),
@@ -533,6 +547,7 @@ m4_define([_MEM_ALLOC_DEFINE], [
 m4_define([MEM_ALLOC_DEFINE], [_MEM_ALLOC_DEFINE(_ARG1$1, _ARG2$1)])
 foreach([MEM_ALLOC_DEFINE], (product(([[reg]], [[stack]]),([[imm]], [[reg]], [[stack]]))))
 
+# common.mem.free
 m4_define([MEM_FREE_DEFINE], [
     INSTR_DEFINE([common.mem.free_$1],
         CODE(0x00, 0x03, 0x01, OLB_CODE_$1, 0x00, 0x00, 0x00, 0x00),
@@ -545,6 +560,7 @@ m4_define([MEM_FREE_DEFINE], [
 MEM_FREE_DEFINE([reg])
 MEM_FREE_DEFINE([stack])
 
+# common.mem.getsize
 m4_define([MEM_GET_SIZE_DEFINE], [
     INSTR_DEFINE([common.mem.getsize_$1_$2],
         CODE(0x00, 0x03, 0x02, OLB_CODE_$1, OLB_CODE_$2, 0x00, 0x00, 0x00),
@@ -562,6 +578,7 @@ MEM_GET_SIZE_DEFINE([reg],[stack])
 MEM_GET_SIZE_DEFINE([stack],[reg])
 MEM_GET_SIZE_DEFINE([stack],[stack])
 
+# common.halt
 m4_define([HALT_DEFINE], [
     INSTR_DEFINE([common.halt_$1],
         CODE(0x00, 0xff, 0x00, OLB_CODE_$1, 0x00, 0x00, 0x00, 0x00),
