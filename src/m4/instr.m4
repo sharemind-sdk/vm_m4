@@ -532,6 +532,20 @@ PUSHREF_REF_DEFINE([cref], [cref])
 PUSHREF_REF_DEFINE([cref], [ref])
 PUSHREF_REF_DEFINE([ref], [ref])
 
+# common.proc.pushref (mem) + common.proc.pushcref (mem)
+m4_define([_PUSHREF_MEM_DEFINE], [
+    INSTR_DEFINE([common.proc.push$1_mem_$2_imm],
+    CODE(0x00, 0x02, m4_ifelse($1, [ref], [0x05], [0x07]), OLB_CODE_mem_$2_imm, 0x00, 0x00, 0x00, 0x00),
+    ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX,
+    IMPL([
+        union SM_CodeBlock * srcPtr;
+        struct SMVM_MemorySlot * srcSlot;
+        SMVM_MI_GET_$2(srcPtr, SMVM_MI_ARG_AS(1, sizet));
+        SMVM_MI_MEM_GET_SLOT_OR_EXCEPT(SMVM_MI_BLOCK_AS(srcPtr,uint64), srcSlot);
+        SMVM_MI_PUSHREF_MEM_$1(srcSlot);]),
+    DO_DISPATCH, PREPARE_FINISH)])
+m4_define([PUSHREF_MEM_DEFINE], [_PUSHREF_MEM_DEFINE(_ARG1$1, _ARG2$1)])
+foreach([PUSHREF_MEM_DEFINE], (product(([cref], [ref]), ([reg], [stack]))))
 
 INSTR_DEFINE([common.proc.clearstack],
     CODE(0x00, 0x02, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00),
