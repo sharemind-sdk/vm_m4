@@ -547,6 +547,124 @@ m4_define([_PUSHREF_MEM_DEFINE], [
 m4_define([PUSHREF_MEM_DEFINE], [_PUSHREF_MEM_DEFINE(_ARG1$1, _ARG2$1)])
 foreach([PUSHREF_MEM_DEFINE], (product(([cref], [ref]), ([reg], [stack]))))
 
+# common.proc.pushrefpart (reg, stack) + common.proc.pushcrefpart (imm, reg, stack)
+m4_define([_PUSHREFPART_BLOCK_DEFINE], [
+    INSTR_DEFINE([common.proc.push$1part_$2_$3_$4],
+        CODE(0x00, 0x02, m4_ifelse($1, [ref], [0x06], [0x08]), OLB_CODE_$2, OLB_CODE_$3, OLB_CODE_$4, 0x00, 0x00),
+        ARGS(3),
+        m4_ifelse($3_$4, [imm_imm],
+                  PREPARATION([
+                      SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(2,uint64) < 8u,
+                                                  SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
+                      SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(3,uint64) > 0u,
+                                                  SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
+                      SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(2,uint64) + SMVM_PREPARE_ARG_AS(3,uint64) <= 8u,
+                                                  SMVM_PREPARE_ERROR_INVALID_ARGUMENTS)]),
+                  $3, [imm],
+                  PREPARATION([
+                      SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(2,uint64) < 8u,
+                                                  SMVM_PREPARE_ERROR_INVALID_ARGUMENTS)]),
+                  $4, [imm],
+                  PREPARATION([
+                      SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(3,uint64) > 0u,
+                                                  SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
+                      SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(3,uint64) <= 8u,
+                                                  SMVM_PREPARE_ERROR_INVALID_ARGUMENTS)]),
+                  NO_PREPARATION),
+        NO_IMPL_SUFFIX,
+        IMPL([
+            union SM_CodeBlock * m4_ifelse($2, [imm], [restrict]) b;
+            union SM_CodeBlock * m4_ifelse($3, [imm], [restrict]) offset;
+            union SM_CodeBlock * m4_ifelse($4, [imm], [restrict]) nBytes;
+            m4_ifelse($2, [imm],
+                      [b = SMVM_MI_ARG_P(1);],
+                      [SMVM_MI_GET_$2(b, SMVM_MI_ARG_AS(1, sizet));])
+            m4_ifelse($3, [imm],
+                      [offset = SMVM_MI_ARG_P(2);],
+                      [SMVM_MI_GET_$3(offset, SMVM_MI_ARG_AS(2, sizet));
+                       SMVM_MI_TRY_EXCEPT(SMVM_MI_BLOCK_AS(offset, sizet) < 8u,
+                                          SMVM_E_OUT_OF_BOUNDS_REFERENCE_INDEX);])
+            m4_ifelse($4, [imm],
+                      [nBytes = SMVM_MI_ARG_P(3);],
+                      [SMVM_MI_GET_$4(nBytes, SMVM_MI_ARG_AS(3, sizet));
+                       SMVM_MI_TRY_EXCEPT(SMVM_MI_BLOCK_AS(nBytes, sizet) > 0u,
+                                          SMVM_E_OUT_OF_BOUNDS_REFERENCE_SIZE);
+                       SMVM_MI_TRY_EXCEPT(SMVM_MI_BLOCK_AS(nBytes, sizet) <= 8u,
+                                          SMVM_E_OUT_OF_BOUNDS_REFERENCE_SIZE);])
+            SMVM_MI_PUSHREFPART_BLOCK_$1(b,SMVM_MI_BLOCK_AS(offset,sizet),SMVM_MI_BLOCK_AS(nBytes,sizet));]),
+        DO_DISPATCH, PREPARE_FINISH)])
+m4_define([PUSHREFPART_BLOCK_DEFINE], [_PUSHREFPART_BLOCK_DEFINE(_ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1)])
+foreach([PUSHREFPART_BLOCK_DEFINE], (product(([cref], [ref]), ([reg], [stack]), ([imm], [reg], [stack]), ([imm], [reg], [stack]))))
+foreach([PUSHREFPART_BLOCK_DEFINE], (product(([cref]), ([imm]), ([imm], [reg], [stack]), ([imm], [reg], [stack]))))
+
+# common.proc.pushrefpart (ref) + common.proc.pushcrefpart (ref, cref)
+m4_define([PUSHREFPART_REF_DEFINE], [
+    INSTR_DEFINE([common.proc.push$1part_$2_$3_$4],
+    CODE(0x00, 0x02, m4_ifelse($1, [ref], [0x06], [0x08]), OLB_CODE_$2_$3, OLB_CODE_$4, 0x00, 0x00, 0x00),
+    ARGS(3),
+    m4_ifelse($4, [imm],
+              PREPARATION([SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(3,uint64) > 0u,
+                                                       SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);]),
+              NO_PREPARATION),
+    NO_IMPL_SUFFIX,
+    IMPL([
+        struct SMVM_Reference * restrict srcRef;
+        union SM_CodeBlock * m4_ifelse($3, [imm], [restrict]) offset;
+        union SM_CodeBlock * m4_ifelse($3, [imm], [restrict]) nBytes;
+        SMVM_MI_GET_$2(srcRef, SMVM_MI_ARG_AS(1, sizet));
+        m4_ifelse($3, [imm],
+                  [offset = SMVM_MI_ARG_P(2);],
+                  [SMVM_MI_GET_$3(offset, SMVM_MI_ARG_AS(2, sizet));])
+        SMVM_MI_TRY_EXCEPT(SMVM_MI_BLOCK_AS(offset,sizet) < srcRef->size,
+                           SMVM_E_OUT_OF_BOUNDS_REFERENCE_INDEX);
+        m4_ifelse($4, [imm],
+                  [nBytes = SMVM_MI_ARG_P(3);],
+                  [SMVM_MI_GET_$4(nBytes, SMVM_MI_ARG_AS(3, sizet));])
+        SMVM_MI_TRY_EXCEPT(SMVM_MI_BLOCK_AS(nBytes,sizet) <= srcRef->size,
+                           SMVM_E_OUT_OF_BOUNDS_REFERENCE_SIZE);
+        SMVM_MI_TRY_EXCEPT(SMVM_MI_BLOCK_AS(nBytes,sizet) + SMVM_MI_BLOCK_AS(offset,sizet) < srcRef->size,
+                           SMVM_E_OUT_OF_BOUNDS_REFERENCE_SIZE);
+        SMVM_MI_TRY_EXCEPT(SMVM_MI_BLOCK_AS(nBytes,sizet) + SMVM_MI_BLOCK_AS(offset,sizet) < SMVM_MI_BLOCK_AS(nBytes,sizet),
+                           SMVM_E_OUT_OF_BOUNDS_REFERENCE_SIZE);
+        SMVM_MI_PUSHREFPART_REF_$1(srcRef, SMVM_MI_BLOCK_AS(offset,sizet), SMVM_MI_BLOCK_AS(nBytes,sizet));]),
+    DO_DISPATCH, PREPARE_FINISH)])
+
+# common.proc.pushrefpart (mem) + common.proc.pushcrefpart (mem)
+m4_define([_PUSHREFPART_MEM_DEFINE], [
+    INSTR_DEFINE([common.proc.push$1part_mem_$2_$3_$4],
+    CODE(0x00, 0x02, m4_ifelse($1, [ref], [0x06], [0x08]), OLB_CODE_mem_$2_$3, OLB_CODE_$4, 0x00, 0x00, 0x00),
+    ARGS(3),
+    m4_ifelse($4, [imm],
+              PREPARATION([SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(3,uint64) > 0u,
+                                                       SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);]),
+              NO_PREPARATION),
+    NO_IMPL_SUFFIX,
+    IMPL([
+        union SM_CodeBlock * srcPtr;
+        union SM_CodeBlock * m4_ifelse($2, [imm], [restrict]) offset;
+        union SM_CodeBlock * m4_ifelse($2, [imm], [restrict]) nBytes;
+        struct SMVM_MemorySlot * srcSlot;
+        SMVM_MI_GET_$2(srcPtr, SMVM_MI_ARG_AS(1, sizet));
+        SMVM_MI_MEM_GET_SLOT_OR_EXCEPT(SMVM_MI_BLOCK_AS(srcPtr,uint64), srcSlot);
+        m4_ifelse($3, [imm],
+                  [offset = SMVM_MI_ARG_P(2);],
+                  [SMVM_MI_GET_$3(offset, SMVM_MI_ARG_AS(2, sizet));])
+        SMVM_MI_TRY_EXCEPT(SMVM_MI_BLOCK_AS(offset,sizet) < srcSlot->size,
+                           SMVM_E_OUT_OF_BOUNDS_REFERENCE_INDEX);
+        m4_ifelse($4, [imm],
+                  [nBytes = SMVM_MI_ARG_P(3);],
+                  [SMVM_MI_GET_$4(nBytes, SMVM_MI_ARG_AS(3, sizet));])
+        SMVM_MI_TRY_EXCEPT(SMVM_MI_BLOCK_AS(nBytes,sizet) <= srcSlot->size,
+                           SMVM_E_OUT_OF_BOUNDS_REFERENCE_SIZE);
+        SMVM_MI_TRY_EXCEPT(SMVM_MI_BLOCK_AS(nBytes,sizet) + SMVM_MI_BLOCK_AS(offset,sizet) < srcSlot->size,
+                           SMVM_E_OUT_OF_BOUNDS_REFERENCE_SIZE);
+        SMVM_MI_TRY_EXCEPT(SMVM_MI_BLOCK_AS(nBytes,sizet) + SMVM_MI_BLOCK_AS(offset,sizet) < SMVM_MI_BLOCK_AS(nBytes,sizet),
+                           SMVM_E_OUT_OF_BOUNDS_REFERENCE_SIZE);
+        SMVM_MI_PUSHREFPART_MEM_$1(srcSlot, SMVM_MI_BLOCK_AS(offset,sizet), SMVM_MI_BLOCK_AS(nBytes,sizet));]),
+    DO_DISPATCH, PREPARE_FINISH)])
+m4_define([PUSHREFPART_MEM_DEFINE], [_PUSHREFPART_MEM_DEFINE(_ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1)])
+foreach([PUSHREFPART_MEM_DEFINE], (product(([cref], [ref]), ([reg], [stack]), ([imm], [reg], [stack]), ([imm], [reg], [stack]))))
+
 INSTR_DEFINE([common.proc.clearstack],
     CODE(0x00, 0x02, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00),
     NO_ARGS, NO_PREPARATION, NO_IMPL_SUFFIX,
