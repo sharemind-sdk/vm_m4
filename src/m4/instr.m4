@@ -502,7 +502,7 @@ PUSH_DEFINE([imm])
 PUSH_DEFINE([reg])
 PUSH_DEFINE([stack])
 
-# common.proc.pushref
+# common.proc.pushref (reg, stack) + common.proc.pushcref (imm, reg, stack)
 m4_define([_PUSHREF_BLOCK_DEFINE], [
     INSTR_DEFINE([common.proc.push$1_$2],
         CODE(0x00, 0x02, m4_ifelse($1, [ref], [0x05], [0x07]), OLB_CODE_$2, 0x00, 0x00, 0x00, 0x00),
@@ -517,6 +517,23 @@ m4_define([_PUSHREF_BLOCK_DEFINE], [
 m4_define([PUSHREF_BLOCK_DEFINE], [_PUSHREF_BLOCK_DEFINE(_ARG1$1, _ARG2$1)])
 foreach([PUSHREF_BLOCK_DEFINE], (product(([cref], [ref]), ([reg], [stack]))))
 _PUSHREF_BLOCK_DEFINE([cref], [imm])
+
+# common.proc.pushref (ref) + common.proc.pushcref (ref, cref)
+m4_define([_PUSHREF_REF_DEFINE] [
+    INSTR_DEFINE([common.proc.push$1_$2_$3],
+    CODE(0x00, 0x02, m4_ifelse($1, [ref], [0x05], [0x07]), OLB_CODE_$2_$3, 0x00, 0x00, 0x00, 0x00),
+    ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX,
+    IMPL([
+        struct SMVM_Reference * restrict srcRef;
+        SMVM_MI_GET_$1(srcRef, SMVM_MI_ARG_AS(1, sizet));
+        SMVM_MI_PUSHREF_REF_$1(srcRef);]),
+    DO_DISPATCH, PREPARE_FINISH)])
+m4_define([PUSHREF_REF_DEFINE], [_PUSHREF_REF_DEFINE(_ARG1$1, _ARG2$1, _ARG3$1)])
+foreach([PUSHREF_REF_DEFINE], (product(([cref], [ref]), ([ref]), ([imm], [reg], [stack]))))
+PUSHREF_REF_DEFINE([cref], [cref], [imm])
+PUSHREF_REF_DEFINE([cref], [cref], [reg])
+PUSHREF_REF_DEFINE([cref], [cref], [stack])
+
 
 INSTR_DEFINE([common.proc.clearstack],
     CODE(0x00, 0x02, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00),
