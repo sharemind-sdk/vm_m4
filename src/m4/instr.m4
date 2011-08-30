@@ -30,6 +30,7 @@ m4_define([_ARG2],[$2]) # _ARG1(a1,a2,...) -> a2
 m4_define([_ARG3],[$3]) # _ARG1(a1,a2,...) -> a3
 m4_define([_ARG4],[$4]) # _ARG1(a1,a2,...) -> a4
 m4_define([_ARG5],[$5]) # _ARG1(a1,a2,...) -> a5
+m4_define([_ARG6],[$6]) # _ARG1(a1,a2,...) -> a6
 
 # DEC_TO_HEX(value) changes the representation of value for decimal base to hexadecimal
 m4_define([DEC_TO_HEX], [_$0(m4_eval([$1 % 16]))[]m4_ifelse(m4_eval([$1 >= 16]),
@@ -746,6 +747,193 @@ INSTR_DEFINE([common.except],
         SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_IS_EXCEPTIONCODE(SMVM_PREPARE_ARG_AS(1,int64)),
                                     SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
     ]), NO_IMPL_SUFFIX, IMPL([SMVM_MI_DO_EXCEPT(SMVM_MI_ARG_AS(1,int64))]), DO_DISPATCH, PREPARE_FINISH)
+
+
+# (name,namespace,class,dtb,olb,prepare,impl)
+m4_define([ALBI_D_DEFINE], [
+    INSTR_DEFINE($1_$4_$5,
+        CODE($2, $3, DTB_CODE_$4, OLB_CODE_$5, 0x00, 0x00, 0x00, 0x00),
+        ARGS(1), $6, NO_IMPL_SUFFIX,
+        IMPL([
+            union SM_CodeBlock * bd;
+            SMVM_MI_GET_$5(bd, SMVM_MI_ARG_AS(1, sizet));
+            DTB_TYPE_$4 * d = SMVM_MI_BLOCK_AS_P(bd,DTB_NAME_$4);
+            $7]),
+        DO_DISPATCH, PREPARE_FINISH)])
+
+# (name,namespace,class,dtb_d,olb_d,dtb_s,olb_s,prepare,impl)
+m4_define([ALBI_DS_DEFINE], [
+    INSTR_DEFINE($1_$4_$5_$6_$7,
+        CODE($2, $3, DTB_CODE_$4, OLB_CODE_$5, DTB_CODE_$6, OLB_CODE_$7, 0x00, 0x00),
+        ARGS(1), $8, NO_IMPL_SUFFIX,
+        IMPL([
+            union SM_CodeBlock * bd;
+            m4_ifelse($7, [imm], [const]) union SM_CodeBlock * m4_ifelse($7, [imm], [restrict]) bs;
+            DTB_TYPE_$4 * d;
+            m4_ifelse($7, [imm], [const]) DTB_TYPE_$6 * m4_ifelse($7, [imm], [restrict]) s;
+            SMVM_MI_GET_$5(bd, SMVM_MI_ARG_AS(1, sizet));
+            d = SMVM_MI_BLOCK_AS_P(bd,DTB_NAME_$4);
+            m4_ifelse($7, [imm], [bs = SMVM_MI_ARG_P(2);], [SMVM_MI_GET_$7(bs, SMVM_MI_ARG_AS(2, sizet));])
+            s = SMVM_MI_BLOCK_AS_P(bs,DTB_NAME_$6);
+            $9]),
+        DO_DISPATCH, PREPARE_FINISH)])
+m4_define([ALBI_DDS_DEFINE], [ALBI_DSS_DEFINE])
+
+# (name,namespace,class,dtb_d,olb_d,dtb_s1,olb_s1,dtb_s2,olb_s2,prepare,impl)
+m4_define([ALBI_DSS_DEFINE], [
+    INSTR_DEFINE($1_$4_$5_$6_$7_$8_$9,
+        CODE($2, $3, DTB_CODE_$4, OLB_CODE_$5, DTB_CODE_$6, OLB_CODE_$7, DTB_CODE_$8, OLB_CODE_$9),
+        ARGS(1), $10, NO_IMPL_SUFFIX,
+        IMPL([
+            union SM_CodeBlock * bd;
+            m4_ifelse($7, [imm], [const]) union SM_CodeBlock * m4_ifelse($7, [imm], [restrict]) bs1;
+            m4_ifelse($9, [imm], [const]) union SM_CodeBlock * m4_ifelse($9, [imm], [restrict]) bs2;
+            DTB_TYPE_$4 * d;
+            m4_ifelse($7, [imm], [const]) DTB_TYPE_$6 * m4_ifelse($7, [imm], [restrict]) s1;
+            m4_ifelse($9, [imm], [const]) DTB_TYPE_$8 * m4_ifelse($9, [imm], [restrict]) s2;
+            SMVM_MI_GET_$5(bd, SMVM_MI_ARG_AS(1, sizet));
+            d = SMVM_MI_BLOCK_AS_P(bd,DTB_NAME_$4);
+            m4_ifelse($7, [imm], [bs1 = SMVM_MI_ARG_P(2);], [SMVM_MI_GET_$7(bs1, SMVM_MI_ARG_AS(2, sizet));])
+            s1 = SMVM_MI_BLOCK_AS_P(bs1,DTB_NAME_$6);
+            m4_ifelse($9, [imm], [bs2 = SMVM_MI_ARG_P(3);], [SMVM_MI_GET_$9(bs2, SMVM_MI_ARG_AS(3, sizet));])
+            s2 = SMVM_MI_BLOCK_AS_P(bs2,DTB_NAME_$8);
+            $11]),
+        DO_DISPATCH, PREPARE_FINISH)])
+
+# arith.uneg
+m4_define([ARITH_UNEG_DEFINE], [ALBI_D_DEFINE([[arith.uneg]], 0x1, 0x00, _ARG1$1, _ARG2$1, NO_PREPARATION, [(*d) = -(*d)])])
+foreach([ARITH_UNEG_DEFINE], (product(([int8], [int16], [int32], [int64], [float32]), ([reg], [stack]))))
+
+# arith.uinc
+m4_define([ARITH_UINC_DEFINE], [ALBI_D_DEFINE([[arith.uinc]], 0x1, 0x01, _ARG1$1, _ARG2$1, NO_PREPARATION, [(*d)++])])
+foreach([ARITH_UINC_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]), ([reg], [stack]))))
+
+# arith.udec
+m4_define([ARITH_UDEC_DEFINE], [ALBI_D_DEFINE([[arith.udec]], 0x1, 0x02, _ARG1$1, _ARG2$1, NO_PREPARATION, [(*d)--])])
+foreach([ARITH_UDEC_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]), ([reg], [stack]))))
+
+# arith.bneg
+m4_define([ARITH_BNEG_DEFINE], [ALBI_DS_DEFINE([[arith.bneg]], 0x1, 0x40, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) = (DTB_GET_TYPE(_ARG1$1)) -(*s)])])
+foreach([ARITH_BNEG_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
+                                      ([reg], [stack]),
+                                      ([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
+                                      ([imm], [reg], [stack]))))
+
+# arith.binc
+m4_define([ARITH_BINC_DEFINE], [ALBI_DS_DEFINE([[arith.binc]], 0x1, 0x41, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) = (DTB_GET_TYPE(_ARG1$1)) (*s + ((DTB_GET_TYPE(_ARG3$1)) 1))])])
+foreach([ARITH_BINC_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
+                                      ([reg], [stack]),
+                                      ([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
+                                      ([imm], [reg], [stack]))))
+
+# arith.bdec
+m4_define([ARITH_BDEC_DEFINE], [ALBI_DS_DEFINE([[arith.bdec]], 0x1, 0x42, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) = (DTB_GET_TYPE(_ARG1$1)) (*s - ((DTB_GET_TYPE(_ARG3$1)) 1))])])
+foreach([ARITH_BDEC_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
+                                      ([reg], [stack]),
+                                      ([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
+                                      ([imm], [reg], [stack]))))
+
+# arith.badd
+m4_define([ARITH_BADD_DEFINE], [ALBI_DS_DEFINE([[arith.badd]], 0x1, 0x80, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) += *s])])
+foreach([ARITH_BADD_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
+                                      ([reg], [stack]),
+                                      ([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
+                                      ([imm], [reg], [stack]))))
+
+# arith.bsub
+m4_define([ARITH_BSUB_DEFINE], [ALBI_DS_DEFINE([[arith.bsub]], 0x1, 0x81, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) -= *s])])
+foreach([ARITH_BSUB_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
+                                      ([reg], [stack]),
+                                      ([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
+                                      ([imm], [reg], [stack]))))
+
+# arith.bsub2
+m4_define([ARITH_BSUB2_DEFINE], [ALBI_DS_DEFINE([[arith.bsub2]], 0x1, 0x82, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) = (*s) - (*d)])])
+foreach([ARITH_BSUB2_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
+                                       ([reg], [stack]),
+                                       ([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
+                                       ([imm], [reg], [stack]))))
+
+# arith.bmul
+m4_define([ARITH_BMUL_DEFINE], [ALBI_DS_DEFINE([[arith.bmul]], 0x1, 0x83, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) *= *s])])
+foreach([ARITH_BMUL_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
+                                      ([reg], [stack]),
+                                      ([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
+                                      ([imm], [reg], [stack]))))
+
+# arith.bdiv
+m4_define([ARITH_BDIV_DEFINE], [ALBI_DS_DEFINE([[arith.bdiv]], 0x1, 0x84, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) /= *s])])
+foreach([ARITH_BDIV_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
+                                      ([reg], [stack]),
+                                      ([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
+                                      ([imm], [reg], [stack]))))
+
+# arith.bdiv2
+m4_define([ARITH_BDIV2_DEFINE], [ALBI_DS_DEFINE([[arith.bdiv2]], 0x1, 0x85, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) = (*s) / (*d)])])
+foreach([ARITH_BDIV2_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
+                                       ([reg], [stack]),
+                                       ([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
+                                       ([imm], [reg], [stack]))))
+
+# arith.bmod
+m4_define([ARITH_BMOD_DEFINE], [ALBI_DS_DEFINE([[arith.bmod]], 0x1, 0x86, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) %= *s])])
+foreach([ARITH_BMOD_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64]),
+                                      ([reg], [stack]),
+                                      ([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64]),
+                                      ([imm], [reg], [stack]))))
+
+# arith.bmod2
+m4_define([ARITH_BMOD2_DEFINE], [ALBI_DS_DEFINE([[arith.bmod2]], 0x1, 0x87, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) = (*s) % (*d)])])
+foreach([ARITH_BMOD2_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64]),
+                                       ([reg], [stack]),
+                                       ([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64]),
+                                       ([imm], [reg], [stack]))))
+
+# arith.tadd
+m4_define([ARITH_TADD_DEFINE], [ALBI_DSS_DEFINE([[arith.tadd]], 0x1, 0xc0, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, _ARG5$1, _ARG6$1, NO_PREPARATION, [(*d) = (*s1) + (*s2)])])
+foreach([ARITH_TADD_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
+                                      ([reg], [stack]),
+                                      ([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
+                                      ([imm], [reg], [stack]),
+                                      ([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
+                                      ([imm], [reg], [stack]))))
+
+# arith.tsub
+m4_define([ARITH_TSUB_DEFINE], [ALBI_DSS_DEFINE([[arith.tsub]], 0x1, 0xc1, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, _ARG5$1, _ARG6$1, NO_PREPARATION, [(*d) = (*s1) - (*s2)])])
+foreach([ARITH_TSUB_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
+                                      ([reg], [stack]),
+                                      ([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
+                                      ([imm], [reg], [stack]),
+                                      ([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
+                                      ([imm], [reg], [stack]))))
+
+# arith.tmul
+m4_define([ARITH_TMUL_DEFINE], [ALBI_DSS_DEFINE([[arith.tmul]], 0x1, 0xc2, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, _ARG5$1, _ARG6$1, NO_PREPARATION, [(*d) = (*s1) * (*s2)])])
+foreach([ARITH_TMUL_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
+                                      ([reg], [stack]),
+                                      ([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
+                                      ([imm], [reg], [stack]),
+                                      ([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
+                                      ([imm], [reg], [stack]))))
+
+# arith.tdiv
+m4_define([ARITH_TDIV_DEFINE], [ALBI_DSS_DEFINE([[arith.tdiv]], 0x1, 0xc3, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, _ARG5$1, _ARG6$1, NO_PREPARATION, [(*d) = (*s1) / (*s2)])])
+foreach([ARITH_TDIV_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
+                                      ([reg], [stack]),
+                                      ([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
+                                      ([imm], [reg], [stack]),
+                                      ([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
+                                      ([imm], [reg], [stack]))))
+
+# arith.tmod
+m4_define([ARITH_TMOD_DEFINE], [ALBI_DSS_DEFINE([[arith.tmod]], 0x1, 0xc4, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, _ARG5$1, _ARG6$1, NO_PREPARATION, [(*d) = (*s1) % (*s2)])])
+foreach([ARITH_TMOD_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
+                                      ([reg], [stack]),
+                                      ([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64]),
+                                      ([imm], [reg], [stack]),
+                                      ([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64]),
+                                      ([imm], [reg], [stack]))))
+
 
 # (name,suffixes,code,b3,b4,b5,b6,args,prep,precode,conds,dispatch)
 m4_define([INSTR_JUMP_DEFINE], [
