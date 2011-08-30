@@ -20,6 +20,8 @@ OTHER_FILES += \
     dispatches.m4 \
     foreach.m4 \
     forloop.m4 \
+    gnu_m4_examples/COPYING \
+    gnu_m4_examples/foreachq4.m4 \
     instr.m4 \
     instruction_from_code_cases.m4 \
     instruction_from_name_cases.m4 \
