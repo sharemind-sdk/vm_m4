@@ -779,7 +779,8 @@ m4_define([ALBI_DS_DEFINE], [
 m4_define([ALBI_DDS_DEFINE], [ALBI_DSS_DEFINE])
 
 # (1=name,2=namespace,3=class,4=dtb_d,5=olb_d,6=olb_s1,7=olb_s2,8=prepare,9=impl)
-m4_define([ALBI_DSS_DEFINE], [
+m4_define([ALBI_DSS_DEFINE], [m4_ifelse($6, $7, m4_ifelse($6, [imm], [], [_$0($@)]))])
+m4_define([_ALBI_DSS_DEFINE], [
     INSTR_DEFINE($1_$4_$5_$6_$7,
         CODE($2, $3, DTB_CODE_$4, OLB_CODE_$5, OLB_CODE_$6, OLB_CODE_$7, 0x00, 0x00),
         ARGS(1), $8, NO_IMPL_SUFFIX,
@@ -815,19 +816,19 @@ foreach([ARITH_UDEC_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [i
 m4_define([ARITH_BNEG_DEFINE], [ALBI_DS_DEFINE([[arith.bneg]], 0x1, 0x40, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = -(*s)])])
 foreach([ARITH_BNEG_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
                                       ([reg], [stack]),
-                                      ([imm], [reg], [stack]))))
+                                      ([reg], [stack]))))
 
 # arith.binc
 m4_define([ARITH_BINC_DEFINE], [ALBI_DS_DEFINE([[arith.binc]], 0x1, 0x41, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = (*s) + 1])])
 foreach([ARITH_BINC_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
                                       ([reg], [stack]),
-                                      ([imm], [reg], [stack]))))
+                                      ([reg], [stack]))))
 
 # arith.bdec
 m4_define([ARITH_BDEC_DEFINE], [ALBI_DS_DEFINE([[arith.bdec]], 0x1, 0x42, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = (*s) - 1])])
 foreach([ARITH_BDEC_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
                                       ([reg], [stack]),
-                                      ([imm], [reg], [stack]))))
+                                      ([reg], [stack]))))
 
 # arith.badd
 m4_define([ARITH_BADD_DEFINE], [ALBI_DS_DEFINE([[arith.badd]], 0x1, 0x80, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) += *s])])
