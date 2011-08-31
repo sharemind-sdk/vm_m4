@@ -764,7 +764,7 @@ m4_define([ALBI_D_DEFINE], [
 m4_define([ALBI_DS_DEFINE], [
     INSTR_DEFINE($1_$4_$5_$6,
         CODE($2, $3, DTB_CODE_$4, OLB_CODE_$5, OLB_CODE_$6, 0x00, 0x00, 0x00),
-        ARGS(1), $7, NO_IMPL_SUFFIX,
+        ARGS(2), $7, NO_IMPL_SUFFIX,
         IMPL([
             union SM_CodeBlock * bd;
             m4_ifelse($6, [imm], [const]) union SM_CodeBlock * m4_ifelse($6, [imm], [restrict]) bs;
@@ -783,7 +783,7 @@ m4_define([ALBI_DSS_DEFINE], [m4_ifelse($6, $7, m4_ifelse($6, [imm], [], [_$0($@
 m4_define([_ALBI_DSS_DEFINE], [
     INSTR_DEFINE($1_$4_$5_$6_$7,
         CODE($2, $3, DTB_CODE_$4, OLB_CODE_$5, OLB_CODE_$6, OLB_CODE_$7, 0x00, 0x00),
-        ARGS(1), $8, NO_IMPL_SUFFIX,
+        ARGS(3), $8, NO_IMPL_SUFFIX,
         IMPL([
             union SM_CodeBlock * bd;
             m4_ifelse($6, [imm], [const]) union SM_CodeBlock * m4_ifelse($6, [imm], [restrict]) bs1;
