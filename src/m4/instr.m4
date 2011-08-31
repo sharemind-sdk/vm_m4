@@ -985,44 +985,44 @@ foreach([BINARY_B1SHL_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]),
 m4_define([BINARY_B1SHR_DEFINE], [ALBI_DS_DEFINE([[binary.b1shr]], 0x2, 0x49, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = ((*s) >> 1u) | ((*s) & (~((]DTB_GET_TYPE(_ARG1$1)[) 0u) << ]m4_eval(DTB_GET_BITS(_ARG1$1) - 1)[))])])
 foreach([BINARY_B1SHR_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([reg], [stack]))))
 
-# binary.band
-m4_define([BINARY_BAND_DEFINE], [ALBI_DS_DEFINE([[binary.band]], 0x2, 0x81, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) &= (*s)])])
+# binary.bband
+m4_define([BINARY_BAND_DEFINE], [ALBI_DS_DEFINE([[binary.bband]], 0x2, 0x81, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) &= (*s)])])
 foreach([BINARY_BAND_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]))))
 
-# binary.b_0010
-m4_define([BINARY_B0010_DEFINE], [ALBI_DS_DEFINE([[binary.b_0010]], 0x2, 0x82, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) &= ~(*s)])])
+# binary.bb_0010
+m4_define([BINARY_B0010_DEFINE], [ALBI_DS_DEFINE([[binary.bb_0010]], 0x2, 0x82, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) &= ~(*s)])])
 foreach([BINARY_B0010_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]))))
 
-# binary.b_0100
-m4_define([BINARY_B0100_DEFINE], [ALBI_DS_DEFINE([[binary.b_0100]], 0x2, 0x84, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = ~(*d) & (*s)])])
+# binary.bb_0100
+m4_define([BINARY_B0100_DEFINE], [ALBI_DS_DEFINE([[binary.bb_0100]], 0x2, 0x84, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = ~(*d) & (*s)])])
 foreach([BINARY_B0100_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]))))
 
-# binary.bxor
-m4_define([BINARY_BXOR_DEFINE], [ALBI_DS_DEFINE([[binary.bxor]], 0x2, 0x86, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) ^= (*s)])])
+# binary.bbxor
+m4_define([BINARY_BXOR_DEFINE], [ALBI_DS_DEFINE([[binary.bbxor]], 0x2, 0x86, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) ^= (*s)])])
 foreach([BINARY_BXOR_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]))))
 
-# binary.bor
-m4_define([BINARY_BOR_DEFINE], [ALBI_DS_DEFINE([[binary.bor]], 0x2, 0x87, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) |= (*s)])])
+# binary.bbor
+m4_define([BINARY_BOR_DEFINE], [ALBI_DS_DEFINE([[binary.bbor]], 0x2, 0x87, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) |= (*s)])])
 foreach([BINARY_BOR_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]))))
 
-# binary.b_1000
-m4_define([BINARY_B1000_DEFINE], [ALBI_DS_DEFINE([[binary.b_1000]], 0x2, 0x88, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = ~((*d) | (*s))])])
+# binary.bb_1000
+m4_define([BINARY_B1000_DEFINE], [ALBI_DS_DEFINE([[binary.bb_1000]], 0x2, 0x88, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = ~((*d) | (*s))])])
 foreach([BINARY_B1000_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]))))
 
-# binary.b_1001
-m4_define([BINARY_B1001_DEFINE], [ALBI_DS_DEFINE([[binary.b_1001]], 0x2, 0x89, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = ~((*d) ^ (*s))])])
+# binary.bb_1001
+m4_define([BINARY_B1001_DEFINE], [ALBI_DS_DEFINE([[binary.bb_1001]], 0x2, 0x89, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = ~((*d) ^ (*s))])])
 foreach([BINARY_B1001_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]))))
 
-# binary.b_1011
-m4_define([BINARY_B1011_DEFINE], [ALBI_DS_DEFINE([[binary.b_1011]], 0x2, 0x8b, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) |= ~(*s)])])
+# binary.bb_1011
+m4_define([BINARY_B1011_DEFINE], [ALBI_DS_DEFINE([[binary.bb_1011]], 0x2, 0x8b, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) |= ~(*s)])])
 foreach([BINARY_B1011_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]))))
 
-# binary.b_1101
-m4_define([BINARY_B1101_DEFINE], [ALBI_DS_DEFINE([[binary.b_1101]], 0x2, 0x8d, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = ~(*d) | (*s)])])
+# binary.bb_1101
+m4_define([BINARY_B1101_DEFINE], [ALBI_DS_DEFINE([[binary.bb_1101]], 0x2, 0x8d, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = ~(*d) | (*s)])])
 foreach([BINARY_B1101_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]))))
 
-# binary.b_1110
-m4_define([BINARY_B1110_DEFINE], [ALBI_DS_DEFINE([[binary.b_1110]], 0x2, 0x8e, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = ~((*d) & (*s))])])
+# binary.bb_1110
+m4_define([BINARY_B1110_DEFINE], [ALBI_DS_DEFINE([[binary.bb_1110]], 0x2, 0x8e, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = ~((*d) & (*s))])])
 foreach([BINARY_B1110_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]))))
 
 # binary.brtl
@@ -1057,38 +1057,36 @@ foreach([BINARY_BSHL_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), 
 m4_define([BINARY_BSHR_DEFINE], [ALBI_DS_DEFINE([[binary.bshr]], 0x2, 0x97, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = ((*d) >> ((*s) % ]DTB_GET_BITS(_ARG1$1)[)) | ((*d) & (~((]DTB_GET_TYPE(_ARG1$1)[) 0u) << (]DTB_GET_BITS(_ARG1$1)[ - ((*s) % ]DTB_GET_BITS(_ARG1$1)[))))])])
 foreach([BINARY_BSHR_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]))))
 
-
-
-# binary.tand
-m4_define([BINARY_TAND_DEFINE], [ALBI_DSS_DEFINE([[binary.tand]], 0x2, 0xc1, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) = (*s1) & (*s2)])])
+# binary.btand
+m4_define([BINARY_TAND_DEFINE], [ALBI_DSS_DEFINE([[binary.btand]], 0x2, 0xc1, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) = (*s1) & (*s2)])])
 foreach([BINARY_TAND_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]), ([imm], [reg], [stack]))))
 
-# binary.t_0010
-m4_define([BINARY_T0010_DEFINE], [ALBI_DSS_DEFINE([[binary.t_0010]], 0x2, 0xc2, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) = (*s1) & ~(*s2)])])
+# binary.bt_0010
+m4_define([BINARY_T0010_DEFINE], [ALBI_DSS_DEFINE([[binary.bt_0010]], 0x2, 0xc2, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) = (*s1) & ~(*s2)])])
 foreach([BINARY_T0010_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]), ([imm], [reg], [stack]))))
 
-# binary.txor
-m4_define([BINARY_TXOR_DEFINE], [ALBI_DSS_DEFINE([[binary.txor]], 0x2, 0xc6, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) = (*s1) ^ (*s2)])])
+# binary.btxor
+m4_define([BINARY_TXOR_DEFINE], [ALBI_DSS_DEFINE([[binary.btxor]], 0x2, 0xc6, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) = (*s1) ^ (*s2)])])
 foreach([BINARY_TXOR_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]), ([imm], [reg], [stack]))))
 
-# binary.tor
-m4_define([BINARY_TOR_DEFINE], [ALBI_DSS_DEFINE([[binary.tor]], 0x2, 0xc7, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) = (*s1) | (*s2)])])
+# binary.btor
+m4_define([BINARY_TOR_DEFINE], [ALBI_DSS_DEFINE([[binary.btor]], 0x2, 0xc7, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) = (*s1) | (*s2)])])
 foreach([BINARY_TOR_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]), ([imm], [reg], [stack]))))
 
-# binary.t_1000
-m4_define([BINARY_T1000_DEFINE], [ALBI_DSS_DEFINE([[binary.t_1000]], 0x2, 0xc8, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) = ~((*s1) | (*s2))])])
+# binary.bt_1000
+m4_define([BINARY_T1000_DEFINE], [ALBI_DSS_DEFINE([[binary.bt_1000]], 0x2, 0xc8, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) = ~((*s1) | (*s2))])])
 foreach([BINARY_T1000_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]), ([imm], [reg], [stack]))))
 
-# binary.t_1001
-m4_define([BINARY_T1001_DEFINE], [ALBI_DSS_DEFINE([[binary.t_1001]], 0x2, 0xc9, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) = ~((*s1) ^ (*s2))])])
+# binary.bt_1001
+m4_define([BINARY_T1001_DEFINE], [ALBI_DSS_DEFINE([[binary.bt_1001]], 0x2, 0xc9, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) = ~((*s1) ^ (*s2))])])
 foreach([BINARY_T1001_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]), ([imm], [reg], [stack]))))
 
-# binary.t_1011
-m4_define([BINARY_T1011_DEFINE], [ALBI_DSS_DEFINE([[binary.t_1011]], 0x2, 0xcb, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) = (*s1) | ~(*s2)])])
+# binary.bt_1011
+m4_define([BINARY_T1011_DEFINE], [ALBI_DSS_DEFINE([[binary.bt_1011]], 0x2, 0xcb, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) = (*s1) | ~(*s2)])])
 foreach([BINARY_T1011_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]), ([imm], [reg], [stack]))))
 
-# binary.t_1110
-m4_define([BINARY_T1110_DEFINE], [ALBI_DSS_DEFINE([[binary.t_1110]], 0x2, 0xce, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) = ~((*s1) & (*s2))])])
+# binary.bt_1110
+m4_define([BINARY_T1110_DEFINE], [ALBI_DSS_DEFINE([[binary.bt_1110]], 0x2, 0xce, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) = ~((*s1) & (*s2))])])
 foreach([BINARY_T1110_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]), ([imm], [reg], [stack]))))
 
 # binary.trtl
@@ -1122,6 +1120,86 @@ foreach([BINARY_TSHL_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), 
 # binary.tshr
 m4_define([BINARY_TSHR_DEFINE], [ALBI_DSS_DEFINE([[binary.tshr]], 0x2, 0xd7, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) = ((*s1) >> ((*s2) % ]DTB_GET_BITS(_ARG1$1)[)) | ((*s1) & (~((]DTB_GET_TYPE(_ARG1$1)[) 0u) << (]DTB_GET_BITS(_ARG1$1)[ - ((*s2) % ]DTB_GET_BITS(_ARG1$1)[))))])])
 foreach([BINARY_TSHR_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]), ([imm], [reg], [stack]))))
+
+# logical.unot
+m4_define([LOGICAL_UNOT_DEFINE], [ALBI_D_DEFINE([[logical.unot]], 0x3, 0x00, _ARG1$1, _ARG2$1, NO_PREPARATION, [(*d) = !(*d)])])
+foreach([LOGICAL_UNOT_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]))))
+
+# logical.lbnot
+m4_define([LOGICAL_BNOT_DEFINE], [ALBI_DS_DEFINE([[logical.lbnot]], 0x3, 0x40, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = !(*s)])])
+foreach([LOGICAL_BNOT_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([reg], [stack]))))
+
+# logical.lband
+m4_define([LOGICAL_BAND_DEFINE], [ALBI_DS_DEFINE([[logical.lband]], 0x3, 0x81, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = (*d) && (*s)])])
+foreach([LOGICAL_BAND_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]))))
+
+# logical.lb_0010
+m4_define([LOGICAL_B0010_DEFINE], [ALBI_DS_DEFINE([[logical.lb_0010]], 0x3, 0x82, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = (*d) && !(*s)])])
+foreach([LOGICAL_B0010_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]))))
+
+# logical.lb_0100
+m4_define([LOGICAL_B0100_DEFINE], [ALBI_DS_DEFINE([[logical.lb_0100]], 0x3, 0x84, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = !(*d) && (*s)])])
+foreach([LOGICAL_B0100_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]))))
+
+# logical.lbxor
+m4_define([LOGICAL_BXOR_DEFINE], [ALBI_DS_DEFINE([[logical.lbxor]], 0x3, 0x86, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = ((*d) && !(*s)) || (!(*d) && (*s))])])
+foreach([LOGICAL_BXOR_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]))))
+
+# logical.lbor
+m4_define([LOGICAL_BOR_DEFINE], [ALBI_DS_DEFINE([[logical.lbor]], 0x3, 0x87, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = (*d) || (*s)])])
+foreach([LOGICAL_BOR_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]))))
+
+# logical.lb_1000
+m4_define([LOGICAL_B1000_DEFINE], [ALBI_DS_DEFINE([[logical.lb_1000]], 0x3, 0x88, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = !((*d) || (*s))])])
+foreach([LOGICAL_B1000_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]))))
+
+# logical.lb_1001
+m4_define([LOGICAL_B1001_DEFINE], [ALBI_DS_DEFINE([[logical.lb_1001]], 0x3, 0x89, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = ((*d) && (*s)) || (!(*d) && !(*s))])])
+foreach([LOGICAL_B1001_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]))))
+
+# logical.lb_1011
+m4_define([LOGICAL_B1011_DEFINE], [ALBI_DS_DEFINE([[logical.lb_1011]], 0x3, 0x8b, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = (*d) || !(*s)])])
+foreach([LOGICAL_B1011_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]))))
+
+# logical.lb_1101
+m4_define([LOGICAL_B1101_DEFINE], [ALBI_DS_DEFINE([[logical.lb_1101]], 0x3, 0x8d, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = !(*d) || (*s)])])
+foreach([LOGICAL_B1101_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]))))
+
+# logical.lb_1110
+m4_define([LOGICAL_B1110_DEFINE], [ALBI_DS_DEFINE([[logical.lb_1110]], 0x3, 0x8e, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = !((*d) && (*s))])])
+foreach([LOGICAL_B1110_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]))))
+
+# logical.ltand
+m4_define([LOGICAL_TAND_DEFINE], [ALBI_DSS_DEFINE([[logical.ltand]], 0x3, 0xc1, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) = (*s1) && (*s2)])])
+foreach([LOGICAL_TAND_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]), ([imm], [reg], [stack]))))
+
+# logical.lt_0010
+m4_define([LOGICAL_T0010_DEFINE], [ALBI_DSS_DEFINE([[logical.lt_0010]], 0x3, 0xc2, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) = (*s1) && !(*s2)])])
+foreach([LOGICAL_T0010_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]), ([imm], [reg], [stack]))))
+
+# logical.ltxor
+m4_define([LOGICAL_TXOR_DEFINE], [ALBI_DSS_DEFINE([[logical.ltxor]], 0x3, 0xc6, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) = ((*s1) && !(*s2)) || (!(*s1) && (*s2))])])
+foreach([LOGICAL_TXOR_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]), ([imm], [reg], [stack]))))
+
+# logical.ltor
+m4_define([LOGICAL_TOR_DEFINE], [ALBI_DSS_DEFINE([[logical.ltor]], 0x3, 0xc7, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) = (*s1) || (*s2)])])
+foreach([LOGICAL_TOR_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]), ([imm], [reg], [stack]))))
+
+# logical.lt_1000
+m4_define([LOGICAL_T1000_DEFINE], [ALBI_DSS_DEFINE([[logical.lt_1000]], 0x3, 0xc8, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) = !((*s1) || (*s2))])])
+foreach([LOGICAL_T1000_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]), ([imm], [reg], [stack]))))
+
+# logical.lt_1001
+m4_define([LOGICAL_T1001_DEFINE], [ALBI_DSS_DEFINE([[logical.lt_1001]], 0x3, 0xc9, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) = ((*s1) && (*s2)) || (!(*s1) && !(*s2))])])
+foreach([LOGICAL_T1001_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]), ([imm], [reg], [stack]))))
+
+# logical.lt_1011
+m4_define([LOGICAL_T1011_DEFINE], [ALBI_DSS_DEFINE([[logical.lt_1011]], 0x3, 0xcb, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) = (*s1) || !(*s2)])])
+foreach([LOGICAL_T1011_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]), ([imm], [reg], [stack]))))
+
+# logical.lt_1110
+m4_define([LOGICAL_T1110_DEFINE], [ALBI_DSS_DEFINE([[logical.lt_1110]], 0x3, 0xce, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) = !((*s1) && (*s2))])])
+foreach([LOGICAL_T1110_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]), ([imm], [reg], [stack]))))
 
 
 # (name,suffixes,code,b3,b4,b5,b6,args,prep,precode,conds,dispatch)
