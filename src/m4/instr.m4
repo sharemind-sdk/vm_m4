@@ -120,15 +120,6 @@ INSTR_DEFINE([common.trap],
     CODE(0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00),
     NO_ARGS, NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([SMVM_MI_TRAP]), DO_DISPATCH, PREPARE_FINISH)
 
-INSTR_DEFINE([int64_to_float32_stack],
-    CODE(0x99, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00),
-    ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX,
-    IMPL([
-        union SM_CodeBlock * s;
-        SMVM_MI_GET_stack(s, SMVM_MI_ARG_AS(1, sizet));
-        SMVM_MI_BLOCK_AS(s,float32) = SMVM_MI_BLOCK_AS(s,int64)]),
-    DO_DISPATCH, PREPARE_FINISH)
-
 # common.mov (imm, reg, stack) >> (reg, stack)
 m4_define([_MOV_REGS_TO_REGS_DEFINE], [
     INSTR_DEFINE([common.mov_$1_$2],
@@ -733,6 +724,22 @@ MEM_GET_SIZE_DEFINE([reg],[reg])
 MEM_GET_SIZE_DEFINE([reg],[stack])
 MEM_GET_SIZE_DEFINE([stack],[reg])
 MEM_GET_SIZE_DEFINE([stack],[stack])
+
+# common.convert
+m4_define([_CONVERT_DEFINE], [
+    INSTR_DEFINE([common.convert_$1_$2_$3_$4],
+        CODE(0x00, 0x04, DTB_CODE_$1, OLB_CODE_$2, DTB_CODE_$3, OLB_CODE_$4, 0x00, 0x00),
+        ARGS(2), NO_PREPARATION, NO_IMPL_SUFFIX,
+        IMPL([
+            union SM_CodeBlock * s;
+            SMVM_MI_GET_$2(s, SMVM_MI_ARG_AS(1, sizet));
+            union SM_CodeBlock * d;
+            SMVM_MI_GET_$4(d, SMVM_MI_ARG_AS(2, sizet));
+            SMVM_MI_BLOCK_AS(d,$3) = SMVM_MI_BLOCK_AS(s,$1)]),
+        DO_DISPATCH, PREPARE_FINISH
+    )])
+m4_define([CONVERT_DEFINE], [_$0(_ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1)])
+foreach([CONVERT_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]), ([reg], [stack]), ([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]), ([reg], [stack]))))
 
 # common.halt
 m4_define([HALT_DEFINE], [
