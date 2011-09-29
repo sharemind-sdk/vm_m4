@@ -120,6 +120,15 @@ INSTR_DEFINE([common.trap],
     CODE(0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00),
     NO_ARGS, NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([SMVM_MI_TRAP]), DO_DISPATCH, PREPARE_FINISH)
 
+INSTR_DEFINE([int64_to_float32_stack],
+    CODE(0x99, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00),
+    ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX,
+    IMPL([
+        union SM_CodeBlock * s;
+        SMVM_MI_GET_stack(s, SMVM_MI_ARG_AS(1, sizet));
+        SMVM_MI_BLOCK_AS(s,float32) = SMVM_MI_BLOCK_AS(s,int64)]),
+    DO_DISPATCH, PREPARE_FINISH)
+
 # common.mov (imm, reg, stack) >> (reg, stack)
 m4_define([_MOV_REGS_TO_REGS_DEFINE], [
     INSTR_DEFINE([common.mov_$1_$2],
@@ -757,7 +766,9 @@ m4_define([ALBI_D_DEFINE], [
             union SM_CodeBlock * bd;
             SMVM_MI_GET_$5(bd, SMVM_MI_ARG_AS(1, sizet));
             DTB_TYPE_$4 * d = SMVM_MI_BLOCK_AS_P(bd,DTB_NAME_$4);
-            $7]),
+            m4_ifelse([$4], [float32], [SMVM_MI_CLEAR_FPE_EXCEPT;])
+            $7;
+            m4_ifelse([$4], [float32], [SMVM_MI_TEST_FPE_EXCEPT;])]),
         DO_DISPATCH, PREPARE_FINISH)])
 
 # (1=name,2=namespace,3=class,4=dtb_d,5=olb_d,6=olb_s,7=prepare,8=impl)
@@ -774,7 +785,9 @@ m4_define([ALBI_DS_DEFINE], [
             d = SMVM_MI_BLOCK_AS_P(bd,DTB_NAME_$4);
             m4_ifelse($6, [imm], [bs = SMVM_MI_ARG_P(2);], [SMVM_MI_GET_$6(bs, SMVM_MI_ARG_AS(2, sizet));])
             s = SMVM_MI_BLOCK_AS_P(bs,DTB_NAME_$4);
-            $8]),
+            m4_ifelse([$4], [float32], [SMVM_MI_CLEAR_FPE_EXCEPT;])
+            $8;
+            m4_ifelse([$4], [float32], [SMVM_MI_TEST_FPE_EXCEPT;])]),
         DO_DISPATCH, PREPARE_FINISH)])
 m4_define([ALBI_DDS_DEFINE], [ALBI_DSS_DEFINE])
 
@@ -797,7 +810,9 @@ m4_define([_ALBI_DSS_DEFINE], [
             s1 = SMVM_MI_BLOCK_AS_P(bs1,DTB_NAME_$4);
             m4_ifelse($7, [imm], [bs2 = SMVM_MI_ARG_P(3);], [SMVM_MI_GET_$7(bs2, SMVM_MI_ARG_AS(3, sizet));])
             s2 = SMVM_MI_BLOCK_AS_P(bs2,DTB_NAME_$4);
-            $9]),
+            m4_ifelse([$4], [float32], [SMVM_MI_CLEAR_FPE_EXCEPT;])
+            $9;
+            m4_ifelse([$4], [float32], [SMVM_MI_TEST_FPE_EXCEPT;])]),
         DO_DISPATCH, PREPARE_FINISH)])
 
 # arith.uneg
