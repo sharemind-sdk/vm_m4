@@ -747,11 +747,11 @@ m4_define([HALT_DEFINE], [
         CODE(0x00, 0xff, 0x00, OLB_CODE_$1, 0x00, 0x00, 0x00, 0x00),
         ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX,
         IMPL([
-            m4_ifelse($1, [imm],,
+            m4_ifelse($1, [imm], [],
                 [union SM_CodeBlock * haltCode;
                  SMVM_MI_GET_$1(haltCode, SMVM_MI_ARG_AS(1, sizet));])
             SMVM_MI_HALT(m4_ifelse($1, [imm], [SMVM_MI_ARG(1)], [*haltCode]))]),
-        NO_DISPATCH, PREPARE_FINISH])
+        NO_DISPATCH, PREPARE_FINISH)])
 HALT_DEFINE([imm])
 HALT_DEFINE([reg])
 HALT_DEFINE([stack])
@@ -1239,8 +1239,8 @@ m4_define([INSTR_JUMP_DEFINE], [
         IMPL([m4_ifelse([$10], [NO_JUMP_PRECODE], [], [
         $10;])m4_ifelse([$11], [NO_JUMP_CONDITION], [], [
         if ($11) {])
-            SMVM_MI_JUMP_REL(SMVM_MI_ARG_P(1));m4_ifelse([$11], [NO_JUMP_CONDITION], [], [[
-        } else (void) 0]])]),
+            SMVM_MI_JUMP_REL(SMVM_MI_ARG_P(1));m4_ifelse([$11], [NO_JUMP_CONDITION], [], [
+        } else (void) 0])]),
         $12, PREPARE_FINISH)
     INSTR_DEFINE($1[_reg]$2,
         CODE(0x04, $3, OLB_CODE_reg, $4, $5, $6, $7, 0x00),
@@ -1252,8 +1252,8 @@ m4_define([INSTR_JUMP_DEFINE], [
         if ($11) {])
             union SM_CodeBlock * t;
             SMVM_MI_GET_reg(t, SMVM_MI_ARG_AS(1, sizet));
-            SMVM_MI_CHECK_JUMP_REL(SMVM_MI_BLOCK_AS(t,int64));m4_ifelse([$11], [NO_JUMP_CONDITION], [], [[
-        } else (void) 0]])]),
+            SMVM_MI_CHECK_JUMP_REL(SMVM_MI_BLOCK_AS(t,int64));m4_ifelse([$11], [NO_JUMP_CONDITION], [], [
+        } else (void) 0])]),
         $12, PREPARE_FINISH)
     INSTR_DEFINE($1[_stack]$2,
         CODE(0x04, $3, OLB_CODE_stack, $4, $5, $6, $7, 0x00),
@@ -1265,8 +1265,8 @@ m4_define([INSTR_JUMP_DEFINE], [
         if ($11) {])
             union SM_CodeBlock * t;
             SMVM_MI_GET_stack(t, SMVM_MI_ARG_AS(1, sizet));
-            SMVM_MI_CHECK_JUMP_REL(SMVM_MI_BLOCK_AS(t,int64));m4_ifelse([$11], [NO_JUMP_CONDITION], [], [[
-        } else (void) 0]])]),
+            SMVM_MI_CHECK_JUMP_REL(SMVM_MI_BLOCK_AS(t,int64));m4_ifelse([$11], [NO_JUMP_CONDITION], [], [
+        } else (void) 0])]),
         $12, PREPARE_FINISH)
 ])
 
@@ -1304,15 +1304,15 @@ m4_define([INSTR_JUMP_JZ_DEFINE],
 foreach([INSTR_JUMP_JZ_DEFINE], (product(([[uint8]], [[uint16]], [[uint32]], [[uint64]], [[float32]]),([[reg]], [[stack]]))))
 
 m4_define([INSTR_JUMP_JNZ_DEFINE],
-          [INSTR_JUMP_COND_1_DEFINE([jnz],0x02,[SMVM_MI_BLOCK_AS(c,_ARG1$1) != 0)],_ARG1$1,_ARG2$1)])
+          [INSTR_JUMP_COND_1_DEFINE([jnz],0x02,(SMVM_MI_BLOCK_AS(c,_ARG1$1) != 0),_ARG1$1,_ARG2$1)])
 foreach([INSTR_JUMP_JNZ_DEFINE], (product(([[uint8]], [[uint16]], [[uint32]], [[uint64]], [[float32]]),([[reg]], [[stack]]))))
 
 m4_define([INSTR_JUMP_DNJZ_DEFINE],
-          [INSTR_JUMP_COND_1_DEFINE([dnjz],0x03,[(--(SMVM_MI_BLOCK_AS(c,_ARG1$1)) == 0)],_ARG1$1,_ARG2$1)])
+          [INSTR_JUMP_COND_1_DEFINE([dnjz],0x03,(--(SMVM_MI_BLOCK_AS(c,_ARG1$1)) == 0),_ARG1$1,_ARG2$1)])
 foreach([INSTR_JUMP_DNJZ_DEFINE], (product(([[uint8]], [[uint16]], [[uint32]], [[uint64]]),([[reg]], [[stack]]))))
 
 m4_define([INSTR_JUMP_DNJNZ_DEFINE],
-          [INSTR_JUMP_COND_1_DEFINE([dnjnz],0x04,[(--(SMVM_MI_BLOCK_AS(c,_ARG1$1)) != 0)],_ARG1$1,_ARG2$1)])
+          [INSTR_JUMP_COND_1_DEFINE([dnjnz],0x04,(--(SMVM_MI_BLOCK_AS(c,_ARG1$1)) != 0),_ARG1$1,_ARG2$1)])
 foreach([INSTR_JUMP_DNJNZ_DEFINE], (product(([[uint8]], [[uint16]], [[uint32]], [[uint64]]),([[reg]], [[stack]]))))
 
 m4_define([INSTR_JUMP_JE_DEFINE],
