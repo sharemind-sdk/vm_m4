@@ -792,6 +792,8 @@ m4_define([ALBI_DS_DEFINE], [
             d = SMVM_MI_BLOCK_AS_P(bd,DTB_NAME_$4);
             m4_ifelse($6, [imm], [bs = SMVM_MI_ARG_P(2);], [SMVM_MI_GET_$6(bs, SMVM_MI_ARG_AS(2, sizet));])
             s = SMVM_MI_BLOCK_AS_P(bs,DTB_NAME_$4);
+            m4_ifelse($1, [arith.bdiv], m4_ifelse([$4], [float32], [], [if (*s == 0) { SMVM_MI_DO_EXCEPT(SMVM_E_INTEGER_DIVIDE_BY_ZERO); }]))
+            m4_ifelse($1, [arith.bdiv2], m4_ifelse([$4], [float32], [], [if (*s == 0) { SMVM_MI_DO_EXCEPT(SMVM_E_INTEGER_DIVIDE_BY_ZERO); }]))
             m4_ifelse([$4], [float32], [SMVM_MI_CLEAR_FPE_EXCEPT;])
             $8;
             m4_ifelse([$4], [float32], [SMVM_MI_TEST_FPE_EXCEPT;])]),
@@ -817,6 +819,7 @@ m4_define([_ALBI_DSS_DEFINE], [
             s1 = SMVM_MI_BLOCK_AS_P(bs1,DTB_NAME_$4);
             m4_ifelse($7, [imm], [bs2 = SMVM_MI_ARG_P(3);], [SMVM_MI_GET_$7(bs2, SMVM_MI_ARG_AS(3, sizet));])
             s2 = SMVM_MI_BLOCK_AS_P(bs2,DTB_NAME_$4);
+            m4_ifelse($1, [arith.tdiv], m4_ifelse([$4], [float32], [], [if (*s2 == 0) { SMVM_MI_DO_EXCEPT(SMVM_E_INTEGER_DIVIDE_BY_ZERO); }]))
             m4_ifelse([$4], [float32], [SMVM_MI_CLEAR_FPE_EXCEPT;])
             $9;
             m4_ifelse([$4], [float32], [SMVM_MI_TEST_FPE_EXCEPT;])]),
