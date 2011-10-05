@@ -1304,11 +1304,11 @@ m4_define([INSTR_JUMP_COND_2_DEFINE], [
 
 m4_define([INSTR_JUMP_JZ_DEFINE],
           [INSTR_JUMP_COND_1_DEFINE([jz],0x01,(SMVM_MI_BLOCK_AS(c,_ARG1$1) == 0),_ARG1$1,_ARG2$1)])
-foreach([INSTR_JUMP_JZ_DEFINE], (product(([[uint8]], [[uint16]], [[uint32]], [[uint64]], [[float32]]),([[reg]], [[stack]]))))
+foreach([INSTR_JUMP_JZ_DEFINE], (product(([[uint8]], [[uint16]], [[uint32]], [[uint64]]),([[reg]], [[stack]]))))
 
 m4_define([INSTR_JUMP_JNZ_DEFINE],
           [INSTR_JUMP_COND_1_DEFINE([jnz],0x02,(SMVM_MI_BLOCK_AS(c,_ARG1$1) != 0),_ARG1$1,_ARG2$1)])
-foreach([INSTR_JUMP_JNZ_DEFINE], (product(([[uint8]], [[uint16]], [[uint32]], [[uint64]], [[float32]]),([[reg]], [[stack]]))))
+foreach([INSTR_JUMP_JNZ_DEFINE], (product(([[uint8]], [[uint16]], [[uint32]], [[uint64]]),([[reg]], [[stack]]))))
 
 m4_define([INSTR_JUMP_DNJZ_DEFINE],
           [INSTR_JUMP_COND_1_DEFINE([dnjz],0x03,(--(SMVM_MI_BLOCK_AS(c,_ARG1$1)) == 0),_ARG1$1,_ARG2$1)])
