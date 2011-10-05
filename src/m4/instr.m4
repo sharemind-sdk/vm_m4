@@ -337,7 +337,7 @@ m4_define([_MOV_REGS_TO_REF_DEFINE], [
             m4_popdef([CPY_ARGS])]),
         DO_DISPATCH, PREPARE_FINISH)])
 m4_define([MOV_REGS_TO_REF_DEFINE], [_MOV_REGS_TO_REF_DEFINE(_ARG1$1, _ARG2$1, _ARG3$1)])
-foreach([MOV_REGS_TO_REF_DEFINE], (product(([imm], [reg], [stack]), ([reg], [stack]), ([imm], [reg], [stack]))))
+foreach([MOV_REGS_TO_REF_DEFINE], (product(([imm], [reg], [stack]), ([imm], [reg], [stack]), ([imm], [reg], [stack]))))
 
 # common.mov (cref, ref) >> (ref)
 m4_define([_MOV_REF_TO_REF_DEFINE], [
