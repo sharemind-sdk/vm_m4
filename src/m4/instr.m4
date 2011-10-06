@@ -1380,8 +1380,8 @@ m4_define([INSTR_JUMP_DNJNZ_DEFINE],
           [INSTR_JUMP_COND_1_DEFINE([dnjnz],0x04,(--(SMVM_MI_BLOCK_AS(c,_ARG1$1)) != 0),_ARG1$1,_ARG2$1)])
 foreach([INSTR_JUMP_DNJNZ_DEFINE], (product(([[uint8]], [[uint16]], [[uint32]], [[uint64]]),([[reg]], [[stack]]))))
 
-m4_define([INSTR_JUMP_JE_DEFINE],
-          [INSTR_JUMP_COND_2_DEFINE([je],0x05,((*c1) == (*c2)),_ARG1$1,_ARG2$1,_ARG3$1)])
+m4_define([INSTR_JUMP_JEQ_DEFINE],
+          [INSTR_JUMP_COND_2_DEFINE([jeq],0x05,((*c1) == (*c2)),_ARG1$1,_ARG2$1,_ARG3$1)])
 foreach([INSTR_JUMP_JE_DEFINE], (product(([[int8]], [[int16]], [[int32]], [[int64]], [[uint8]], [[uint16]], [[uint32]], [[uint64]], [[float32]]),([[imm]], [[reg]], [[stack]]),([[reg]], [[stack]]))))
 
 m4_define([INSTR_JUMP_JNE_DEFINE],
