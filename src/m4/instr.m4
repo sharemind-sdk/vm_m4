@@ -1165,8 +1165,8 @@ foreach([BINARY_TSHR_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), 
 m4_define([LOGICAL_UNOT_DEFINE], [ALBI_D_DEFINE([[logical.unot]], 0x3, 0x00, _ARG1$1, _ARG2$1, NO_PREPARATION, [(*d) = !(*d)])])
 foreach([LOGICAL_UNOT_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]))))
 
-# logical.lbnot
-m4_define([LOGICAL_BNOT_DEFINE], [ALBI_DS_DEFINE([[logical.lbnot]], 0x3, 0x40, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = !(*s)])])
+# logical.bnot
+m4_define([LOGICAL_BNOT_DEFINE], [ALBI_DS_DEFINE([[logical.bnot]], 0x3, 0x40, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = !(*s)])])
 foreach([LOGICAL_BNOT_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([reg], [stack]))))
 
 # logical.lband
