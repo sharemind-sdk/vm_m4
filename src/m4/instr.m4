@@ -121,9 +121,10 @@ INSTR_DEFINE([common.trap],
     NO_ARGS, NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([SMVM_MI_TRAP]), DO_DISPATCH, PREPARE_FINISH)
 
 # common.mov (imm, reg, stack) >> (reg, stack)
+# (1=olbsrc,2=olbdest)
 m4_define([_MOV_REGS_TO_REGS_DEFINE], [
     INSTR_DEFINE([common.mov_$1_$2],
-        CODE(0x00, 0x01, OLB_CODE_$1, OLB_CODE_$2, 0x00, 0x00, 0x00, 0x00),
+        CODE(0x00, 0x01, OLB_CODE_$1, 0x00, OLB_CODE_$2, 0x00, 0x00, 0x00),
         ARGS(2), NO_PREPARATION, NO_IMPL_SUFFIX,
         IMPL([
             union SM_CodeBlock * s;
@@ -138,9 +139,10 @@ m4_define([MOV_REGS_TO_REGS_DEFINE], [_MOV_REGS_TO_REGS_DEFINE(_ARG1$1, _ARG2$1)
 foreach([MOV_REGS_TO_REGS_DEFINE], (product(([imm], [reg], [stack]), ([reg], [stack]))))
 
 # common.mov (mem) >> (reg, stack)
+# (1=olbsrc_part,2=olbsrcoffset,3=olbdest,4=olbnbytes)
 m4_define([_MOV_MEM_TO_REGS_DEFINE], [
     INSTR_DEFINE([common.mov_mem_$1_$2_$3_$4],
-        CODE(0x00, 0x01, OLB_CODE_mem_$1_$2, OLB_CODE_$3, OLB_CODE_$4, 0x00, 0x00, 0x00),
+        CODE(0x00, 0x01, OLB_CODE_mem_$1, OLB_CODE_$2, OLB_CODE_$3, 0x00, OLB_CODE_$4, 0x00),
         ARGS(4),
         m4_ifelse($4, [imm],
                   [PREPARATION([
@@ -173,9 +175,10 @@ m4_define([MOV_MEM_TO_REGS_DEFINE], [_MOV_MEM_TO_REGS_DEFINE(_ARG1$1, _ARG2$1, _
 foreach([MOV_MEM_TO_REGS_DEFINE], (product(([reg], [stack]), ([imm], [reg], [stack]), ([reg], [stack]), ([imm], [reg], [stack]))))
 
 # common.mov (imm, reg, stack) >> (mem)
+# (1=olbsrc,2=olbdest_part,3=olbdestoffset,4=olbnbytes)
 m4_define([_MOV_REGS_TO_MEM_DEFINE], [
     INSTR_DEFINE([common.mov_$1_mem_$2_$3_$4],
-        CODE(0x00, 0x01, OLB_CODE_$1, OLB_CODE_mem_$2_$3, OLB_CODE_$4, 0x00, 0x00, 0x00),
+        CODE(0x00, 0x01, OLB_CODE_$1, 0x00, OLB_CODE_mem_$2, OLB_CODE_$3, OLB_CODE_$4, 0x00),
         ARGS(4),
         m4_ifelse($4, [imm],
                   [PREPARATION([
@@ -209,9 +212,10 @@ m4_define([MOV_REGS_TO_MEM_DEFINE], [_MOV_REGS_TO_MEM_DEFINE(_ARG1$1, _ARG2$1, _
 foreach([MOV_REGS_TO_MEM_DEFINE], (product(([imm], [reg], [stack]), ([reg], [stack]), ([imm], [reg], [stack]), ([imm], [reg], [stack]))))
 
 # common.mov (mem) >> (mem)
+# (1=olbsrc_part,2=olbsrcoffset,3=olbdest_part,4=olbdestoffset,5=olbnbytes)
 m4_define([_MOV_MEM_TO_MEM_DEFINE], [
     INSTR_DEFINE([common.mov_mem_$1_$2_mem_$3_$4_$5],
-        CODE(0x00, 0x01, OLB_CODE_mem_$1_$2, OLB_CODE_mem_$3_$4, OLB_CODE_$5, 0x00, 0x00, 0x00),
+        CODE(0x00, 0x01, OLB_CODE_mem_$1, OLB_CODE_$2, OLB_CODE_mem_$3, OLB_CODE_$4, OLB_CODE_$5, 0x00),
         ARGS(5), NO_PREPARATION, NO_IMPL_SUFFIX,
         IMPL([
             union SM_CodeBlock * srcPtr;
@@ -250,9 +254,10 @@ m4_define([MOV_MEM_TO_MEM_DEFINE], [_MOV_MEM_TO_MEM_DEFINE(_ARG1$1, _ARG2$1, _AR
 foreach([MOV_MEM_TO_MEM_DEFINE], (product(([reg], [stack]), ([imm], [reg], [stack]), ([reg], [stack]), ([imm], [reg], [stack]), ([imm], [reg], [stack]))))
 
 # common.mov (ref, cref) >> (reg, stack)
+# (1=olbsrc,2=olbsrcoffset,3=olbdest,4=olbnbytes)
 m4_define([_MOV_REF_TO_REGS_DEFINE], [
     INSTR_DEFINE([common.mov_$1_$2_$3_$4],
-        CODE(0x00, 0x01, OLB_CODE_$1_$2, OLB_CODE_$3, OLB_CODE_$4, 0x00, 0x00, 0x00),
+        CODE(0x00, 0x01, OLB_CODE_$1, OLB_CODE_$2, OLB_CODE_$3, 0x00, OLB_CODE_$4, 0x00),
         ARGS(4),
         m4_ifelse($4, [imm],
                   [PREPARATION([
@@ -294,9 +299,10 @@ m4_define([MOV_REF_TO_REGS_DEFINE], [_MOV_REF_TO_REGS_DEFINE(_ARG1$1, _ARG2$1, _
 foreach([MOV_REF_TO_REGS_DEFINE], (product(([cref], [ref]), ([imm], [reg], [stack]), ([reg], [stack]), ([imm], [reg], [stack]))))
 
 # common.mov (imm, reg, stack) >> (ref)
+# (1=olbsrc,2=olbdestoffset,3=olbnbytes)
 m4_define([_MOV_REGS_TO_REF_DEFINE], [
     INSTR_DEFINE([common.mov_$1_ref_$2_$3],
-        CODE(0x00, 0x01, OLB_CODE_$1, OLB_CODE_ref_$2, OLB_CODE_$3, 0x00, 0x00, 0x00),
+        CODE(0x00, 0x01, OLB_CODE_$1, 0x00, OLB_CODE_ref, OLB_CODE_$2, OLB_CODE_$3, 0x00),
         ARGS(4),
         m4_ifelse($3, [imm],
                   [PREPARATION([
@@ -340,9 +346,10 @@ m4_define([MOV_REGS_TO_REF_DEFINE], [_MOV_REGS_TO_REF_DEFINE(_ARG1$1, _ARG2$1, _
 foreach([MOV_REGS_TO_REF_DEFINE], (product(([imm], [reg], [stack]), ([imm], [reg], [stack]), ([imm], [reg], [stack]))))
 
 # common.mov (cref, ref) >> (ref)
+# (1=olbsrc,2=olbsrcoffset,3=olbdestoffset,4=olbnbytes)
 m4_define([_MOV_REF_TO_REF_DEFINE], [
     INSTR_DEFINE([common.mov_$1_$2_ref_$3_$4],
-        CODE(0x00, 0x01, OLB_CODE_$1_$2, OLB_CODE_ref_$3, OLB_CODE_$4, 0x00, 0x00, 0x00),
+        CODE(0x00, 0x01, OLB_CODE_$1, OLB_CODE_$2, OLB_CODE_ref, OLB_CODE_$3, OLB_CODE_$4, 0x00),
         ARGS(5), NO_PREPARATION, NO_IMPL_SUFFIX,
         IMPL([
             struct SMVM_Reference * srcRef;
@@ -375,9 +382,10 @@ m4_define([MOV_REF_TO_REF_DEFINE], [_MOV_REF_TO_REF_DEFINE(_ARG1$1, _ARG2$1, _AR
 foreach([MOV_REF_TO_REF_DEFINE], (product(([cref], [ref]), ([imm], [reg], [stack]), ([imm], [reg], [stack]), ([imm], [reg], [stack]))))
 
 # common.mov (cref, ref) >> (mem)
+# (1=olbsrc,2=olbsrcoffset,3=olbdest_part,4=olbdestoffset,5=olbnbytes)
 m4_define([_MOV_REF_TO_MEM_DEFINE], [
     INSTR_DEFINE([common.mov_$1_$2_mem_$3_$4_$5],
-        CODE(0x00, 0x01, OLB_CODE_$1_$2, OLB_CODE_mem_$3_$4, OLB_CODE_$5, 0x00, 0x00, 0x00),
+        CODE(0x00, 0x01, OLB_CODE_$1, OLB_CODE_$2, OLB_CODE_mem_$3, OLB_CODE_$4, OLB_CODE_$5, 0x00),
         ARGS(5), NO_PREPARATION, NO_IMPL_SUFFIX,
         IMPL([
             struct SMVM_Reference * restrict srcRef;
@@ -412,9 +420,10 @@ m4_define([MOV_REF_TO_MEM_DEFINE], [_MOV_REF_TO_MEM_DEFINE(_ARG1$1, _ARG2$1, _AR
 foreach([MOV_REF_TO_MEM_DEFINE], (product(([cref], [ref]), ([imm], [reg], [stack]), ([reg], [stack]), ([imm], [reg], [stack]), ([imm], [reg], [stack]))))
 
 # common.mov (mem) >> (ref)
+# (1=olbsrc_part,2=olbsrcoffset,3=olbdestoffset,4=olbnbytes)
 m4_define([_MOV_MEM_TO_REF_DEFINE], [
     INSTR_DEFINE([common.mov_mem_$1_$2_ref_$3_$4],
-        CODE(0x00, 0x01, OLB_CODE_mem_$1_$2, OLB_CODE_ref_$3, OLB_CODE_$4, 0x00, 0x00, 0x00),
+        CODE(0x00, 0x01, OLB_CODE_mem_$1, OLB_CODE_$2, OLB_CODE_ref, OLB_CODE_$3, OLB_CODE_$4, 0x00),
         ARGS(5), NO_PREPARATION, NO_IMPL_SUFFIX,
         IMPL([
             union SM_CodeBlock * restrict srcPtr;
@@ -503,6 +512,7 @@ PUSH_DEFINE([reg])
 PUSH_DEFINE([stack])
 
 # common.proc.pushref (reg, stack) + common.proc.pushcref (imm, reg, stack)
+# (1=ref_or_cref,2=olbsrc)
 m4_define([_PUSHREF_BLOCK_DEFINE], [
     INSTR_DEFINE([common.proc.push$1_$2],
         CODE(0x00, 0x02, m4_ifelse($1, [ref], [0x05], [0x07]), OLB_CODE_$2, 0x00, 0x00, 0x00, 0x00),
@@ -519,9 +529,10 @@ foreach([PUSHREF_BLOCK_DEFINE], (product(([cref], [ref]), ([reg], [stack]))))
 _PUSHREF_BLOCK_DEFINE([cref], [imm])
 
 # common.proc.pushref (ref) + common.proc.pushcref (ref, cref)
+# (1=ref_or_cref,2=olbsrc)
 m4_define([PUSHREF_REF_DEFINE], [
-    INSTR_DEFINE([common.proc.push$1_$2_imm],
-    CODE(0x00, 0x02, m4_ifelse($1, [ref], [0x05], [0x07]), OLB_CODE_$2_imm, 0x00, 0x00, 0x00, 0x00),
+    INSTR_DEFINE([common.proc.push$1_$2],
+    CODE(0x00, 0x02, m4_ifelse($1, [ref], [0x05], [0x07]), OLB_CODE_$2, 0x00, 0x00, 0x00, 0x00),
     ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX,
     IMPL([
         struct SMVM_Reference * restrict srcRef;
@@ -533,9 +544,10 @@ PUSHREF_REF_DEFINE([cref], [ref])
 PUSHREF_REF_DEFINE([ref], [ref])
 
 # common.proc.pushref (mem) + common.proc.pushcref (mem)
+# (1=ref_or_cref,2=olbsrc_part)
 m4_define([_PUSHREF_MEM_DEFINE], [
-    INSTR_DEFINE([common.proc.push$1_mem_$2_imm],
-    CODE(0x00, 0x02, m4_ifelse($1, [ref], [0x05], [0x07]), OLB_CODE_mem_$2_imm, 0x00, 0x00, 0x00, 0x00),
+    INSTR_DEFINE([common.proc.push$1_mem_$2],
+    CODE(0x00, 0x02, m4_ifelse($1, [ref], [0x05], [0x07]), OLB_CODE_mem_$2, 0x00, 0x00, 0x00, 0x00),
     ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX,
     IMPL([
         union SM_CodeBlock * srcPtr;
@@ -548,6 +560,7 @@ m4_define([PUSHREF_MEM_DEFINE], [_PUSHREF_MEM_DEFINE(_ARG1$1, _ARG2$1)])
 foreach([PUSHREF_MEM_DEFINE], (product(([cref], [ref]), ([reg], [stack]))))
 
 # common.proc.pushrefpart (reg, stack) + common.proc.pushcrefpart (imm, reg, stack)
+# (1=ref_or_cref,2=olbsrc,3=olbsrcoffset,4=olblength)
 m4_define([_PUSHREFPART_BLOCK_DEFINE], [
     INSTR_DEFINE([common.proc.push$1part_$2_$3_$4],
         CODE(0x00, 0x02, m4_ifelse($1, [ref], [0x06], [0x08]), OLB_CODE_$2, OLB_CODE_$3, OLB_CODE_$4, 0x00, 0x00),
@@ -598,9 +611,10 @@ foreach([PUSHREFPART_BLOCK_DEFINE], (product(([cref], [ref]), ([reg], [stack]), 
 foreach([PUSHREFPART_BLOCK_DEFINE], (product(([cref]), ([imm]), ([imm], [reg], [stack]), ([imm], [reg], [stack]))))
 
 # common.proc.pushrefpart (ref) + common.proc.pushcrefpart (ref, cref)
+# (1=ref_or_cref,2=olbsrc,3=olbsrcoffset,4=olblength)
 m4_define([PUSHREFPART_REF_DEFINE], [
     INSTR_DEFINE([common.proc.push$1part_$2_$3_$4],
-    CODE(0x00, 0x02, m4_ifelse($1, [ref], [0x06], [0x08]), OLB_CODE_$2_$3, OLB_CODE_$4, 0x00, 0x00, 0x00),
+    CODE(0x00, 0x02, m4_ifelse($1, [ref], [0x06], [0x08]), OLB_CODE_$2, OLB_CODE_$3, OLB_CODE_$4, 0x00, 0x00),
     ARGS(3),
     m4_ifelse($4, [imm],
               PREPARATION([SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(3,uint64) > 0u,
@@ -630,9 +644,10 @@ m4_define([PUSHREFPART_REF_DEFINE], [
     DO_DISPATCH, PREPARE_FINISH)])
 
 # common.proc.pushrefpart (mem) + common.proc.pushcrefpart (mem)
+# (1=ref_or_cref,2=olbsrc_part,3=olbsrcoffset,4=olblength)
 m4_define([_PUSHREFPART_MEM_DEFINE], [
     INSTR_DEFINE([common.proc.push$1part_mem_$2_$3_$4],
-    CODE(0x00, 0x02, m4_ifelse($1, [ref], [0x06], [0x08]), OLB_CODE_mem_$2_$3, OLB_CODE_$4, 0x00, 0x00, 0x00),
+    CODE(0x00, 0x02, m4_ifelse($1, [ref], [0x06], [0x08]), OLB_CODE_mem_$2, OLB_CODE_$3, OLB_CODE_$4, 0x00, 0x00),
     ARGS(3),
     m4_ifelse($4, [imm],
               PREPARATION([SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(3,uint64) > 0u,
