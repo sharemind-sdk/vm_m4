@@ -7,22 +7,10 @@
 # code is subject to the appropriate license agreement.
 #
 
-m4_include([forloop.m4])
-
-m4_define([_DTBS_EXPAND],[$1])
-
-m4_define([DTB_COUNT],0)
-m4_define([DTB], [m4_defn(m4_format([[DTB_%s]], [$1]))])
-m4_define([DTB_DEFINE], [m4_define(m4_format([[DTB_%s]], [$1]), [$1, $2, $3])
-                         m4_define(m4_format([[DTB_NAME_%s]], [$1]), [$1])
+m4_define([DTB_DEFINE], [m4_define(m4_format([[DTB_NAME_%s]], [$1]), [$1])
                          m4_define(m4_format([[DTB_CODE_%s]], [$1]), [$2])
                          m4_define(m4_format([[DTB_TYPE_%s]], [$1]), [$3])
-                         m4_define(m4_format([[DTB_BITS_%s]], [$1]), [$4])
-                         m4_define([DTB_COUNT],m4_incr(DTB_COUNT))
-                         m4_define([DTB_]DTB_COUNT,[$1])])
-
-m4_define([DTBS],[forloop([i], 1, DTB_COUNT, [(DTB(DTB(i)))])])
-m4_define([DTBS_FOREACH],[forloop([i], 1, DTB_COUNT, [m4_indir([$1],_DTBS_EXPAND(DTB(DTB(i))))])])
+                         m4_define(m4_format([[DTB_BITS_%s]], [$1]), [$4])])
 
 m4_define([DTB_GET_NAME], DTB_NAME_$1)
 m4_define([DTB_GET_CODE], DTB_CODE_$1)
