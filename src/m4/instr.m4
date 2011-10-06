@@ -854,7 +854,7 @@ foreach([ARITH_UDEC_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [i
 
 # arith.bneg
 m4_define([ARITH_BNEG_DEFINE], [ALBI_DS_DEFINE([[arith.bneg]], 0x1, 0x40, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = -(*s)])])
-foreach([ARITH_BNEG_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
+foreach([ARITH_BNEG_DEFINE], (product(([int8], [int16], [int32], [int64], [float32]),
                                       ([reg], [stack]),
                                       ([reg], [stack]))))
 
