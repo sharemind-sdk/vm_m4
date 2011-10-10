@@ -1382,7 +1382,7 @@ foreach([INSTR_JUMP_DNJNZ_DEFINE], (product(([[uint8]], [[uint16]], [[uint32]], 
 
 m4_define([INSTR_JUMP_JEQ_DEFINE],
           [INSTR_JUMP_COND_2_DEFINE([jeq],0x05,((*c1) == (*c2)),_ARG1$1,_ARG2$1,_ARG3$1)])
-foreach([INSTR_JUMP_JE_DEFINE], (product(([[int8]], [[int16]], [[int32]], [[int64]], [[uint8]], [[uint16]], [[uint32]], [[uint64]], [[float32]]),([[imm]], [[reg]], [[stack]]),([[reg]], [[stack]]))))
+foreach([INSTR_JUMP_JEQ_DEFINE], (product(([[int8]], [[int16]], [[int32]], [[int64]], [[uint8]], [[uint16]], [[uint32]], [[uint64]], [[float32]]),([[imm]], [[reg]], [[stack]]),([[reg]], [[stack]]))))
 
 m4_define([INSTR_JUMP_JNE_DEFINE],
           [INSTR_JUMP_COND_2_DEFINE([jne],0x06,((*c1) != (*c2)),_ARG1$1,_ARG2$1,_ARG3$1)])
