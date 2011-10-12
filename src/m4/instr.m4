@@ -788,9 +788,7 @@ m4_define([ALBI_D_DEFINE], [
             union SM_CodeBlock * bd;
             SMVM_MI_GET_$5(bd, SMVM_MI_ARG_AS(1, sizet));
             DTB_TYPE_$4 * d = SMVM_MI_BLOCK_AS_P(bd,DTB_NAME_$4);
-            m4_ifelse([$4], [float32], [SMVM_MI_CLEAR_FPE_EXCEPT;])
-            $7;
-            m4_ifelse([$4], [float32], [SMVM_MI_TEST_FPE_EXCEPT;])]),
+            $7;]),
         DO_DISPATCH, PREPARE_FINISH)])
 
 # (1=name,2=namespace,3=class,4=dtb_d,5=olb_d,6=olb_s,7=prepare,8=impl)
@@ -809,9 +807,7 @@ m4_define([ALBI_DS_DEFINE], [
             s = SMVM_MI_BLOCK_AS_P(bs,DTB_NAME_$4);
             m4_ifelse($1, [arith.bdiv], m4_ifelse([$4], [float32], [], [if (*s == 0) { SMVM_MI_DO_EXCEPT(SMVM_E_INTEGER_DIVIDE_BY_ZERO); }]))
             m4_ifelse($1, [arith.bdiv2], m4_ifelse([$4], [float32], [], [if (*s == 0) { SMVM_MI_DO_EXCEPT(SMVM_E_INTEGER_DIVIDE_BY_ZERO); }]))
-            m4_ifelse([$4], [float32], [SMVM_MI_CLEAR_FPE_EXCEPT;])
-            $8;
-            m4_ifelse([$4], [float32], [SMVM_MI_TEST_FPE_EXCEPT;])]),
+            $8;]),
         DO_DISPATCH, PREPARE_FINISH)])
 m4_define([ALBI_DDS_DEFINE], [ALBI_DSS_DEFINE])
 
@@ -834,120 +830,139 @@ m4_define([_ALBI_DSS_DEFINE], [
             s1 = SMVM_MI_BLOCK_AS_P(bs1,DTB_NAME_$4);
             m4_ifelse($7, [imm], [bs2 = SMVM_MI_ARG_P(3);], [SMVM_MI_GET_$7(bs2, SMVM_MI_ARG_AS(3, sizet));])
             s2 = SMVM_MI_BLOCK_AS_P(bs2,DTB_NAME_$4);
-            m4_ifelse($1, [arith.tdiv], m4_ifelse([$4], [float32], [], [if (*s2 == 0) { SMVM_MI_DO_EXCEPT(SMVM_E_INTEGER_DIVIDE_BY_ZERO); }]))
-            m4_ifelse([$4], [float32], [SMVM_MI_CLEAR_FPE_EXCEPT;])
-            $9;
-            m4_ifelse([$4], [float32], [SMVM_MI_TEST_FPE_EXCEPT;])]),
+            m4_ifelse($1, [arith.bdiv], [if (*s == 0) { SMVM_MI_DO_EXCEPT(SMVM_E_INTEGER_DIVIDE_BY_ZERO); }])
+            m4_ifelse($1, [arith.bdiv2], [if (*d == 0) { SMVM_MI_DO_EXCEPT(SMVM_E_INTEGER_DIVIDE_BY_ZERO); }])
+            m4_ifelse($1, [arith.tdiv], [if (*s2 == 0) { SMVM_MI_DO_EXCEPT(SMVM_E_INTEGER_DIVIDE_BY_ZERO); }])
+            $9;]),
         DO_DISPATCH, PREPARE_FINISH)])
 
 # arith.uneg
-m4_define([ARITH_UNEG_DEFINE], [ALBI_D_DEFINE([[arith.uneg]], 0x1, 0x00, _ARG1$1, _ARG2$1, NO_PREPARATION, [(*d) = -(*d)])])
+m4_define([ARITH_UNEG_OP], [m4_ifelse($1, [float32], [SMVM_MI_UNEG_FLOAT32(*d)], [(*d) = -(*d)])])
+m4_define([ARITH_UNEG_DEFINE], [ALBI_D_DEFINE([[arith.uneg]], 0x1, 0x00, _ARG1$1, _ARG2$1, NO_PREPARATION, ARITH_UNEG_OP(_ARG1$1))])
 foreach([ARITH_UNEG_DEFINE], (product(([int8], [int16], [int32], [int64], [float32]), ([reg], [stack]))))
 
 # arith.uinc
-m4_define([ARITH_UINC_DEFINE], [ALBI_D_DEFINE([[arith.uinc]], 0x1, 0x01, _ARG1$1, _ARG2$1, NO_PREPARATION, [(*d)++])])
+m4_define([ARITH_UINC_OP], [m4_ifelse($1, [float32], [SMVM_MI_UINC_FLOAT32(*d)], [(*d)++])])
+m4_define([ARITH_UINC_DEFINE], [ALBI_D_DEFINE([[arith.uinc]], 0x1, 0x01, _ARG1$1, _ARG2$1, NO_PREPARATION, ARITH_UINC_OP(_ARG1$1))])
 foreach([ARITH_UINC_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]), ([reg], [stack]))))
 
 # arith.udec
-m4_define([ARITH_UDEC_DEFINE], [ALBI_D_DEFINE([[arith.udec]], 0x1, 0x02, _ARG1$1, _ARG2$1, NO_PREPARATION, [(*d)--])])
+m4_define([ARITH_UDEC_OP], [m4_ifelse($1, [float32], [SMVM_MI_UDEC_FLOAT32(*d)], [(*d)--])])
+m4_define([ARITH_UDEC_DEFINE], [ALBI_D_DEFINE([[arith.udec]], 0x1, 0x02, _ARG1$1, _ARG2$1, NO_PREPARATION, ARITH_UDEC_OP(_ARG1$1))])
 foreach([ARITH_UDEC_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]), ([reg], [stack]))))
 
 # arith.bneg
-m4_define([ARITH_BNEG_DEFINE], [ALBI_DS_DEFINE([[arith.bneg]], 0x1, 0x40, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = -(*s)])])
+m4_define([ARITH_BNEG_OP], [m4_ifelse($1, [float32], [SMVM_MI_BNEG_FLOAT32(*d,*s)], [(*d) = -(*s)])])
+m4_define([ARITH_BNEG_DEFINE], [ALBI_DS_DEFINE([[arith.bneg]], 0x1, 0x40, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, ARITH_BNEG_OP(_ARG1$1))])
 foreach([ARITH_BNEG_DEFINE], (product(([int8], [int16], [int32], [int64], [float32]),
                                       ([reg], [stack]),
                                       ([reg], [stack]))))
 
 # arith.binc
-m4_define([ARITH_BINC_DEFINE], [ALBI_DS_DEFINE([[arith.binc]], 0x1, 0x41, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = (*s) + 1])])
+m4_define([ARITH_BINC_OP], [m4_ifelse($1, [float32], [SMVM_MI_BINC_FLOAT32(*d,*s)], [(*d) = (*s) + 1])])
+m4_define([ARITH_BINC_DEFINE], [ALBI_DS_DEFINE([[arith.binc]], 0x1, 0x41, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, ARITH_BINC_OP(_ARG1$1))])
 foreach([ARITH_BINC_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
                                       ([reg], [stack]),
                                       ([reg], [stack]))))
 
 # arith.bdec
-m4_define([ARITH_BDEC_DEFINE], [ALBI_DS_DEFINE([[arith.bdec]], 0x1, 0x42, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = (*s) - 1])])
+m4_define([ARITH_BDEC_OP], [m4_ifelse($1, [float32], [SMVM_MI_BDEC_FLOAT32(*d,*s)], [(*d) = (*s) - 1])])
+m4_define([ARITH_BDEC_DEFINE], [ALBI_DS_DEFINE([[arith.bdec]], 0x1, 0x42, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, ARITH_BDEC_OP(_ARG1$1))])
 foreach([ARITH_BDEC_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
                                       ([reg], [stack]),
                                       ([reg], [stack]))))
 
 # arith.badd
-m4_define([ARITH_BADD_DEFINE], [ALBI_DS_DEFINE([[arith.badd]], 0x1, 0x80, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) += *s])])
+m4_define([ARITH_BADD_OP], [m4_ifelse($1, [float32], [SMVM_MI_BADD_FLOAT32(*d,*s)], [(*d) += (*s)])])
+m4_define([ARITH_BADD_DEFINE], [ALBI_DS_DEFINE([[arith.badd]], 0x1, 0x80, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, ARITH_BADD_OP(_ARG1$1))])
 foreach([ARITH_BADD_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
                                       ([reg], [stack]),
                                       ([imm], [reg], [stack]))))
 
 # arith.bsub
-m4_define([ARITH_BSUB_DEFINE], [ALBI_DS_DEFINE([[arith.bsub]], 0x1, 0x81, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) -= *s])])
+m4_define([ARITH_BSUB_OP], [m4_ifelse($1, [float32], [SMVM_MI_BSUB_FLOAT32(*d,*s)], [(*d) -= (*s)])])
+m4_define([ARITH_BSUB_DEFINE], [ALBI_DS_DEFINE([[arith.bsub]], 0x1, 0x81, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, ARITH_BSUB_OP(_ARG1$1))])
 foreach([ARITH_BSUB_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
                                       ([reg], [stack]),
                                       ([imm], [reg], [stack]))))
 
 # arith.bsub2
-m4_define([ARITH_BSUB2_DEFINE], [ALBI_DS_DEFINE([[arith.bsub2]], 0x1, 0x82, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = (*s) - (*d)])])
+m4_define([ARITH_BSUB2_OP], [m4_ifelse($1, [float32], [SMVM_MI_BSUB2_FLOAT32(*d,*s)], [(*d) = (*s) - (*d)])])
+m4_define([ARITH_BSUB2_DEFINE], [ALBI_DS_DEFINE([[arith.bsub2]], 0x1, 0x82, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, ARITH_BSUB2_OP(_ARG1$1))])
 foreach([ARITH_BSUB2_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
                                        ([reg], [stack]),
                                        ([imm], [reg], [stack]))))
 
 # arith.bmul
-m4_define([ARITH_BMUL_DEFINE], [ALBI_DS_DEFINE([[arith.bmul]], 0x1, 0x83, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) *= *s])])
+m4_define([ARITH_BMUL_OP], [m4_ifelse($1, [float32], [SMVM_MI_BMUL_FLOAT32(*d,*s)], [(*d) *= (*s)])])
+m4_define([ARITH_BMUL_DEFINE], [ALBI_DS_DEFINE([[arith.bmul]], 0x1, 0x83, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, ARITH_BMUL_OP(_ARG1$1))])
 foreach([ARITH_BMUL_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
                                       ([reg], [stack]),
                                       ([imm], [reg], [stack]))))
 
 # arith.bdiv
-m4_define([ARITH_BDIV_DEFINE], [ALBI_DS_DEFINE([[arith.bdiv]], 0x1, 0x84, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) /= *s])])
+m4_define([ARITH_BDIV_OP], [m4_ifelse($1, [float32], [SMVM_MI_BDIV_FLOAT32(*d,*s)], [(*d) /= (*s)])])
+m4_define([ARITH_BDIV_DEFINE], [ALBI_DS_DEFINE([[arith.bdiv]], 0x1, 0x84, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, ARITH_BDIV_OP(_ARG1$1))])
 foreach([ARITH_BDIV_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
                                       ([reg], [stack]),
                                       ([imm], [reg], [stack]))))
 
 # arith.bdiv2
-m4_define([ARITH_BDIV2_DEFINE], [ALBI_DS_DEFINE([[arith.bdiv2]], 0x1, 0x85, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = (*s) / (*d)])])
+m4_define([ARITH_BDIV2_OP], [m4_ifelse($1, [float32], [SMVM_MI_BDIV2_FLOAT32(*d,*s)], [(*d) = (*s) / (*d)])])
+m4_define([ARITH_BDIV2_DEFINE], [ALBI_DS_DEFINE([[arith.bdiv2]], 0x1, 0x85, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, ARITH_BDIV2_OP(_ARG1$1))])
 foreach([ARITH_BDIV2_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
                                        ([reg], [stack]),
                                        ([imm], [reg], [stack]))))
 
 # arith.bmod
-m4_define([ARITH_BMOD_DEFINE], [ALBI_DS_DEFINE([[arith.bmod]], 0x1, 0x86, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) %= *s])])
+m4_define([ARITH_BMOD_OP], [m4_ifelse($1, [float32], [SMVM_MI_BMOD_FLOAT32(*d,*s)], [(*d) %= (*s)])])
+m4_define([ARITH_BMOD_DEFINE], [ALBI_DS_DEFINE([[arith.bmod]], 0x1, 0x86, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, ARITH_BMOD_OP(_ARG1$1))])
 foreach([ARITH_BMOD_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64]),
                                       ([reg], [stack]),
                                       ([imm], [reg], [stack]))))
 
 # arith.bmod2
-m4_define([ARITH_BMOD2_DEFINE], [ALBI_DS_DEFINE([[arith.bmod2]], 0x1, 0x87, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = (*s) % (*d)])])
+m4_define([ARITH_BMOD2_OP], [m4_ifelse($1, [float32], [SMVM_MI_BMOD2_FLOAT32(*d,*s)], [(*d) = (*s) % (*d)])])
+m4_define([ARITH_BMOD2_DEFINE], [ALBI_DS_DEFINE([[arith.bmod2]], 0x1, 0x87, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, ARITH_BMOD2_OP(_ARG1$1))])
 foreach([ARITH_BMOD2_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64]),
                                        ([reg], [stack]),
                                        ([imm], [reg], [stack]))))
 
 # arith.tadd
-m4_define([ARITH_TADD_DEFINE], [ALBI_DSS_DEFINE([[arith.tadd]], 0x1, 0xc0, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) = (*s1) + (*s2)])])
+m4_define([ARITH_TADD_OP], [m4_ifelse($1, [float32], [SMVM_MI_TADD_FLOAT32(*d,*s1,*s2)], [(*d) = (*s1) + (*s2)])])
+m4_define([ARITH_TADD_DEFINE], [ALBI_DSS_DEFINE([[arith.tadd]], 0x1, 0xc0, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, ARITH_TADD_OP(_ARG1$1))])
 foreach([ARITH_TADD_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
                                       ([reg], [stack]),
                                       ([imm], [reg], [stack]),
                                       ([imm], [reg], [stack]))))
 
 # arith.tsub
-m4_define([ARITH_TSUB_DEFINE], [ALBI_DSS_DEFINE([[arith.tsub]], 0x1, 0xc1, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) = (*s1) - (*s2)])])
+m4_define([ARITH_TSUB_OP], [m4_ifelse($1, [float32], [SMVM_MI_TSUB_FLOAT32(*d,*s1,*s2)], [(*d) = (*s1) - (*s2)])])
+m4_define([ARITH_TSUB_DEFINE], [ALBI_DSS_DEFINE([[arith.tsub]], 0x1, 0xc1, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, ARITH_TSUB_OP(_ARG1$1))])
 foreach([ARITH_TSUB_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
                                       ([reg], [stack]),
                                       ([imm], [reg], [stack]),
                                       ([imm], [reg], [stack]))))
 
 # arith.tmul
-m4_define([ARITH_TMUL_DEFINE], [ALBI_DSS_DEFINE([[arith.tmul]], 0x1, 0xc2, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) = (*s1) * (*s2)])])
+m4_define([ARITH_TMUL_OP], [m4_ifelse($1, [float32], [SMVM_MI_TMUL_FLOAT32(*d,*s1,*s2)], [(*d) = (*s1) * (*s2)])])
+m4_define([ARITH_TMUL_DEFINE], [ALBI_DSS_DEFINE([[arith.tmul]], 0x1, 0xc2, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, ARITH_TMUL_OP(_ARG1$1))])
 foreach([ARITH_TMUL_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
                                       ([reg], [stack]),
                                       ([imm], [reg], [stack]),
                                       ([imm], [reg], [stack]))))
 
 # arith.tdiv
-m4_define([ARITH_TDIV_DEFINE], [ALBI_DSS_DEFINE([[arith.tdiv]], 0x1, 0xc3, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) = (*s1) / (*s2)])])
+m4_define([ARITH_TDIV_OP], [m4_ifelse($1, [float32], [SMVM_MI_TDIV_FLOAT32(*d,*s1,*s2)], [(*d) = (*s1) / (*s2)])])
+m4_define([ARITH_TDIV_DEFINE], [ALBI_DSS_DEFINE([[arith.tdiv]], 0x1, 0xc3, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, ARITH_TDIV_OP(_ARG1$1))])
 foreach([ARITH_TDIV_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
                                       ([reg], [stack]),
                                       ([imm], [reg], [stack]),
                                       ([imm], [reg], [stack]))))
 
 # arith.tmod
-m4_define([ARITH_TMOD_DEFINE], [ALBI_DSS_DEFINE([[arith.tmod]], 0x1, 0xc4, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) = (*s1) % (*s2)])])
+m4_define([ARITH_TMOD_OP], [m4_ifelse($1, [float32], [SMVM_MI_TMOD_FLOAT32(*d,*s1,*s2)], [(*d) = (*s1) % (*s2)])])
+m4_define([ARITH_TMOD_DEFINE], [ALBI_DSS_DEFINE([[arith.tmod]], 0x1, 0xc4, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, ARITH_TMOD_OP(_ARG1$1))])
 foreach([ARITH_TMOD_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64]),
                                       ([reg], [stack]),
                                       ([imm], [reg], [stack]),
