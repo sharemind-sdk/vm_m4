@@ -741,7 +741,7 @@ MEM_GET_SIZE_DEFINE([stack],[reg])
 MEM_GET_SIZE_DEFINE([stack],[stack])
 
 # common.convert
-m4_define([_CONVERT_DEFINE], [
+m4_define([_CONVERT_DEFINE], [m4_ifelse($1, $3, [], [
     INSTR_DEFINE([common.convert_$1_$2_$3_$4],
         CODE(0x00, 0x04, DTB_CODE_$1, OLB_CODE_$2, DTB_CODE_$3, OLB_CODE_$4, 0x00, 0x00),
         ARGS(2), NO_PREPARATION, NO_IMPL_SUFFIX,
@@ -750,9 +750,14 @@ m4_define([_CONVERT_DEFINE], [
             SMVM_MI_GET_$2(s, SMVM_MI_ARG_AS(1, sizet));
             union SM_CodeBlock * d;
             SMVM_MI_GET_$4(d, SMVM_MI_ARG_AS(2, sizet));
-            SMVM_MI_BLOCK_AS(d,$3) = SMVM_MI_BLOCK_AS(s,$1)]),
+            m4_ifelse($1, [float32],
+                      [SMVM_MI_CONVERT_$1_TO_$3(SMVM_MI_BLOCK_AS(d,$3), SMVM_MI_BLOCK_AS(s,$1))],
+                      $3, [float32],
+                      [SMVM_MI_CONVERT_$1_TO_$3(SMVM_MI_BLOCK_AS(d,$3), SMVM_MI_BLOCK_AS(s,$1))],
+                      [SMVM_MI_BLOCK_AS(d,$3) = SMVM_MI_BLOCK_AS(s,$1)])
+            ]),
         DO_DISPATCH, PREPARE_FINISH
-    )])
+    )])])
 m4_define([CONVERT_DEFINE], [_$0(_ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1)])
 foreach([CONVERT_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]), ([reg], [stack]), ([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]), ([reg], [stack]))))
 
