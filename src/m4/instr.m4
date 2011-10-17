@@ -127,7 +127,7 @@ m4_define([_MOV_REGS_TO_REGS_DEFINE], [
         CODE(0x00, 0x01, OLB_CODE_$1, 0x00, OLB_CODE_$2, 0x00, 0x00, 0x00),
         ARGS(2), NO_PREPARATION, NO_IMPL_SUFFIX,
         IMPL([
-            union SM_CodeBlock * s;
+            const union SM_CodeBlock * s;
             m4_ifelse($1, [imm],
                       [s = SMVM_MI_ARG_P(1);],
                       [SMVM_MI_GET_$1(s, SMVM_MI_ARG_AS(1, sizet));])
@@ -152,10 +152,10 @@ m4_define([_MOV_MEM_TO_REGS_DEFINE], [
                                                   SMVM_PREPARE_ERROR_INVALID_ARGUMENTS)])],
                   [NO_PREPARATION]),
         NO_IMPL_SUFFIX, IMPL([
-            union SM_CodeBlock * ptr;
-            union SM_CodeBlock * m4_ifelse($2, [imm], [restrict]) offset;
+            const union SM_CodeBlock * ptr;
+            const union SM_CodeBlock * m4_ifelse($2, [imm], [restrict]) offset;
             union SM_CodeBlock * dest;
-            union SM_CodeBlock * m4_ifelse($4, [imm], [restrict]) numBytes;
+            const union SM_CodeBlock * m4_ifelse($4, [imm], [restrict]) numBytes;
             struct SMVM_MemorySlot * restrict slot;
             m4_ifelse($4, [imm], [],
                       [SMVM_MI_GET_$4(numBytes, SMVM_MI_ARG_AS(4,sizet));
@@ -188,11 +188,11 @@ m4_define([_MOV_REGS_TO_MEM_DEFINE], [
                                                   SMVM_PREPARE_ERROR_INVALID_ARGUMENTS)])],
                   [NO_PREPARATION]),
         NO_IMPL_SUFFIX, IMPL([
-            union SM_CodeBlock * m4_ifelse($1, [imm], [restrict]) src;
-            union SM_CodeBlock * restrict ptr;
-            union SM_CodeBlock * m4_ifelse($3, [imm], [restrict]) offset;
-            union SM_CodeBlock * m4_ifelse($4, [imm], [restrict]) numBytes;
-            struct SMVM_MemorySlot * restrict slot;
+            const union SM_CodeBlock * m4_ifelse($1, [imm], [restrict]) src;
+            const union SM_CodeBlock * restrict ptr;
+            const union SM_CodeBlock * m4_ifelse($3, [imm], [restrict]) offset;
+            const union SM_CodeBlock * m4_ifelse($4, [imm], [restrict]) numBytes;
+            const struct SMVM_MemorySlot * restrict slot;
             m4_ifelse($4, [imm], [],
                       [SMVM_MI_GET_$4(numBytes, SMVM_MI_ARG_AS(4,sizet));
                        SMVM_MI_TRY_EXCEPT(SMVM_MI_BLOCK_AS(numBytes,sizet) > 0u && SMVM_MI_BLOCK_AS(numBytes,sizet) <= 8u,
@@ -218,13 +218,13 @@ m4_define([_MOV_MEM_TO_MEM_DEFINE], [
         CODE(0x00, 0x01, OLB_CODE_mem_$1, OLB_CODE_$2, OLB_CODE_mem_$3, OLB_CODE_$4, OLB_CODE_$5, 0x00),
         ARGS(5), NO_PREPARATION, NO_IMPL_SUFFIX,
         IMPL([
-            union SM_CodeBlock * srcPtr;
-            union SM_CodeBlock * m4_ifelse($2, [imm], [restrict]) srcOffset;
-            union SM_CodeBlock * dstPtr;
-            union SM_CodeBlock * m4_ifelse($4, [imm], [restrict]) dstOffset;
-            union SM_CodeBlock * m4_ifelse($5, [imm], [restrict]) numBytes;
-            struct SMVM_MemorySlot * srcSlot;
-            struct SMVM_MemorySlot * dstSlot;
+            const union SM_CodeBlock * srcPtr;
+            const union SM_CodeBlock * m4_ifelse($2, [imm], [restrict]) srcOffset;
+            const union SM_CodeBlock * dstPtr;
+            const union SM_CodeBlock * m4_ifelse($4, [imm], [restrict]) dstOffset;
+            const union SM_CodeBlock * m4_ifelse($5, [imm], [restrict]) numBytes;
+            const struct SMVM_MemorySlot * srcSlot;
+            const struct SMVM_MemorySlot * dstSlot;
             SMVM_MI_GET_$1(srcPtr, SMVM_MI_ARG_AS(1, sizet));
             SMVM_MI_GET_$3(dstPtr, SMVM_MI_ARG_AS(3, sizet));
             SMVM_MI_MEM_GET_SLOT_OR_EXCEPT(SMVM_MI_BLOCK_AS(srcPtr,uint64), srcSlot);
@@ -267,10 +267,10 @@ m4_define([_MOV_REF_TO_REGS_DEFINE], [
                                                   SMVM_PREPARE_ERROR_INVALID_ARGUMENTS)])],
                   [NO_PREPARATION]),
         NO_IMPL_SUFFIX, IMPL([
-            struct SMVM_Reference * restrict srcRef;
-            union SM_CodeBlock * m4_ifelse($2, [imm], [restrict]) srcOffset;
+            const struct SMVM_[]m4_ifelse($1, [cref], [C])[]Reference * restrict srcRef;
+            const union SM_CodeBlock * m4_ifelse($2, [imm], [restrict]) srcOffset;
             union SM_CodeBlock * dest;
-            union SM_CodeBlock * m4_ifelse($4, [imm], [restrict]) numBytes;
+            const union SM_CodeBlock * m4_ifelse($4, [imm], [restrict]) numBytes;
             m4_ifelse($4, [imm], [],
                       [SMVM_MI_GET_$4(numBytes, SMVM_MI_ARG_AS(4,sizet));
                        SMVM_MI_TRY_EXCEPT(SMVM_MI_BLOCK_AS(numBytes,sizet) > 0u && SMVM_MI_BLOCK_AS(numBytes,sizet) <= 8u,
@@ -312,10 +312,10 @@ m4_define([_MOV_REGS_TO_REF_DEFINE], [
                                                   SMVM_PREPARE_ERROR_INVALID_ARGUMENTS)])],
                   [NO_PREPARATION]),
         NO_IMPL_SUFFIX, IMPL([
-            union SM_CodeBlock * m4_ifelse($1, [imm], [restrict]) src;
-            struct SMVM_Reference * restrict dstRef;
-            union SM_CodeBlock * m4_ifelse($2, [imm], [restrict]) dstOffset;
-            union SM_CodeBlock * m4_ifelse($3, [imm], [restrict]) numBytes;
+            const union SM_CodeBlock * m4_ifelse($1, [imm], [restrict]) src;
+            const struct SMVM_Reference * restrict dstRef;
+            const union SM_CodeBlock * m4_ifelse($2, [imm], [restrict]) dstOffset;
+            const union SM_CodeBlock * m4_ifelse($3, [imm], [restrict]) numBytes;
             m4_ifelse($3, [imm], [],
                       [SMVM_MI_GET_$3(numBytes, SMVM_MI_ARG_AS(4,sizet));
                        SMVM_MI_TRY_EXCEPT(SMVM_MI_BLOCK_AS(numBytes,sizet) > 0u && SMVM_MI_BLOCK_AS(numBytes,sizet) <= 8u,
@@ -352,11 +352,11 @@ m4_define([_MOV_REF_TO_REF_DEFINE], [
         CODE(0x00, 0x01, OLB_CODE_$1, OLB_CODE_$2, OLB_CODE_ref, OLB_CODE_$3, OLB_CODE_$4, 0x00),
         ARGS(5), NO_PREPARATION, NO_IMPL_SUFFIX,
         IMPL([
-            struct SMVM_Reference * srcRef;
-            union SM_CodeBlock * m4_ifelse($2, [imm], [restrict]) srcOffset;
-            struct SMVM_Reference * dstRef;
-            union SM_CodeBlock * m4_ifelse($3, [imm], [restrict]) dstOffset;
-            union SM_CodeBlock * m4_ifelse($4, [imm], [restrict]) numBytes;
+            const struct SMVM_[]m4_ifelse($1, [cref], [C])Reference * srcRef;
+            const union SM_CodeBlock * m4_ifelse($2, [imm], [restrict]) srcOffset;
+            const struct SMVM_Reference * dstRef;
+            const union SM_CodeBlock * m4_ifelse($3, [imm], [restrict]) dstOffset;
+            const union SM_CodeBlock * m4_ifelse($4, [imm], [restrict]) numBytes;
             SMVM_MI_GET_$1(srcRef, SMVM_MI_ARG_AS(1, sizet));
             m4_ifelse($2, [imm], [], [SMVM_MI_GET_$2(srcOffset, SMVM_MI_ARG_AS(2, sizet));])
             SMVM_MI_GET_ref(dstRef, SMVM_MI_ARG_AS(3, sizet));
@@ -388,12 +388,12 @@ m4_define([_MOV_REF_TO_MEM_DEFINE], [
         CODE(0x00, 0x01, OLB_CODE_$1, OLB_CODE_$2, OLB_CODE_mem_$3, OLB_CODE_$4, OLB_CODE_$5, 0x00),
         ARGS(5), NO_PREPARATION, NO_IMPL_SUFFIX,
         IMPL([
-            struct SMVM_Reference * restrict srcRef;
-            union SM_CodeBlock * m4_ifelse($2, [imm], [restrict]) srcOffset;
-            union SM_CodeBlock * restrict dstPtr;
-            union SM_CodeBlock * m4_ifelse($4, [imm], [restrict]) dstOffset;
-            union SM_CodeBlock * m4_ifelse($5, [imm], [restrict]) numBytes;
-            struct SMVM_MemorySlot * restrict dstSlot;
+            const struct SMVM_[]m4_ifelse($1, [cref], [C])Reference * restrict srcRef;
+            const union SM_CodeBlock * m4_ifelse($2, [imm], [restrict]) srcOffset;
+            const union SM_CodeBlock * restrict dstPtr;
+            const union SM_CodeBlock * m4_ifelse($4, [imm], [restrict]) dstOffset;
+            const union SM_CodeBlock * m4_ifelse($5, [imm], [restrict]) numBytes;
+            const struct SMVM_MemorySlot * restrict dstSlot;
             SMVM_MI_GET_$1(srcRef, SMVM_MI_ARG_AS(1, sizet));
             m4_ifelse($2, [imm], [], [SMVM_MI_GET_$2(srcOffset, SMVM_MI_ARG_AS(2, sizet));])
             SMVM_MI_GET_$3(dstPtr, SMVM_MI_ARG_AS(3, sizet));
@@ -426,12 +426,12 @@ m4_define([_MOV_MEM_TO_REF_DEFINE], [
         CODE(0x00, 0x01, OLB_CODE_mem_$1, OLB_CODE_$2, OLB_CODE_ref, OLB_CODE_$3, OLB_CODE_$4, 0x00),
         ARGS(5), NO_PREPARATION, NO_IMPL_SUFFIX,
         IMPL([
-            union SM_CodeBlock * restrict srcPtr;
-            union SM_CodeBlock * m4_ifelse($2, [imm], [restrict]) srcOffset;
-            struct SMVM_Reference * restrict dstRef;
-            union SM_CodeBlock * m4_ifelse($3, [imm], [restrict]) dstOffset;
-            union SM_CodeBlock * m4_ifelse($4, [imm], [restrict]) numBytes;
-            struct SMVM_MemorySlot * restrict srcSlot;
+            const union SM_CodeBlock * restrict srcPtr;
+            const union SM_CodeBlock * m4_ifelse($2, [imm], [restrict]) srcOffset;
+            const struct SMVM_Reference * restrict dstRef;
+            const union SM_CodeBlock * m4_ifelse($3, [imm], [restrict]) dstOffset;
+            const union SM_CodeBlock * m4_ifelse($4, [imm], [restrict]) numBytes;
+            const struct SMVM_MemorySlot * restrict srcSlot;
             SMVM_MI_GET_$1(srcPtr, SMVM_MI_ARG_AS(1, sizet));
             SMVM_MI_MEM_GET_SLOT_OR_EXCEPT(SMVM_MI_BLOCK_AS(srcPtr,uint64), srcSlot);
             m4_ifelse($2, [imm], [], [SMVM_MI_GET_$2(srcOffset, SMVM_MI_ARG_AS(2, sizet));])
@@ -468,7 +468,7 @@ m4_define([_CALL_DEFINE], [
         NO_IMPL_SUFFIX,
         IMPL([
             m4_ifelse($1, [imm],,[
-                union SM_CodeBlock * addr;
+                const union SM_CodeBlock * addr;
                 SMVM_MI_GET_$1(addr, SMVM_MI_ARG_AS(1, sizet));])
             m4_ifelse($2, [imm],,[
                 union SM_CodeBlock * rv;
@@ -518,7 +518,7 @@ m4_define([_PUSHREF_BLOCK_DEFINE], [
         CODE(0x00, 0x02, m4_ifelse($1, [ref], [0x05], [0x07]), OLB_CODE_$2, 0x00, 0x00, 0x00, 0x00),
         ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX,
         IMPL([
-            union SM_CodeBlock * restrict b;
+            m4_ifelse($1, [cref], [const]) union SM_CodeBlock * restrict b;
             m4_ifelse($2, [imm],
                       [b = SMVM_MI_ARG_P(1);],
                       [SMVM_MI_GET_$2(b, SMVM_MI_ARG_AS(1, sizet));])
@@ -535,7 +535,7 @@ m4_define([PUSHREF_REF_DEFINE], [
     CODE(0x00, 0x02, m4_ifelse($1, [ref], [0x05], [0x07]), OLB_CODE_$2, 0x00, 0x00, 0x00, 0x00),
     ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX,
     IMPL([
-        struct SMVM_Reference * restrict srcRef;
+        const struct SMVM_[]m4_ifelse($2, [cref], [C])Reference * restrict srcRef;
         SMVM_MI_GET_$2(srcRef, SMVM_MI_ARG_AS(1, sizet));
         SMVM_MI_PUSHREF_REF_$1(srcRef);]),
     DO_DISPATCH, PREPARE_FINISH)])
@@ -550,7 +550,7 @@ m4_define([_PUSHREF_MEM_DEFINE], [
     CODE(0x00, 0x02, m4_ifelse($1, [ref], [0x05], [0x07]), OLB_CODE_mem_$2, 0x00, 0x00, 0x00, 0x00),
     ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX,
     IMPL([
-        union SM_CodeBlock * srcPtr;
+        const union SM_CodeBlock * srcPtr;
         struct SMVM_MemorySlot * srcSlot;
         SMVM_MI_GET_$2(srcPtr, SMVM_MI_ARG_AS(1, sizet));
         SMVM_MI_MEM_GET_SLOT_OR_EXCEPT(SMVM_MI_BLOCK_AS(srcPtr,uint64), srcSlot);
@@ -586,9 +586,9 @@ m4_define([_PUSHREFPART_BLOCK_DEFINE], [
                   NO_PREPARATION),
         NO_IMPL_SUFFIX,
         IMPL([
-            union SM_CodeBlock * m4_ifelse($2, [imm], [restrict]) b;
-            union SM_CodeBlock * m4_ifelse($3, [imm], [restrict]) offset;
-            union SM_CodeBlock * m4_ifelse($4, [imm], [restrict]) nBytes;
+            m4_ifelse($2, [imm], [const]) union SM_CodeBlock * m4_ifelse($2, [imm], [restrict]) b;
+            const union SM_CodeBlock * m4_ifelse($3, [imm], [restrict]) offset;
+            const union SM_CodeBlock * m4_ifelse($4, [imm], [restrict]) nBytes;
             m4_ifelse($2, [imm],
                       [b = SMVM_MI_ARG_P(1);],
                       [SMVM_MI_GET_$2(b, SMVM_MI_ARG_AS(1, sizet));])
@@ -622,9 +622,9 @@ m4_define([PUSHREFPART_REF_DEFINE], [
               NO_PREPARATION),
     NO_IMPL_SUFFIX,
     IMPL([
-        struct SMVM_Reference * restrict srcRef;
-        union SM_CodeBlock * m4_ifelse($3, [imm], [restrict]) offset;
-        union SM_CodeBlock * m4_ifelse($3, [imm], [restrict]) nBytes;
+        const struct SMVM_[]m4_ifelse($1, [cref], [C])Reference * restrict srcRef;
+        const union SM_CodeBlock * m4_ifelse($3, [imm], [restrict]) offset;
+        const union SM_CodeBlock * m4_ifelse($3, [imm], [restrict]) nBytes;
         SMVM_MI_GET_$2(srcRef, SMVM_MI_ARG_AS(1, sizet));
         m4_ifelse($3, [imm],
                   [offset = SMVM_MI_ARG_P(2);],
@@ -655,9 +655,9 @@ m4_define([_PUSHREFPART_MEM_DEFINE], [
               NO_PREPARATION),
     NO_IMPL_SUFFIX,
     IMPL([
-        union SM_CodeBlock * srcPtr;
-        union SM_CodeBlock * m4_ifelse($2, [imm], [restrict]) offset;
-        union SM_CodeBlock * m4_ifelse($2, [imm], [restrict]) nBytes;
+        const union SM_CodeBlock * srcPtr;
+        const union SM_CodeBlock * m4_ifelse($2, [imm], [restrict]) offset;
+        const union SM_CodeBlock * m4_ifelse($2, [imm], [restrict]) nBytes;
         struct SMVM_MemorySlot * srcSlot;
         SMVM_MI_GET_$2(srcPtr, SMVM_MI_ARG_AS(1, sizet));
         SMVM_MI_MEM_GET_SLOT_OR_EXCEPT(SMVM_MI_BLOCK_AS(srcPtr,uint64), srcSlot);
@@ -1336,7 +1336,7 @@ m4_define([INSTR_JUMP_DEFINE], [
         IMPL([m4_ifelse([$9], [NO_JUMP_PRECODE], [], [
         $9;])m4_ifelse([$10], [NO_JUMP_CONDITION], [], [
         if ($10) {])
-            union SM_CodeBlock * t;
+            const union SM_CodeBlock * t;
             SMVM_MI_GET_reg(t, SMVM_MI_ARG_AS(1, sizet));
             SMVM_MI_CHECK_JUMP_REL(SMVM_MI_BLOCK_AS(t,int64));m4_ifelse([$10], [NO_JUMP_CONDITION], [], [
         } else (void) 0])]),
@@ -1349,7 +1349,7 @@ m4_define([INSTR_JUMP_DEFINE], [
         IMPL([m4_ifelse([$9], [NO_JUMP_PRECODE], [], [
         $9;])m4_ifelse([$10], [NO_JUMP_CONDITION], [], [
         if ($10) {])
-            union SM_CodeBlock * t;
+            const union SM_CodeBlock * t;
             SMVM_MI_GET_stack(t, SMVM_MI_ARG_AS(1, sizet));
             SMVM_MI_CHECK_JUMP_REL(SMVM_MI_BLOCK_AS(t,int64));m4_ifelse([$10], [NO_JUMP_CONDITION], [], [
         } else (void) 0])]),
@@ -1365,7 +1365,7 @@ m4_define([INSTR_JUMP_COND_1_DEFINE], [
         $2, DTB_CODE_$4, OLB_CODE_$5, 0x00, 2,
         NO_PREPARATION,
         [
-        union SM_CodeBlock * c;
+        m4_ifelse($1, [dnjz],, $1, [dnjnz],, [const]) union SM_CodeBlock * c;
         SMVM_MI_GET_[]$5(c, SMVM_MI_ARG_AS(2, sizet))],
         $3, DO_DISPATCH)])
 
@@ -1377,10 +1377,10 @@ m4_define([INSTR_JUMP_COND_2_DEFINE], [
         m4_ifelse([$5], [$7], [SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(1,uint64) != SMVM_PREPARE_ARG_AS(2,uint64),
                                     SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);], [NO_PREPARATION]),
         [
-        DTB_TYPE_$4 * c1;
+        const DTB_TYPE_$4 * c1;
         m4_ifelse([$5], [imm], [c1 = SMVM_MI_ARG_AS_P(2, DTB_NAME_$4)],
                     [SMVM_MI_GET_T_$5(c1, $4, SMVM_MI_ARG_AS(2, sizet))]);
-        DTB_TYPE_$4 * c2;
+        const DTB_TYPE_$4 * c2;
         SMVM_MI_GET_T_$6(c2, $4, SMVM_MI_ARG_AS(3, sizet))],
         $3, DO_DISPATCH)])
 
