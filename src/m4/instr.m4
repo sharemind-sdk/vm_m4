@@ -778,7 +778,7 @@ m4_define([ALBI_D_DEFINE], [
         IMPL([
             union SM_CodeBlock * bd;
             SMVM_MI_GET_$5(bd, SMVM_MI_ARG_AS(1, sizet));
-            DTB_TYPE_$4 * d = SMVM_MI_BLOCK_AS_P(bd,DTB_NAME_$4);
+            DTB_TYPE_$4 * d = SMVM_MI_BLOCK_AS_P(bd,$4);
             $7;]),
         DO_DISPATCH, PREPARE_FINISH)])
 
@@ -793,9 +793,9 @@ m4_define([ALBI_DS_DEFINE], [
             DTB_TYPE_$4 * d;
             m4_ifelse($6, [imm], [const]) DTB_TYPE_$4 * m4_ifelse($6, [imm], [restrict]) s;
             SMVM_MI_GET_$5(bd, SMVM_MI_ARG_AS(1, sizet));
-            d = SMVM_MI_BLOCK_AS_P(bd,DTB_NAME_$4);
+            d = SMVM_MI_BLOCK_AS_P(bd,$4);
             m4_ifelse($6, [imm], [bs = SMVM_MI_ARG_P(2);], [SMVM_MI_GET_$6(bs, SMVM_MI_ARG_AS(2, sizet));])
-            s = SMVM_MI_BLOCK_AS_P(bs,DTB_NAME_$4);
+            s = SMVM_MI_BLOCK_AS_P(bs,$4);
             m4_ifelse($1, [arith.bdiv], m4_ifelse([$4], [float32], [], [if (*s == 0) { SMVM_MI_DO_EXCEPT(SMVM_E_INTEGER_DIVIDE_BY_ZERO); }]))
             m4_ifelse($1, [arith.bdiv2], m4_ifelse([$4], [float32], [], [if (*s == 0) { SMVM_MI_DO_EXCEPT(SMVM_E_INTEGER_DIVIDE_BY_ZERO); }]))
             $8;]),
@@ -816,11 +816,11 @@ m4_define([_ALBI_DSS_DEFINE], [
             m4_ifelse($6, [imm], [const]) DTB_TYPE_$4 * m4_ifelse($6, [imm], [restrict]) s1;
             m4_ifelse($7, [imm], [const]) DTB_TYPE_$4 * m4_ifelse($7, [imm], [restrict]) s2;
             SMVM_MI_GET_$5(bd, SMVM_MI_ARG_AS(1, sizet));
-            d = SMVM_MI_BLOCK_AS_P(bd,DTB_NAME_$4);
+            d = SMVM_MI_BLOCK_AS_P(bd,$4);
             m4_ifelse($6, [imm], [bs1 = SMVM_MI_ARG_P(2);], [SMVM_MI_GET_$6(bs1, SMVM_MI_ARG_AS(2, sizet));])
-            s1 = SMVM_MI_BLOCK_AS_P(bs1,DTB_NAME_$4);
+            s1 = SMVM_MI_BLOCK_AS_P(bs1,$4);
             m4_ifelse($7, [imm], [bs2 = SMVM_MI_ARG_P(3);], [SMVM_MI_GET_$7(bs2, SMVM_MI_ARG_AS(3, sizet));])
-            s2 = SMVM_MI_BLOCK_AS_P(bs2,DTB_NAME_$4);
+            s2 = SMVM_MI_BLOCK_AS_P(bs2,$4);
             m4_ifelse($1, [arith.bdiv], [if (*s == 0) { SMVM_MI_DO_EXCEPT(SMVM_E_INTEGER_DIVIDE_BY_ZERO); }])
             m4_ifelse($1, [arith.bdiv2], [if (*d == 0) { SMVM_MI_DO_EXCEPT(SMVM_E_INTEGER_DIVIDE_BY_ZERO); }])
             m4_ifelse($1, [arith.tdiv], [if (*s2 == 0) { SMVM_MI_DO_EXCEPT(SMVM_E_INTEGER_DIVIDE_BY_ZERO); }])
@@ -1374,7 +1374,7 @@ m4_define([INSTR_JUMP_COND_2_DEFINE], [
                                     SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);], [NO_PREPARATION]),
         [
         const DTB_TYPE_$4 * c1;
-        m4_ifelse([$5], [imm], [c1 = SMVM_MI_ARG_AS_P(2, DTB_NAME_$4)],
+        m4_ifelse([$5], [imm], [c1 = SMVM_MI_ARG_AS_P(2, $4)],
                     [SMVM_MI_GET_T_$5(c1, $4, SMVM_MI_ARG_AS(2, sizet))]);
         const DTB_TYPE_$4 * c2;
         SMVM_MI_GET_T_$6(c2, $4, SMVM_MI_ARG_AS(3, sizet))],

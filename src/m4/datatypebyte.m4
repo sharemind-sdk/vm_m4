@@ -7,12 +7,10 @@
 # code is subject to the appropriate license agreement.
 #
 
-m4_define([DTB_DEFINE], [m4_define(m4_format([[DTB_NAME_%s]], [$1]), [$1])
-                         m4_define(m4_format([[DTB_CODE_%s]], [$1]), [$2])
+m4_define([DTB_DEFINE], [m4_define(m4_format([[DTB_CODE_%s]], [$1]), [$2])
                          m4_define(m4_format([[DTB_TYPE_%s]], [$1]), [$3])
                          m4_define(m4_format([[DTB_BITS_%s]], [$1]), [$4])])
 
-m4_define([DTB_GET_NAME], DTB_NAME_$1)
 m4_define([DTB_GET_CODE], DTB_CODE_$1)
 m4_define([DTB_GET_TYPE], DTB_TYPE_$1)
 m4_define([DTB_GET_BITS], DTB_BITS_$1)
