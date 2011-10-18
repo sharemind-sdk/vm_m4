@@ -1317,7 +1317,17 @@ m4_define([INSTR_JUMP_DEFINE], [
         ARGS($7),
         [if (1) {
             m4_ifelse([$8], [NO_PREPARATION], [], [$8;
-            ])SMVM_PREPARE_CHECK_OR_ERROR(
+            ])
+            if (SMVM_PREPARE_ARG_AS(1,int64) < 0) {
+                SMVM_PREPARE_CHECK_OR_ERROR(
+                    ((uint64_t) -(SMVM_PREPARE_ARG_AS(1,int64) + 1)) < SMVM_PREPARE_CURRENT_I,
+                    SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
+            } else {
+                SMVM_PREPARE_CHECK_OR_ERROR(
+                    ((uint64_t) SMVM_PREPARE_ARG_AS(1,int64)) < SMVM_PREPARE_CODESIZE - SMVM_PREPARE_CURRENT_I - 1u,
+                    SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
+            }
+            SMVM_PREPARE_CHECK_OR_ERROR(
                 SMVM_PREPARE_IS_INSTR((size_t) SMVM_PREPARE_CURRENT_I + SMVM_PREPARE_ARG_AS(1,int64)),
                 SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
         }],
