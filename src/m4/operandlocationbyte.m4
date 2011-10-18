@@ -7,13 +7,10 @@
 # code is subject to the appropriate license agreement.
 #
 
-m4_define([OLB_DEFINE], [m4_define(m4_format([[OLB_NAME_%s]], [$1]), [$1])
-                         m4_define(m4_format([[OLB_CODE_%s]], [$1]), [$2])])
-
-OLB_DEFINE(imm,         0x01)
-OLB_DEFINE(reg,         0x02)
-OLB_DEFINE(stack,       0x04)
-OLB_DEFINE(ref,         0x08)
-OLB_DEFINE(cref,        0x10)
-OLB_DEFINE(mem_reg,     0x20)
-OLB_DEFINE(mem_stack,   0x40)
+m4_define([OLB_CODE_imm],         0x01)
+m4_define([OLB_CODE_reg],         0x02)
+m4_define([OLB_CODE_stack],       0x04)
+m4_define([OLB_CODE_ref],         0x08)
+m4_define([OLB_CODE_cref],        0x10)
+m4_define([OLB_CODE_mem_reg],     0x20)
+m4_define([OLB_CODE_mem_stack],   0x40)
