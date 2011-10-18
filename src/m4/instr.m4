@@ -732,7 +732,7 @@ m4_define([_CONVERT_DEFINE], [m4_ifelse($1, $3, [], [
         CODE(0x00, 0x04, DTB_CODE_$1, OLB_CODE_$2, DTB_CODE_$3, OLB_CODE_$4, 0x00, 0x00),
         ARGS(2), NO_PREPARATION, NO_IMPL_SUFFIX,
         IMPL([
-            union SM_CodeBlock * s;
+            const union SM_CodeBlock * s;
             SMVM_MI_GET_$2(s, SMVM_MI_ARG_AS(1, sizet));
             union SM_CodeBlock * d;
             SMVM_MI_GET_$4(d, SMVM_MI_ARG_AS(2, sizet));
@@ -740,7 +740,7 @@ m4_define([_CONVERT_DEFINE], [m4_ifelse($1, $3, [], [
                       [SMVM_MI_CONVERT_$1_TO_$3(SMVM_MI_BLOCK_AS(d,$3), SMVM_MI_BLOCK_AS(s,$1))],
                       $3, [float32],
                       [SMVM_MI_CONVERT_$1_TO_$3(SMVM_MI_BLOCK_AS(d,$3), SMVM_MI_BLOCK_AS(s,$1))],
-                      [SMVM_MI_BLOCK_AS(d,$3) = SMVM_MI_BLOCK_AS(s,$1)])
+                      [SMVM_MI_BLOCK_AS(d,$3) = (DTB_TYPE_$3) SMVM_MI_BLOCK_AS(s,$1)])
             ]),
         DO_DISPATCH, PREPARE_FINISH
     )])])
