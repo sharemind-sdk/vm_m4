@@ -1305,17 +1305,22 @@ m4_define([INSTR_JUMP_DEFINE], [
             m4_ifelse([$8], [NO_PREPARATION], [], [$8;
             ])
             if (SMVM_PREPARE_ARG_AS(1,int64) < 0) {
+                uint64_t delta_minus_one = (uint64_t) -(SMVM_PREPARE_ARG_AS(1,int64) + 1);
                 SMVM_PREPARE_CHECK_OR_ERROR(
-                    ((uint64_t) -(SMVM_PREPARE_ARG_AS(1,int64) + 1)) < SMVM_PREPARE_CURRENT_I,
+                    delta_minus_one < SMVM_PREPARE_CURRENT_I,
+                    SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
+                SMVM_PREPARE_CHECK_OR_ERROR(
+                    SMVM_PREPARE_IS_INSTR((uintptr_t) (SMVM_PREPARE_CURRENT_I - 1u - delta_minus_one)),
                     SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
             } else {
+                uint64_t delta = (uint64_t) SMVM_PREPARE_ARG_AS(1,int64);
                 SMVM_PREPARE_CHECK_OR_ERROR(
-                    ((uint64_t) SMVM_PREPARE_ARG_AS(1,int64)) < SMVM_PREPARE_CODESIZE - SMVM_PREPARE_CURRENT_I - 1u,
+                    delta < (size_t) (SMVM_PREPARE_CODESIZE - SMVM_PREPARE_CURRENT_I - 1u),
+                    SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
+                SMVM_PREPARE_CHECK_OR_ERROR(
+                    delta == 0u || SMVM_PREPARE_IS_INSTR((uintptr_t) (SMVM_PREPARE_CURRENT_I + delta)),
                     SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
             }
-            SMVM_PREPARE_CHECK_OR_ERROR(
-                SMVM_PREPARE_IS_INSTR((size_t) SMVM_PREPARE_CURRENT_I + SMVM_PREPARE_ARG_AS(1,int64)),
-                SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
         }],
         NO_IMPL_SUFFIX,
         IMPL([m4_ifelse([$9], [NO_JUMP_PRECODE], [], [
