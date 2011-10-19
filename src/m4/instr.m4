@@ -779,7 +779,7 @@ m4_define([ALBI_D_DEFINE], [
             union SM_CodeBlock * bd;
             SMVM_MI_GET_$5(bd, SMVM_MI_ARG_AS(1, sizet));
             DTB_TYPE_$4 * d = SMVM_MI_BLOCK_AS_P(bd,$4);
-            $7;]),
+            $7]),
         DO_DISPATCH, PREPARE_FINISH)])
 
 # (1=name,2=namespace,3=class,4=dtb_d,5=olb_d,6=olb_s,7=prepare,8=impl)
@@ -798,7 +798,7 @@ m4_define([ALBI_DS_DEFINE], [
             s = SMVM_MI_BLOCK_AS_P(bs,$4);
             m4_ifelse($1, [arith.bdiv], m4_ifelse([$4], [float32], [], [if (*s == 0) { SMVM_MI_DO_EXCEPT(SMVM_E_INTEGER_DIVIDE_BY_ZERO); }]))
             m4_ifelse($1, [arith.bdiv2], m4_ifelse([$4], [float32], [], [if (*s == 0) { SMVM_MI_DO_EXCEPT(SMVM_E_INTEGER_DIVIDE_BY_ZERO); }]))
-            $8;]),
+            $8]),
         DO_DISPATCH, PREPARE_FINISH)])
 m4_define([ALBI_DDS_DEFINE], [ALBI_DSS_DEFINE])
 
@@ -824,7 +824,7 @@ m4_define([_ALBI_DSS_DEFINE], [
             m4_ifelse($1, [arith.bdiv], [if (*s == 0) { SMVM_MI_DO_EXCEPT(SMVM_E_INTEGER_DIVIDE_BY_ZERO); }])
             m4_ifelse($1, [arith.bdiv2], [if (*d == 0) { SMVM_MI_DO_EXCEPT(SMVM_E_INTEGER_DIVIDE_BY_ZERO); }])
             m4_ifelse($1, [arith.tdiv], [if (*s2 == 0) { SMVM_MI_DO_EXCEPT(SMVM_E_INTEGER_DIVIDE_BY_ZERO); }])
-            $9;]),
+            $9]),
         DO_DISPATCH, PREPARE_FINISH)])
 
 # arith.uneg
