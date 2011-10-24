@@ -796,8 +796,13 @@ m4_define([ALBI_DS_DEFINE], [
             d = SMVM_MI_BLOCK_AS_P(bd,$4);
             m4_ifelse($6, [imm], [bs = SMVM_MI_ARG_P(2);], [SMVM_MI_GET_$6(bs, SMVM_MI_ARG_AS(2, sizet));])
             s = SMVM_MI_BLOCK_AS_P(bs,$4);
-            m4_ifelse($1, [arith.bdiv], m4_ifelse([$4], [float32], [], [if (*s == 0) { SMVM_MI_DO_EXCEPT(SMVM_E_INTEGER_DIVIDE_BY_ZERO); }]))
-            m4_ifelse($1, [arith.bdiv2], m4_ifelse([$4], [float32], [], [if (*s == 0) { SMVM_MI_DO_EXCEPT(SMVM_E_INTEGER_DIVIDE_BY_ZERO); }]))
+            m4_ifelse(DTB_CAT_$4, [float], [], [
+                m4_ifelse($1, [arith.bdiv], [
+                    if ((*s) == 0) { SMVM_MI_DO_EXCEPT(SMVM_E_INTEGER_DIVIDE_BY_ZERO); }
+                    m4_ifelse(DTB_CAT_$4, [signed], [else if ((*s) == -1 && (*d) == DTB_MIN_$4) { SMVM_MI_DO_EXCEPT(SMVM_E_INTEGER_OVERFLOW); }])])
+                m4_ifelse($1, [arith.bdiv2], [
+                    if ((*d) == 0) { SMVM_MI_DO_EXCEPT(SMVM_E_INTEGER_DIVIDE_BY_ZERO); }
+                    m4_ifelse(DTB_CAT_$4, [signed], [else if ((*d) == -1 && (*s) == DTB_MIN_$4) { SMVM_MI_DO_EXCEPT(SMVM_E_INTEGER_OVERFLOW); }])])])
             $8]),
         DO_DISPATCH, PREPARE_FINISH)])
 m4_define([ALBI_DDS_DEFINE], [ALBI_DSS_DEFINE])
@@ -821,9 +826,10 @@ m4_define([_ALBI_DSS_DEFINE], [
             s1 = SMVM_MI_BLOCK_AS_P(bs1,$4);
             m4_ifelse($7, [imm], [bs2 = SMVM_MI_ARG_P(3);], [SMVM_MI_GET_$7(bs2, SMVM_MI_ARG_AS(3, sizet));])
             s2 = SMVM_MI_BLOCK_AS_P(bs2,$4);
-            m4_ifelse($1, [arith.bdiv], [if (*s == 0) { SMVM_MI_DO_EXCEPT(SMVM_E_INTEGER_DIVIDE_BY_ZERO); }])
-            m4_ifelse($1, [arith.bdiv2], [if (*d == 0) { SMVM_MI_DO_EXCEPT(SMVM_E_INTEGER_DIVIDE_BY_ZERO); }])
-            m4_ifelse($1, [arith.tdiv], [if (*s2 == 0) { SMVM_MI_DO_EXCEPT(SMVM_E_INTEGER_DIVIDE_BY_ZERO); }])
+            m4_ifelse(DTB_CAT_$4, [float], [], [
+                m4_ifelse($1, [arith.tdiv], [
+                    if ((*s2) == 0) { SMVM_MI_DO_EXCEPT(SMVM_E_INTEGER_DIVIDE_BY_ZERO); }
+                    m4_ifelse(DTB_CAT_$4, [signed], [else if ((*s2) == -1 && (*s1) == DTB_MIN_$4) { SMVM_MI_DO_EXCEPT(SMVM_E_INTEGER_OVERFLOW); }])])])
             $9]),
         DO_DISPATCH, PREPARE_FINISH)])
 
