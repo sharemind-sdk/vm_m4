@@ -796,13 +796,6 @@ m4_define([ALBI_DS_DEFINE], [
             d = SMVM_MI_BLOCK_AS_P(bd,$4);
             m4_ifelse($6, [imm], [bs = SMVM_MI_ARG_P(2);], [SMVM_MI_GET_$6(bs, SMVM_MI_ARG_AS(2, sizet));])
             s = SMVM_MI_BLOCK_AS_P(bs,$4);
-            m4_ifelse(DTB_CAT_$4, [float], [], [
-                m4_ifelse($1, [arith.bdiv], [
-                    if ((*s) == 0) { SMVM_MI_DO_EXCEPT(SMVM_E_INTEGER_DIVIDE_BY_ZERO); }
-                    m4_ifelse(DTB_CAT_$4, [signed], [else if ((*s) == -1 && (*d) == DTB_MIN_$4) { SMVM_MI_DO_EXCEPT(SMVM_E_INTEGER_OVERFLOW); }])])
-                m4_ifelse($1, [arith.bdiv2], [
-                    if ((*d) == 0) { SMVM_MI_DO_EXCEPT(SMVM_E_INTEGER_DIVIDE_BY_ZERO); }
-                    m4_ifelse(DTB_CAT_$4, [signed], [else if ((*d) == -1 && (*s) == DTB_MIN_$4) { SMVM_MI_DO_EXCEPT(SMVM_E_INTEGER_OVERFLOW); }])])])
             $8]),
         DO_DISPATCH, PREPARE_FINISH)])
 m4_define([ALBI_DDS_DEFINE], [ALBI_DSS_DEFINE])
@@ -898,14 +891,24 @@ foreach([ARITH_BMUL_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [i
                                       ([imm], [reg], [stack]))))
 
 # arith.bdiv
-m4_define([ARITH_BDIV_OP], [m4_ifelse($1, [float32], [SMVM_MI_BDIV_FLOAT32(*d,*s)], [(*d) = (DTB_TYPE_$1) ((*d) / (*s))])])
+m4_define([ARITH_BDIV_OP],
+          [m4_ifelse($1, [float32],
+                     [SMVM_MI_BDIV_FLOAT32(*d,*s)],
+                     [if ((*s) == 0) { SMVM_MI_DO_EXCEPT(SMVM_E_INTEGER_DIVIDE_BY_ZERO); }
+                      m4_ifelse(DTB_CAT_$1, [signed], [else if ((*s) == -1 && (*d) == DTB_MIN_$1) { SMVM_MI_DO_EXCEPT(SMVM_E_INTEGER_OVERFLOW); }])
+                      (*d) = (DTB_TYPE_$1) ((*d) / (*s))])])
 m4_define([ARITH_BDIV_DEFINE], [ALBI_DS_DEFINE([[arith.bdiv]], 0x1, 0x84, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, ARITH_BDIV_OP(_ARG1$1))])
 foreach([ARITH_BDIV_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
                                       ([reg], [stack]),
                                       ([imm], [reg], [stack]))))
 
 # arith.bdiv2
-m4_define([ARITH_BDIV2_OP], [m4_ifelse($1, [float32], [SMVM_MI_BDIV2_FLOAT32(*d,*s)], [(*d) = (DTB_TYPE_$1) ((*s) / (*d))])])
+m4_define([ARITH_BDIV2_OP],
+          [m4_ifelse($1, [float32],
+                     [SMVM_MI_BDIV2_FLOAT32(*d,*s)],
+                     [if ((*d) == 0) { SMVM_MI_DO_EXCEPT(SMVM_E_INTEGER_DIVIDE_BY_ZERO); }
+                      m4_ifelse(DTB_CAT_$1, [signed], [else if ((*d) == -1 && (*s) == DTB_MIN_$1) { SMVM_MI_DO_EXCEPT(SMVM_E_INTEGER_OVERFLOW); }])
+                      (*d) = (DTB_TYPE_$1) ((*s) / (*d))])])
 m4_define([ARITH_BDIV2_DEFINE], [ALBI_DS_DEFINE([[arith.bdiv2]], 0x1, 0x85, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, ARITH_BDIV2_OP(_ARG1$1))])
 foreach([ARITH_BDIV2_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
                                        ([reg], [stack]),
