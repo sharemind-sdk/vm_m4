@@ -915,14 +915,24 @@ foreach([ARITH_BDIV2_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [
                                        ([imm], [reg], [stack]))))
 
 # arith.bmod
-m4_define([ARITH_BMOD_OP], [m4_ifelse($1, [float32], [SMVM_MI_BMOD_FLOAT32(*d,*s)], [(*d) = (DTB_TYPE_$1) ((*d) % (*s))])])
+m4_define([ARITH_BMOD_OP],
+          [m4_ifelse($1, [float32],
+                     [SMVM_MI_BMOD_FLOAT32(*d,*s)],
+                     [if ((*s) == 0) { SMVM_MI_DO_EXCEPT(SMVM_E_INTEGER_DIVIDE_BY_ZERO); }
+                      m4_ifelse(DTB_CAT_$1, [signed], [else if (((*s) < 0) && ((*d) != DTB_MIN_$1)) { (*d) = (DTB_TYPE_$1) ((*d) % -(*s)); }])
+                      else (*d) = (DTB_TYPE_$1) ((*d) % (*s))])])
 m4_define([ARITH_BMOD_DEFINE], [ALBI_DS_DEFINE([[arith.bmod]], 0x1, 0x86, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, ARITH_BMOD_OP(_ARG1$1))])
 foreach([ARITH_BMOD_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64]),
                                       ([reg], [stack]),
                                       ([imm], [reg], [stack]))))
 
 # arith.bmod2
-m4_define([ARITH_BMOD2_OP], [m4_ifelse($1, [float32], [SMVM_MI_BMOD2_FLOAT32(*d,*s)], [(*d) = (DTB_TYPE_$1) ((*s) % (*d))])])
+m4_define([ARITH_BMOD2_OP],
+          [m4_ifelse($1, [float32],
+                     [SMVM_MI_BMOD2_FLOAT32(*d,*s)],
+                     [if ((*d) == 0) { SMVM_MI_DO_EXCEPT(SMVM_E_INTEGER_DIVIDE_BY_ZERO); }
+                      m4_ifelse(DTB_CAT_$1, [signed], [else if (((*d) < 0) && ((*s) != DTB_MIN_$1)) { (*d) = (DTB_TYPE_$1) ((*s) % -(*d)); }])
+                      else (*d) = (DTB_TYPE_$1) ((*s) % (*d))])])
 m4_define([ARITH_BMOD2_DEFINE], [ALBI_DS_DEFINE([[arith.bmod2]], 0x1, 0x87, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, ARITH_BMOD2_OP(_ARG1$1))])
 foreach([ARITH_BMOD2_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64]),
                                        ([reg], [stack]),
@@ -961,7 +971,12 @@ foreach([ARITH_TDIV_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [i
                                       ([imm], [reg], [stack]))))
 
 # arith.tmod
-m4_define([ARITH_TMOD_OP], [m4_ifelse($1, [float32], [SMVM_MI_TMOD_FLOAT32(*d,*s1,*s2)], [(*d) = (DTB_TYPE_$1) ((*s1) % (*s2))])])
+m4_define([ARITH_TMOD_OP],
+          [m4_ifelse($1, [float32],
+                     [SMVM_MI_TMOD_FLOAT32(*d,*s1,*s2)],
+                     [if ((*s2) == 0) { SMVM_MI_DO_EXCEPT(SMVM_E_INTEGER_DIVIDE_BY_ZERO); }
+                      m4_ifelse(DTB_CAT_$1, [signed], [else if (((*s2) < 0) && ((*s1) != DTB_MIN_$1)) { (*d) = (DTB_TYPE_$1) ((*s1) % -(*s2)); }])
+                      else (*d) = (DTB_TYPE_$1) ((*s1) % (*s2))])])
 m4_define([ARITH_TMOD_DEFINE], [ALBI_DSS_DEFINE([[arith.tmod]], 0x1, 0xc4, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, ARITH_TMOD_OP(_ARG1$1))])
 foreach([ARITH_TMOD_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64]),
                                       ([reg], [stack]),
