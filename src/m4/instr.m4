@@ -826,6 +826,9 @@ m4_define([_ALBI_DSS_DEFINE], [
             $9]),
         DO_DISPATCH, PREPARE_FINISH)])
 
+# See http://gcc.gnu.org/bugzilla/show_bug.cgi?id=50865
+m4_define([GCC_BUG_50865_WORKAROUND], [if (($4) == -1) { ($1) = ($2) (($3) % 1); } else { ($1) = ($2) (($3) % -($4)); }])
+
 # arith.uneg
 m4_define([ARITH_UNEG_OP], [m4_ifelse($1, [float32], [SMVM_MI_UNEG_FLOAT32(*d)], [(*d) = (DTB_TYPE_$1) -(*d)])])
 m4_define([ARITH_UNEG_DEFINE], [ALBI_D_DEFINE([[arith.uneg]], 0x1, 0x00, _ARG1$1, _ARG2$1, NO_PREPARATION, ARITH_UNEG_OP(_ARG1$1))])
@@ -919,7 +922,7 @@ m4_define([ARITH_BMOD_OP],
           [m4_ifelse($1, [float32],
                      [SMVM_MI_BMOD_FLOAT32(*d,*s)],
                      [if ((*s) == 0) { SMVM_MI_DO_EXCEPT(SMVM_E_INTEGER_DIVIDE_BY_ZERO); }
-                      m4_ifelse(DTB_CAT_$1, [signed], [else if (((*s) < 0) && ((*s) != DTB_MIN_$1)) { (*d) = (DTB_TYPE_$1) ((*d) % -(*s)); }])
+                      m4_ifelse(DTB_CAT_$1, [signed], [else if (((*s) < 0) && ((*s) != DTB_MIN_$1)) { GCC_BUG_50865_WORKAROUND((*d), DTB_TYPE_$1, (*d), (*s)); }])
                       else (*d) = (DTB_TYPE_$1) ((*d) % (*s))])])
 m4_define([ARITH_BMOD_DEFINE], [ALBI_DS_DEFINE([[arith.bmod]], 0x1, 0x86, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, ARITH_BMOD_OP(_ARG1$1))])
 foreach([ARITH_BMOD_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64]),
@@ -931,7 +934,7 @@ m4_define([ARITH_BMOD2_OP],
           [m4_ifelse($1, [float32],
                      [SMVM_MI_BMOD2_FLOAT32(*d,*s)],
                      [if ((*d) == 0) { SMVM_MI_DO_EXCEPT(SMVM_E_INTEGER_DIVIDE_BY_ZERO); }
-                      m4_ifelse(DTB_CAT_$1, [signed], [else if (((*d) < 0) && ((*d) != DTB_MIN_$1)) { (*d) = (DTB_TYPE_$1) ((*s) % -(*d)); }])
+                      m4_ifelse(DTB_CAT_$1, [signed], [else if (((*d) < 0) && ((*d) != DTB_MIN_$1)) { GCC_BUG_50865_WORKAROUND((*d), DTB_TYPE_$1, (*s), (*d)); }])
                       else (*d) = (DTB_TYPE_$1) ((*s) % (*d))])])
 m4_define([ARITH_BMOD2_DEFINE], [ALBI_DS_DEFINE([[arith.bmod2]], 0x1, 0x87, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, ARITH_BMOD2_OP(_ARG1$1))])
 foreach([ARITH_BMOD2_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64]),
@@ -975,7 +978,7 @@ m4_define([ARITH_TMOD_OP],
           [m4_ifelse($1, [float32],
                      [SMVM_MI_TMOD_FLOAT32(*d,*s1,*s2)],
                      [if ((*s2) == 0) { SMVM_MI_DO_EXCEPT(SMVM_E_INTEGER_DIVIDE_BY_ZERO); }
-                      m4_ifelse(DTB_CAT_$1, [signed], [else if (((*s2) < 0) && ((*s2) != DTB_MIN_$1)) { (*d) = (DTB_TYPE_$1) ((*s1) % -(*s2)); }])
+                      m4_ifelse(DTB_CAT_$1, [signed], [else if (((*s2) < 0) && ((*s2) != DTB_MIN_$1)) { GCC_BUG_50865_WORKAROUND((*d), DTB_TYPE_$1, (*s1), (*s2)); }])
                       else (*d) = (DTB_TYPE_$1) ((*s1) % (*s2))])])
 m4_define([ARITH_TMOD_DEFINE], [ALBI_DSS_DEFINE([[arith.tmod]], 0x1, 0xc4, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, ARITH_TMOD_OP(_ARG1$1))])
 foreach([ARITH_TMOD_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64]),
