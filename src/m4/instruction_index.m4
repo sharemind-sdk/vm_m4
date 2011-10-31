@@ -15,7 +15,7 @@ m4_define([INSTR_INDEX_ITEM], [
 m4_define([DO_INSTRS_INDEX], [foreach([INSTR_INDEX_ITEM], [(INSTRS)])])
 
 m4_divert[]m4_dnl
-const struct SMVMI_Instruction * const SMVMI_instructions_index[[]] = {DO_INSTRS_INDEX
+const SMVMI_Instruction * const SMVMI_instructions_index[[]] = {DO_INSTRS_INDEX
     NULL
 };
 
