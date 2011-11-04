@@ -570,6 +570,7 @@ m4_define([PUSHREF_REF_DEFINE], [
     IMPL([
         const SMVM_[]m4_ifelse($2, [cref], [C])Reference * restrict srcRef;
         SMVM_MI_GET_$2(srcRef, SMVM_MI_ARG_AS(1, sizet));
+        m4_ifelse($1, [cref], [SMVM_MI_TRY_EXCEPT(SMVM_MI_REF_CAN_READ(srcRef), SMVM_E_INVALID_ARGUMENT);])
         SMVM_MI_PUSHREF_REF_$1(srcRef)]),
     DO_DISPATCH, PREPARE_FINISH)])
 PUSHREF_REF_DEFINE([cref], [cref])
@@ -587,6 +588,7 @@ m4_define([_PUSHREF_MEM_DEFINE], [
         SMVM_MemorySlot * srcSlot;
         SMVM_MI_GET_$2(srcPtr, SMVM_MI_ARG_AS(1, sizet));
         SMVM_MI_MEM_GET_SLOT_OR_EXCEPT(SMVM_MI_BLOCK_AS(srcPtr,uint64), srcSlot);
+        m4_ifelse($1, [cref], [SMVM_MI_TRY_EXCEPT(SMVM_MI_MEM_CAN_READ(srcSlot), SMVM_E_INVALID_ARGUMENT);])
         SMVM_MI_PUSHREF_MEM_$1(srcSlot)]),
     DO_DISPATCH, PREPARE_FINISH)])
 m4_define([PUSHREF_MEM_DEFINE], [_PUSHREF_MEM_DEFINE(_ARG1$1, _ARG2$1)])
@@ -662,6 +664,7 @@ m4_define([PUSHREFPART_REF_DEFINE], [
         const SMVM_CodeBlock * m4_ifelse($3, [imm], [restrict]) offset;
         const SMVM_CodeBlock * m4_ifelse($3, [imm], [restrict]) nBytes;
         SMVM_MI_GET_$2(srcRef, SMVM_MI_ARG_AS(1, sizet));
+        m4_ifelse($1, [cref], [SMVM_MI_TRY_EXCEPT(SMVM_MI_REF_CAN_READ(srcRef), SMVM_E_INVALID_ARGUMENT);])
         m4_ifelse($3, [imm],
                   [offset = SMVM_MI_ARG_P(2);],
                   [SMVM_MI_GET_$3(offset, SMVM_MI_ARG_AS(2, sizet));])
@@ -695,6 +698,7 @@ m4_define([_PUSHREFPART_MEM_DEFINE], [
         SMVM_MemorySlot * srcSlot;
         SMVM_MI_GET_$2(srcPtr, SMVM_MI_ARG_AS(1, sizet));
         SMVM_MI_MEM_GET_SLOT_OR_EXCEPT(SMVM_MI_BLOCK_AS(srcPtr,uint64), srcSlot);
+        m4_ifelse($1, [cref], [SMVM_MI_TRY_EXCEPT(SMVM_MI_MEM_CAN_READ(srcSlot), SMVM_E_INVALID_ARGUMENT);])
         m4_ifelse($3, [imm],
                   [offset = SMVM_MI_ARG_P(2);],
                   [SMVM_MI_GET_$3(offset, SMVM_MI_ARG_AS(2, sizet));])
