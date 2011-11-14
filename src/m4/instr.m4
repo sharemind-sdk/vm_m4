@@ -514,6 +514,30 @@ m4_define([_CALL_DEFINE], [
 m4_define([CALL_DEFINE], [_CALL_DEFINE(_ARG1$1, _ARG2$1)])
 foreach([CALL_DEFINE], (product(([[imm]], [[reg]], [[stack]]),([[imm]], [[reg]], [[stack]]))))
 
+# common.proc.syscall
+m4_define([_SYSCALL_DEFINE], [
+    INSTR_DEFINE([common.proc.syscall_$1_$2],
+        CODE(0x00, 0x02, 0x02, OLB_CODE_$1, OLB_CODE_$2, 0x00, 0x00, 0x00),
+        ARGS(m4_ifelse($2, [imm], 1, 2)),
+        m4_ifelse($1, [imm],
+                  [SMVM_PREPARE_SYSCALL(1);],
+                  NO_PREPARATION),
+        NO_IMPL_SUFFIX,
+        IMPL([
+            m4_ifelse($1, [imm],,[
+                const SMVM_CodeBlock * addr;
+                SMVM_MI_GET_$1(addr, SMVM_MI_ARG_AS(1, sizet));])
+            m4_ifelse($2, [imm],,[
+                SMVM_CodeBlock * rv;
+                SMVM_MI_GET_$2(rv, SMVM_MI_ARG_AS(2, sizet));])
+            m4_ifelse($1, [imm],
+                [SMVM_MI_SYSCALL(SMVM_MI_ARG_AS(1, p),m4_ifelse($2, [imm], [NULL], [rv]), m4_ifelse($2, [imm], [1], [2]))],
+                [SMVM_MI_CHECK_SYSCALL(addr,m4_ifelse($2, [imm], [NULL], [rv]), m4_ifelse($2, [imm], [1], [2]))])]),
+        DO_DISPATCH, PREPARE_FINISH)
+])
+m4_define([SYSCALL_DEFINE], [_SYSCALL_DEFINE(_ARG1$1, _ARG2$1)])
+foreach([SYSCALL_DEFINE], (product(([[imm]], [[reg]], [[stack]]),([[imm]], [[reg]], [[stack]]))))
+
 # common.proc.return
 m4_define([RETURN_DEFINE], [
     INSTR_DEFINE([common.proc.return_$1],
