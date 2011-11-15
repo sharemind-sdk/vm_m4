@@ -800,6 +800,22 @@ MEM_GET_SIZE_DEFINE([reg],[stack])
 MEM_GET_SIZE_DEFINE([stack],[reg])
 MEM_GET_SIZE_DEFINE([stack],[stack])
 
+# common.mem.getdatasegment
+m4_define([SECTION_CODE_bss], 0x00)
+m4_define([SECTION_CODE_rodata], 0x01)
+m4_define([SECTION_CODE_data], 0x02)
+m4_define([_MEM_GETDATASEGMENT_DEFINE], [
+    INSTR_DEFINE([common.mem.getdatasegment_$1_$2],
+        CODE(0x00, 0x03, 0x05, SECTION_CODE_$1, OLB_CODE_$2, 0x00, 0x00, 0x00),
+        ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX,
+        IMPL([
+            SMVM_CodeBlock * ptrDest;
+            SMVM_MI_GET_$2(ptrDest, SMVM_MI_ARG_AS(1, sizet));
+            SMVM_MI_MEM_GETSEGMENT_$1(ptrDest)]),
+        DO_DISPATCH, PREPARE_FINISH)])
+m4_define([MEM_GETDATASEGMENT_DEFINE], [_MEM_GETDATASEGMENT_DEFINE(_ARG1$1, _ARG2$1)])
+foreach([MEM_GETDATASEGMENT_DEFINE], (product(([[bss]], [[rodata]], [[data]]),([[reg]], [[stack]]))))
+
 # common.convert
 m4_define([_CONVERT_DEFINE], [m4_ifelse($1, $3, [], [
     INSTR_DEFINE([common.convert_$1_$2_$3_$4],
