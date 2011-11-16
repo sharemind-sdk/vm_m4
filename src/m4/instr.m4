@@ -499,14 +499,15 @@ m4_define([_CALL_DEFINE], [
         m4_ifelse($1, [imm], CHECK_CALL_TARGET(SMVM_PREPARE_ARG_AS(1,sizet)), NO_PREPARATION),
         NO_IMPL_SUFFIX,
         IMPL([
-            m4_ifelse($1, [imm],,[
-                const SMVM_CodeBlock * addr;
-                SMVM_MI_GET_$1(addr, SMVM_MI_ARG_AS(1, sizet));])
-            m4_ifelse($2, [imm],,[
-                SMVM_CodeBlock * rv;
-                SMVM_MI_GET_$2(rv, SMVM_MI_ARG_AS(2, sizet));])
+            const SMVM_CodeBlock * m4_ifelse($1, [imm], [restrict]) addr;
+            m4_ifelse($2, [imm], [], [SMVM_CodeBlock * rv;])
+            m4_ifelse($1, [imm], [],
+                      [SMVM_MI_GET_$1(addr, SMVM_MI_ARG_AS(1, sizet));])
+            m4_ifelse($2, [imm], [],
+                      [SMVM_MI_GET_$2(rv, SMVM_MI_ARG_AS(2, sizet));])
+            m4_ifelse($1, [imm], [addr = SMVM_MI_ARG_P(1);])
             m4_ifelse($1, [imm],
-                [SMVM_MI_CALL(SMVM_MI_ARG_AS(1, sizet),m4_ifelse($2, [imm], [NULL], [rv]), m4_ifelse($2, [imm], [1], [2]))],
+                [SMVM_MI_CALL(SMVM_MI_BLOCK_AS(addr, sizet),m4_ifelse($2, [imm], [NULL], [rv]), m4_ifelse($2, [imm], [1], [2]))],
                 [SMVM_MI_CHECK_CALL(addr,m4_ifelse($2, [imm], [NULL], [rv]), m4_ifelse($2, [imm], [1], [2]))])]),
         NO_DISPATCH, PREPARE_FINISH)
 ])
@@ -523,14 +524,15 @@ m4_define([_SYSCALL_DEFINE], [
                   NO_PREPARATION),
         NO_IMPL_SUFFIX,
         IMPL([
-            m4_ifelse($1, [imm],,[
-                const SMVM_CodeBlock * addr;
-                SMVM_MI_GET_$1(addr, SMVM_MI_ARG_AS(1, sizet));])
-            m4_ifelse($2, [imm],,[
-                SMVM_CodeBlock * rv;
-                SMVM_MI_GET_$2(rv, SMVM_MI_ARG_AS(2, sizet));])
+            const SMVM_CodeBlock * m4_ifelse($1, [imm], [restrict]) addr;
+            m4_ifelse($2, [imm], [], [SMVM_CodeBlock * rv;])
+            m4_ifelse($1, [imm], [],
+                      [SMVM_MI_GET_$1(addr, SMVM_MI_ARG_AS(1, sizet));])
+            m4_ifelse($2, [imm], [],
+                      [SMVM_MI_GET_$2(rv, SMVM_MI_ARG_AS(2, sizet));])
+            m4_ifelse($1, [imm], [addr = SMVM_MI_ARG_P(1);])
             m4_ifelse($1, [imm],
-                [SMVM_MI_SYSCALL(SMVM_MI_ARG_AS(1, p),m4_ifelse($2, [imm], [NULL], [rv]), m4_ifelse($2, [imm], [1], [2]))],
+                [SMVM_MI_SYSCALL(SMVM_MI_BLOCK_AS(addr, p),m4_ifelse($2, [imm], [NULL], [rv]), m4_ifelse($2, [imm], [1], [2]))],
                 [SMVM_MI_CHECK_SYSCALL(addr,m4_ifelse($2, [imm], [NULL], [rv]), m4_ifelse($2, [imm], [1], [2]))])]),
         DO_DISPATCH, PREPARE_FINISH)
 ])
@@ -542,11 +544,12 @@ m4_define([RETURN_DEFINE], [
     INSTR_DEFINE([common.proc.return_$1],
         CODE(0x00, 0x02, 0x03, OLB_CODE_$1, 0x00, 0x00, 0x00, 0x00),
         ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX,
-        IMPL(m4_ifelse($1, [imm],
-                       [SMVM_MI_RETURN(SMVM_MI_ARG(1))],
-                       [SMVM_CodeBlock * v;
-                        SMVM_MI_GET_$1(v, SMVM_MI_ARG_AS(1, sizet));
-                        SMVM_MI_RETURN(*v);])),
+        IMPL([
+            m4_ifelse($1, [imm], [const]) SMVM_CodeBlock * restrict v;
+            m4_ifelse($1, [imm],
+                      [v = SMVM_MI_ARG_P(1);],
+                      [SMVM_MI_GET_$1(v, SMVM_MI_ARG_AS(1, sizet));])
+            SMVM_MI_RETURN(*v);]),
         NO_DISPATCH, PREPARE_FINISH)])
 RETURN_DEFINE([imm])
 RETURN_DEFINE([reg])
@@ -745,7 +748,7 @@ INSTR_DEFINE([common.proc.clearstack],
     IMPL([
         if (likely(SMVM_MI_HAS_STACK)) {
             SMVM_MI_CLEAR_STACK;
-        } else (void) 0]),
+        }]),
     DO_DISPATCH, PREPARE_FINISH)
 
 INSTR_DEFINE([common.proc.resizestack],
@@ -1439,37 +1442,38 @@ m4_define([INSTR_JUMP_DEFINE], [
             }
         }],
         NO_IMPL_SUFFIX,
-        IMPL([m4_ifelse([$9], [NO_JUMP_PRECODE], [], [
-        $9;])m4_ifelse([$10], [NO_JUMP_CONDITION], [], [
-        if ($10) {])
-            SMVM_MI_JUMP_REL(SMVM_MI_ARG_P(1));m4_ifelse([$10], [NO_JUMP_CONDITION], [], [
-        } else (void) 0])]),
+        IMPL([
+            m4_ifelse([$9], [NO_JUMP_PRECODE], [], [$9;])
+            m4_ifelse([$10], [NO_JUMP_CONDITION], [], [if ($10) ]){
+            const SMVM_CodeBlock * const restrict addr = SMVM_MI_ARG_P(1);
+            SMVM_MI_JUMP_REL(addr);
+            }]),
         $11, PREPARE_FINISH)
     INSTR_DEFINE($1[_reg]$2,
         CODE(0x04, $3, OLB_CODE_reg, $4, $5, $6, 0x00, 0x00),
         ARGS($7),
         PREPARATION([$8]),
         NO_IMPL_SUFFIX,
-        IMPL([m4_ifelse([$9], [NO_JUMP_PRECODE], [], [
-        $9;])m4_ifelse([$10], [NO_JUMP_CONDITION], [], [
-        if ($10) {])
-            const SMVM_CodeBlock * t;
+        IMPL([
+            m4_ifelse([$9], [NO_JUMP_PRECODE], [], [$9;])
+            m4_ifelse([$10], [NO_JUMP_CONDITION], [], [if ($10) ]){
+            const SMVM_CodeBlock * restrict t;
             SMVM_MI_GET_reg(t, SMVM_MI_ARG_AS(1, sizet));
-            SMVM_MI_CHECK_JUMP_REL(SMVM_MI_BLOCK_AS(t,int64));m4_ifelse([$10], [NO_JUMP_CONDITION], [], [
-        } else (void) 0])]),
+            SMVM_MI_CHECK_JUMP_REL(SMVM_MI_BLOCK_AS(t,int64));
+            }]),
         $11, PREPARE_FINISH)
     INSTR_DEFINE($1[_stack]$2,
         CODE(0x04, $3, OLB_CODE_stack, $4, $5, $6, 0x00, 0x00),
         ARGS($7),
         PREPARATION([$8]),
         NO_IMPL_SUFFIX,
-        IMPL([m4_ifelse([$9], [NO_JUMP_PRECODE], [], [
-        $9;])m4_ifelse([$10], [NO_JUMP_CONDITION], [], [
-        if ($10) {])
-            const SMVM_CodeBlock * t;
+        IMPL([
+            m4_ifelse([$9], [NO_JUMP_PRECODE], [], [$9;])
+            m4_ifelse([$10], [NO_JUMP_CONDITION], [], [if ($10) ]){
+            const SMVM_CodeBlock * restrict t;
             SMVM_MI_GET_stack(t, SMVM_MI_ARG_AS(1, sizet));
-            SMVM_MI_CHECK_JUMP_REL(SMVM_MI_BLOCK_AS(t,int64));m4_ifelse([$10], [NO_JUMP_CONDITION], [], [
-        } else (void) 0])]),
+            SMVM_MI_CHECK_JUMP_REL(SMVM_MI_BLOCK_AS(t,int64));
+            }]),
         $11, PREPARE_FINISH)
 ])
 
