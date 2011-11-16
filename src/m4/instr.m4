@@ -1486,7 +1486,7 @@ m4_define([INSTR_JUMP_COND_1_DEFINE], [
         $2, DTB_CODE_$4, OLB_CODE_$5, 0x00, 2,
         NO_PREPARATION,
         [
-        m4_ifelse($1, [dnjz],, $1, [dnjnz],, [const]) SMVM_CodeBlock * c;
+        m4_ifelse($1, [dnjz],, $1, [dnjnz],, [const]) SMVM_CodeBlock * m4_ifelse($5, [imm], [restrict]) c;
         SMVM_MI_GET_[]$5(c, SMVM_MI_ARG_AS(2, sizet))],
         $3, DO_DISPATCH)])
 
@@ -1498,11 +1498,14 @@ m4_define([INSTR_JUMP_COND_2_DEFINE], [
         m4_ifelse([$5], [$7], [SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(1,uint64) != SMVM_PREPARE_ARG_AS(2,uint64),
                                     SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);], [NO_PREPARATION]),
         [
-        const DTB_TYPE_$4 * c1;
-        m4_ifelse([$5], [imm], [c1 = SMVM_MI_ARG_AS_P(2, $4)],
-                    [SMVM_MI_GET_T_$5(c1, $4, SMVM_MI_ARG_AS(2, sizet))]);
-        const DTB_TYPE_$4 * c2;
-        SMVM_MI_GET_T_$6(c2, $4, SMVM_MI_ARG_AS(3, sizet))],
+        const SMVM_CodeBlock * m4_ifelse($5, [imm], [restrict]) c1;
+        const SMVM_CodeBlock * m4_ifelse($6, [imm], [restrict]) c2;
+        m4_ifelse([$5], [imm], [],
+                  [SMVM_MI_GET_$5(c1, SMVM_MI_ARG_AS(2, sizet));])
+        m4_ifelse([$6], [imm], [],
+                  [SMVM_MI_GET_$6(c2, SMVM_MI_ARG_AS(3, sizet));])
+        m4_ifelse([$5], [imm], [c1 = SMVM_MI_ARG_P(2);])
+        m4_ifelse([$6], [imm], [c2 = SMVM_MI_ARG_P(3);])],
         $3, DO_DISPATCH)])
 
 m4_define([INSTR_JUMP_JZ_DEFINE],
@@ -1522,25 +1525,25 @@ m4_define([INSTR_JUMP_DNJNZ_DEFINE],
 foreach([INSTR_JUMP_DNJNZ_DEFINE], (product(([[uint8]], [[uint16]], [[uint32]], [[uint64]]),([[reg]], [[stack]]))))
 
 m4_define([INSTR_JUMP_JEQ_DEFINE],
-          [INSTR_JUMP_COND_2_DEFINE([jeq],0x05,((*c1) == (*c2)),_ARG1$1,_ARG2$1,_ARG3$1)])
+          [INSTR_JUMP_COND_2_DEFINE([jeq],0x05,(SMVM_MI_BLOCK_AS(c1,_ARG1$1) == SMVM_MI_BLOCK_AS(c2,_ARG1$1)),_ARG1$1,_ARG2$1,_ARG3$1)])
 foreach([INSTR_JUMP_JEQ_DEFINE], (product(([[int8]], [[int16]], [[int32]], [[int64]], [[uint8]], [[uint16]], [[uint32]], [[uint64]], [[float32]]),([[imm]], [[reg]], [[stack]]),([[reg]], [[stack]]))))
 
 m4_define([INSTR_JUMP_JNE_DEFINE],
-          [INSTR_JUMP_COND_2_DEFINE([jne],0x06,((*c1) != (*c2)),_ARG1$1,_ARG2$1,_ARG3$1)])
+          [INSTR_JUMP_COND_2_DEFINE([jne],0x06,(SMVM_MI_BLOCK_AS(c1,_ARG1$1) != SMVM_MI_BLOCK_AS(c2,_ARG1$1)),_ARG1$1,_ARG2$1,_ARG3$1)])
 foreach([INSTR_JUMP_JNE_DEFINE], (product(([[int8]], [[int16]], [[int32]], [[int64]], [[uint8]], [[uint16]], [[uint32]], [[uint64]], [[float32]]),([[imm]], [[reg]], [[stack]]),([[reg]], [[stack]]))))
 
 m4_define([INSTR_JUMP_JGE_DEFINE],
-          [INSTR_JUMP_COND_2_DEFINE([jge],0x07,((*c1) >= (*c2)),_ARG1$1,_ARG2$1,_ARG3$1)])
+          [INSTR_JUMP_COND_2_DEFINE([jge],0x07,(SMVM_MI_BLOCK_AS(c1,_ARG1$1) >= SMVM_MI_BLOCK_AS(c2,_ARG1$1)),_ARG1$1,_ARG2$1,_ARG3$1)])
 foreach([INSTR_JUMP_JGE_DEFINE], (product(([[int8]], [[int16]], [[int32]], [[int64]], [[uint8]], [[uint16]], [[uint32]], [[uint64]], [[float32]]),([[imm]], [[reg]], [[stack]]),([[reg]], [[stack]]))))
 
 m4_define([INSTR_JUMP_JGT_DEFINE],
-          [INSTR_JUMP_COND_2_DEFINE([jgt],0x08,((*c1) > (*c2)),_ARG1$1,_ARG2$1,_ARG3$1)])
+          [INSTR_JUMP_COND_2_DEFINE([jgt],0x08,(SMVM_MI_BLOCK_AS(c1,_ARG1$1) > SMVM_MI_BLOCK_AS(c2,_ARG1$1)),_ARG1$1,_ARG2$1,_ARG3$1)])
 foreach([INSTR_JUMP_JGT_DEFINE], (product(([[int8]], [[int16]], [[int32]], [[int64]], [[uint8]], [[uint16]], [[uint32]], [[uint64]], [[float32]]),([[imm]], [[reg]], [[stack]]),([[reg]], [[stack]]))))
 
 m4_define([INSTR_JUMP_JLE_DEFINE],
-          [INSTR_JUMP_COND_2_DEFINE([jle],0x09,((*c1) <= (*c2)),_ARG1$1,_ARG2$1,_ARG3$1)])
+          [INSTR_JUMP_COND_2_DEFINE([jle],0x09,(SMVM_MI_BLOCK_AS(c1,_ARG1$1) <= SMVM_MI_BLOCK_AS(c2,_ARG1$1)),_ARG1$1,_ARG2$1,_ARG3$1)])
 foreach([INSTR_JUMP_JLE_DEFINE], (product(([[int8]], [[int16]], [[int32]], [[int64]], [[uint8]], [[uint16]], [[uint32]], [[uint64]], [[float32]]),([[imm]], [[reg]], [[stack]]),([[reg]], [[stack]]))))
 
 m4_define([INSTR_JUMP_JLT_DEFINE],
-          [INSTR_JUMP_COND_2_DEFINE([jlt],0x0a,((*c1) < (*c2)),_ARG1$1,_ARG2$1,_ARG3$1)])
+          [INSTR_JUMP_COND_2_DEFINE([jlt],0x0a,(SMVM_MI_BLOCK_AS(c1,_ARG1$1) < SMVM_MI_BLOCK_AS(c2,_ARG1$1)),_ARG1$1,_ARG2$1,_ARG3$1)])
 foreach([INSTR_JUMP_JLT_DEFINE], (product(([[int8]], [[int16]], [[int32]], [[int64]], [[uint8]], [[uint16]], [[uint32]], [[uint64]], [[float32]]),([[imm]], [[reg]], [[stack]]),([[reg]], [[stack]]))))
