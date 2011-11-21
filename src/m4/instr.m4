@@ -532,7 +532,7 @@ m4_define([_SYSCALL_DEFINE], [
                       [SMVM_MI_GET_$2(rv, SMVM_MI_ARG_AS(2, sizet));])
             m4_ifelse($1, [imm], [addr = SMVM_MI_ARG_P(1);])
             m4_ifelse($1, [imm],
-                [SMVM_MI_SYSCALL(SMVM_MI_BLOCK_AS(addr, p),m4_ifelse($2, [imm], [NULL], [rv]), m4_ifelse($2, [imm], [1], [2]))],
+                [SMVM_MI_SYSCALL(SMVM_MI_BLOCK_AS(addr, cp),m4_ifelse($2, [imm], [NULL], [rv]), m4_ifelse($2, [imm], [1], [2]))],
                 [SMVM_MI_CHECK_SYSCALL(addr,m4_ifelse($2, [imm], [NULL], [rv]), m4_ifelse($2, [imm], [1], [2]))])]),
         DO_DISPATCH, PREPARE_FINISH)
 ])
