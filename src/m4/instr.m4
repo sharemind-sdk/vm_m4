@@ -582,7 +582,7 @@ m4_define([_PUSHREF_BLOCK_DEFINE], [
             m4_ifelse($2, [imm],
                       [b = SMVM_MI_ARG_P(1);],
                       $1, [cref],
-                      [SMVM_MI_GET_CONST_$2(b, SMVM_MI_ARG_AS(1, sizet));]
+                      [SMVM_MI_GET_CONST_$2(b, SMVM_MI_ARG_AS(1, sizet));],
                       [SMVM_MI_GET_$2(b, SMVM_MI_ARG_AS(1, sizet));])
             SMVM_MI_PUSHREF_BLOCK_$1(b)]),
         DO_DISPATCH, PREPARE_FINISH)])
