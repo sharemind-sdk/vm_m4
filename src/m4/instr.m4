@@ -835,13 +835,17 @@ m4_define([MEM_GET_SIZE_DEFINE], [
         CODE(0x00, 0x03, 0x02, OLB_CODE_$1, OLB_CODE_$2, 0x00, 0x00, 0x00),
         ARGS(2), NO_PREPARATION, NO_IMPL_SUFFIX,
         IMPL([
-            const SMVM_CodeBlock * ptr;
-            SMVM_MI_GET_CONST_$1(ptr, SMVM_MI_ARG_AS(1, sizet));
+            m4_ifelse($1, [imm],
+                      [const SMVM_CodeBlock * const ptr = SMVM_MI_ARG_P(1);],
+                      [const SMVM_CodeBlock * ptr;
+                       SMVM_MI_GET_CONST_$1(ptr, SMVM_MI_ARG_AS(1, sizet));])
             SMVM_CodeBlock * sizedest;
             SMVM_MI_GET_$2(sizedest, SMVM_MI_ARG_AS(2, sizet));
             SMVM_MI_MEM_GET_SIZE(ptr,sizedest);]),
         DO_DISPATCH, PREPARE_FINISH
     )])
+MEM_GET_SIZE_DEFINE([imm],[reg])
+MEM_GET_SIZE_DEFINE([imm],[stack])
 MEM_GET_SIZE_DEFINE([reg],[reg])
 MEM_GET_SIZE_DEFINE([reg],[stack])
 MEM_GET_SIZE_DEFINE([stack],[reg])
