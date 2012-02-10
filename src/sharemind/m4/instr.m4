@@ -127,11 +127,11 @@ m4_define([_MOV_REGS_TO_REGS_DEFINE], [
         CODE(0x00, 0x01, OLB_CODE_$1, 0x00, OLB_CODE_$2, 0x00, 0x00, 0x00),
         ARGS(2), NO_PREPARATION, NO_IMPL_SUFFIX,
         IMPL([
-            const SMVM_CodeBlock * s;
+            const SHAREMIND_CodeBlock * s;
             m4_ifelse($1, [imm],
                       [s = SMVM_MI_ARG_P(1);],
                       [SMVM_MI_GET_CONST_$1(s, SMVM_MI_ARG_AS(1, sizet));])
-            SMVM_CodeBlock * d;
+            SHAREMIND_CodeBlock * d;
             SMVM_MI_GET_$2(d, SMVM_MI_ARG_AS(2, sizet));
             (*d) = *s]),
         DO_DISPATCH, PREPARE_FINISH)])
@@ -156,11 +156,11 @@ m4_define([_MOV_MEM_TO_REGS_DEFINE], [
                        SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(4,uint64) <= 8u,
                                                    SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);])]),
         NO_IMPL_SUFFIX, IMPL([
-            const SMVM_CodeBlock * src;
+            const SHAREMIND_CodeBlock * src;
             SMVM_MemorySlot * restrict srcSlot;
-            const SMVM_CodeBlock * m4_ifelse($2, [imm], [restrict]) srcOffset;
-            SMVM_CodeBlock * dest;
-            const SMVM_CodeBlock * m4_ifelse($4, [imm], [restrict]) numBytes;
+            const SHAREMIND_CodeBlock * m4_ifelse($2, [imm], [restrict]) srcOffset;
+            SHAREMIND_CodeBlock * dest;
+            const SHAREMIND_CodeBlock * m4_ifelse($4, [imm], [restrict]) numBytes;
             m4_ifelse($1, [imm],
                       [src = SMVM_MI_ARG_P(1);],
                       [SMVM_MI_GET_CONST_$1(src, SMVM_MI_ARG_AS(1, sizet));])
@@ -198,11 +198,11 @@ m4_define([_MOV_REGS_TO_MEM_DEFINE], [
                        SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(4,uint64) <= 8u,
                                                    SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);])]),
         NO_IMPL_SUFFIX, IMPL([
-            const SMVM_CodeBlock * m4_ifelse($1, [imm], [restrict]) src;
-            const SMVM_CodeBlock * dest;
+            const SHAREMIND_CodeBlock * m4_ifelse($1, [imm], [restrict]) src;
+            const SHAREMIND_CodeBlock * dest;
             const SMVM_MemorySlot * restrict destSlot;
-            const SMVM_CodeBlock * m4_ifelse($3, [imm], [restrict]) destOffset;
-            const SMVM_CodeBlock * m4_ifelse($4, [imm], [restrict]) numBytes;
+            const SHAREMIND_CodeBlock * m4_ifelse($3, [imm], [restrict]) destOffset;
+            const SHAREMIND_CodeBlock * m4_ifelse($4, [imm], [restrict]) numBytes;
             m4_ifelse($1, [imm], [],
                       [SMVM_MI_GET_CONST_$1(src, SMVM_MI_ARG_AS(1, sizet));])
             m4_ifelse($2, [imm],
@@ -246,13 +246,13 @@ m4_define([_MOV_MEM_TO_MEM_DEFINE], [
                                                    SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);])]),
         NO_IMPL_SUFFIX,
         IMPL([
-            const SMVM_CodeBlock * src;
+            const SHAREMIND_CodeBlock * src;
             const SMVM_MemorySlot * srcSlot;
-            const SMVM_CodeBlock * m4_ifelse($2, [imm], [restrict]) srcOffset;
-            const SMVM_CodeBlock * dest;
+            const SHAREMIND_CodeBlock * m4_ifelse($2, [imm], [restrict]) srcOffset;
+            const SHAREMIND_CodeBlock * dest;
             const SMVM_MemorySlot * destSlot;
-            const SMVM_CodeBlock * m4_ifelse($4, [imm], [restrict]) destOffset;
-            const SMVM_CodeBlock * m4_ifelse($5, [imm], [restrict]) numBytes;
+            const SHAREMIND_CodeBlock * m4_ifelse($4, [imm], [restrict]) destOffset;
+            const SHAREMIND_CodeBlock * m4_ifelse($5, [imm], [restrict]) numBytes;
             m4_ifelse($1, [imm],
                       [src = SMVM_MI_ARG_P(1);],
                       [SMVM_MI_GET_CONST_$1(src, SMVM_MI_ARG_AS(1, sizet));])
@@ -301,9 +301,9 @@ m4_define([_MOV_REF_TO_REGS_DEFINE], [
                   [NO_PREPARATION]),
         NO_IMPL_SUFFIX, IMPL([
             const SMVM_[]m4_ifelse($1, [cref], [C])[]Reference * restrict srcRef;
-            const SMVM_CodeBlock * m4_ifelse($2, [imm], [restrict]) srcOffset;
-            SMVM_CodeBlock * dest;
-            const SMVM_CodeBlock * m4_ifelse($4, [imm], [restrict]) numBytes;
+            const SHAREMIND_CodeBlock * m4_ifelse($2, [imm], [restrict]) srcOffset;
+            SHAREMIND_CodeBlock * dest;
+            const SHAREMIND_CodeBlock * m4_ifelse($4, [imm], [restrict]) numBytes;
             SMVM_MI_GET_$1(srcRef, SMVM_MI_ARG_AS(1, sizet));
             m4_ifelse($1, [ref], [SMVM_MI_TRY_EXCEPT(SMVM_MI_REF_CAN_READ(srcRef), SMVM_E_READ_DENIED);])
             m4_ifelse($2, [imm], [],
@@ -344,10 +344,10 @@ m4_define([_MOV_REGS_TO_REF_DEFINE], [
                                                   SMVM_PREPARE_ERROR_INVALID_ARGUMENTS)])],
                   [NO_PREPARATION]),
         NO_IMPL_SUFFIX, IMPL([
-            const SMVM_CodeBlock * m4_ifelse($1, [imm], [restrict]) src;
+            const SHAREMIND_CodeBlock * m4_ifelse($1, [imm], [restrict]) src;
             const SMVM_Reference * restrict destRef;
-            const SMVM_CodeBlock * m4_ifelse($2, [imm], [restrict]) destOffset;
-            const SMVM_CodeBlock * m4_ifelse($3, [imm], [restrict]) numBytes;
+            const SHAREMIND_CodeBlock * m4_ifelse($2, [imm], [restrict]) destOffset;
+            const SHAREMIND_CodeBlock * m4_ifelse($3, [imm], [restrict]) numBytes;
             m4_ifelse($1, [imm], [],
                       [SMVM_MI_GET_CONST_$1(src, SMVM_MI_ARG_AS(1, sizet));])
             SMVM_MI_GET_ref(destRef, SMVM_MI_ARG_AS(2, sizet));
@@ -389,10 +389,10 @@ m4_define([_MOV_REF_TO_REF_DEFINE], [
         NO_IMPL_SUFFIX,
         IMPL([
             const SMVM_[]m4_ifelse($1, [cref], [C])Reference * srcRef;
-            const SMVM_CodeBlock * m4_ifelse($2, [imm], [restrict]) srcOffset;
+            const SHAREMIND_CodeBlock * m4_ifelse($2, [imm], [restrict]) srcOffset;
             const SMVM_Reference * destRef;
-            const SMVM_CodeBlock * m4_ifelse($3, [imm], [restrict]) destOffset;
-            const SMVM_CodeBlock * m4_ifelse($4, [imm], [restrict]) numBytes;
+            const SHAREMIND_CodeBlock * m4_ifelse($3, [imm], [restrict]) destOffset;
+            const SHAREMIND_CodeBlock * m4_ifelse($4, [imm], [restrict]) numBytes;
             SMVM_MI_GET_$1(srcRef, SMVM_MI_ARG_AS(1, sizet));
             m4_ifelse($1, [ref], [SMVM_MI_TRY_EXCEPT(SMVM_MI_REF_CAN_READ(srcRef), SMVM_E_READ_DENIED);])
             m4_ifelse($2, [imm], [],
@@ -438,11 +438,11 @@ m4_define([_MOV_REF_TO_MEM_DEFINE], [
         NO_IMPL_SUFFIX,
         IMPL([
             const SMVM_[]m4_ifelse($1, [cref], [C])Reference * restrict srcRef;
-            const SMVM_CodeBlock * m4_ifelse($2, [imm], [restrict]) srcOffset;
-            const SMVM_CodeBlock * restrict dest;
+            const SHAREMIND_CodeBlock * m4_ifelse($2, [imm], [restrict]) srcOffset;
+            const SHAREMIND_CodeBlock * restrict dest;
             const SMVM_MemorySlot * restrict destSlot;
-            const SMVM_CodeBlock * m4_ifelse($4, [imm], [restrict]) destOffset;
-            const SMVM_CodeBlock * m4_ifelse($5, [imm], [restrict]) numBytes;
+            const SHAREMIND_CodeBlock * m4_ifelse($4, [imm], [restrict]) destOffset;
+            const SHAREMIND_CodeBlock * m4_ifelse($5, [imm], [restrict]) numBytes;
             SMVM_MI_GET_$1(srcRef, SMVM_MI_ARG_AS(1, sizet));
             m4_ifelse($1, [ref], [SMVM_MI_TRY_EXCEPT(SMVM_MI_REF_CAN_READ(srcRef), SMVM_E_READ_DENIED);])
             m4_ifelse($2, [imm], [],
@@ -490,12 +490,12 @@ m4_define([_MOV_MEM_TO_REF_DEFINE], [
                                                    SMVM_PREPARE_ERROR_INVALID_ARGUMENTS)])]),
         NO_IMPL_SUFFIX,
         IMPL([
-            const SMVM_CodeBlock * restrict src;
+            const SHAREMIND_CodeBlock * restrict src;
             const SMVM_MemorySlot * restrict srcSlot;
-            const SMVM_CodeBlock * m4_ifelse($2, [imm], [restrict]) srcOffset;
+            const SHAREMIND_CodeBlock * m4_ifelse($2, [imm], [restrict]) srcOffset;
             const SMVM_Reference * restrict destRef;
-            const SMVM_CodeBlock * m4_ifelse($3, [imm], [restrict]) destOffset;
-            const SMVM_CodeBlock * m4_ifelse($4, [imm], [restrict]) numBytes;
+            const SHAREMIND_CodeBlock * m4_ifelse($3, [imm], [restrict]) destOffset;
+            const SHAREMIND_CodeBlock * m4_ifelse($4, [imm], [restrict]) numBytes;
             m4_ifelse($1, [imm],
                       [src = SMVM_MI_ARG_P(1);],
                       [SMVM_MI_GET_CONST_$1(src, SMVM_MI_ARG_AS(1, sizet));])
@@ -536,8 +536,8 @@ m4_define([_CALL_DEFINE], [
         m4_ifelse($1, [imm], CHECK_CALL_TARGET(SMVM_PREPARE_ARG_AS(1,sizet)), NO_PREPARATION),
         NO_IMPL_SUFFIX,
         IMPL([
-            const SMVM_CodeBlock * m4_ifelse($1, [imm], [restrict]) addr;
-            m4_ifelse($2, [imm], [], [SMVM_CodeBlock * rv;])
+            const SHAREMIND_CodeBlock * m4_ifelse($1, [imm], [restrict]) addr;
+            m4_ifelse($2, [imm], [], [SHAREMIND_CodeBlock * rv;])
             m4_ifelse($1, [imm], [],
                       [SMVM_MI_GET_CONST_$1(addr, SMVM_MI_ARG_AS(1, sizet));])
             m4_ifelse($2, [imm], [],
@@ -561,8 +561,8 @@ m4_define([_SYSCALL_DEFINE], [
                   NO_PREPARATION),
         NO_IMPL_SUFFIX,
         IMPL([
-            const SMVM_CodeBlock * m4_ifelse($1, [imm], [restrict]) addr;
-            m4_ifelse($2, [imm], [], [SMVM_CodeBlock * rv;])
+            const SHAREMIND_CodeBlock * m4_ifelse($1, [imm], [restrict]) addr;
+            m4_ifelse($2, [imm], [], [SHAREMIND_CodeBlock * rv;])
             m4_ifelse($1, [imm], [],
                       [SMVM_MI_GET_CONST_$1(addr, SMVM_MI_ARG_AS(1, sizet));])
             m4_ifelse($2, [imm], [],
@@ -582,7 +582,7 @@ m4_define([RETURN_DEFINE], [
         CODE(0x00, 0x02, 0x03, OLB_CODE_$1, 0x00, 0x00, 0x00, 0x00),
         ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX,
         IMPL([
-            const SMVM_CodeBlock * restrict v;
+            const SHAREMIND_CodeBlock * restrict v;
             m4_ifelse($1, [imm],
                       [v = SMVM_MI_ARG_P(1);],
                       [SMVM_MI_GET_CONST_$1(v, SMVM_MI_ARG_AS(1, sizet));])
@@ -598,7 +598,7 @@ m4_define([PUSH_DEFINE], [
         CODE(0x00, 0x02, 0x04, OLB_CODE_$1, 0x00, 0x00, 0x00, 0x00),
         ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX,
         IMPL([
-            const SMVM_CodeBlock * restrict v;
+            const SHAREMIND_CodeBlock * restrict v;
             m4_ifelse($1, [imm],
                       [v = SMVM_MI_ARG_P(1);],
                       [SMVM_MI_GET_CONST_$1(v, SMVM_MI_ARG_AS(1, sizet));])
@@ -615,7 +615,7 @@ m4_define([_PUSHREF_BLOCK_DEFINE], [
         CODE(0x00, 0x02, m4_ifelse($1, [ref], [0x05], [0x07]), OLB_CODE_$2, 0x00, 0x00, 0x00, 0x00),
         ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX,
         IMPL([
-            m4_ifelse($1, [cref], [const]) SMVM_CodeBlock * restrict b;
+            m4_ifelse($1, [cref], [const]) SHAREMIND_CodeBlock * restrict b;
             m4_ifelse($2, [imm],
                       [b = SMVM_MI_ARG_P(1);],
                       $1, [cref],
@@ -650,7 +650,7 @@ m4_define([_PUSHREF_MEM_DEFINE], [
     CODE(0x00, 0x02, m4_ifelse($1, [ref], [0x05], [0x07]), OLB_CODE_mem_$2, 0x00, 0x00, 0x00, 0x00),
     ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX,
     IMPL([
-        const SMVM_CodeBlock * restrict srcPtr;
+        const SHAREMIND_CodeBlock * restrict srcPtr;
         SMVM_MemorySlot * srcSlot;
         SMVM_MI_GET_CONST_$2(srcPtr, SMVM_MI_ARG_AS(1, sizet));
         SMVM_MI_MEM_GET_SLOT_OR_EXCEPT(SMVM_MI_BLOCK_AS(srcPtr,uint64), srcSlot);
@@ -687,9 +687,9 @@ m4_define([_PUSHREFPART_BLOCK_DEFINE], [
                   NO_PREPARATION),
         NO_IMPL_SUFFIX,
         IMPL([
-            m4_ifelse($1, [cref], [const]) SMVM_CodeBlock * m4_ifelse($2, [imm], [restrict]) b;
-            const SMVM_CodeBlock * m4_ifelse($3, [imm], [restrict]) offset;
-            const SMVM_CodeBlock * m4_ifelse($4, [imm], [restrict]) nBytes;
+            m4_ifelse($1, [cref], [const]) SHAREMIND_CodeBlock * m4_ifelse($2, [imm], [restrict]) b;
+            const SHAREMIND_CodeBlock * m4_ifelse($3, [imm], [restrict]) offset;
+            const SHAREMIND_CodeBlock * m4_ifelse($4, [imm], [restrict]) nBytes;
             m4_ifelse($2, [imm],
                       [b = SMVM_MI_ARG_P(1);],
                       $1, [cref],
@@ -729,8 +729,8 @@ m4_define([_PUSHREFPART_REF_DEFINE], [
     NO_IMPL_SUFFIX,
     IMPL([
         const SMVM_[]m4_ifelse($2, [cref], [C])Reference * restrict srcRef;
-        const SMVM_CodeBlock * m4_ifelse($3, [imm], [restrict]) offset;
-        const SMVM_CodeBlock * m4_ifelse($3, [imm], [restrict]) nBytes;
+        const SHAREMIND_CodeBlock * m4_ifelse($3, [imm], [restrict]) offset;
+        const SHAREMIND_CodeBlock * m4_ifelse($3, [imm], [restrict]) nBytes;
         SMVM_MI_GET_$2(srcRef, SMVM_MI_ARG_AS(1, sizet));
         m4_ifelse($1, [cref], [SMVM_MI_TRY_EXCEPT(SMVM_MI_REF_CAN_READ(srcRef), SMVM_E_INVALID_ARGUMENT);])
         m4_ifelse($3, [imm],
@@ -763,9 +763,9 @@ m4_define([_PUSHREFPART_MEM_DEFINE], [
               NO_PREPARATION),
     NO_IMPL_SUFFIX,
     IMPL([
-        const SMVM_CodeBlock * srcPtr;
-        const SMVM_CodeBlock * m4_ifelse($2, [imm], [restrict]) offset;
-        const SMVM_CodeBlock * m4_ifelse($2, [imm], [restrict]) nBytes;
+        const SHAREMIND_CodeBlock * srcPtr;
+        const SHAREMIND_CodeBlock * m4_ifelse($2, [imm], [restrict]) offset;
+        const SHAREMIND_CodeBlock * m4_ifelse($2, [imm], [restrict]) nBytes;
         SMVM_MemorySlot * srcSlot;
         SMVM_MI_GET_CONST_$2(srcPtr, SMVM_MI_ARG_AS(1, sizet));
         SMVM_MI_MEM_GET_SLOT_OR_EXCEPT(SMVM_MI_BLOCK_AS(srcPtr,uint64), srcSlot);
@@ -806,10 +806,10 @@ m4_define([_MEM_ALLOC_DEFINE], [
         CODE(0x00, 0x03, 0x00, OLB_CODE_$1, OLB_CODE_$2, 0x00, 0x00, 0x00),
         ARGS(2), NO_PREPARATION, NO_IMPL_SUFFIX,
         IMPL([
-            SMVM_CodeBlock * m4_ifelse($2, [imm], [restrict]) ptrDest;
+            SHAREMIND_CodeBlock * m4_ifelse($2, [imm], [restrict]) ptrDest;
             SMVM_MI_GET_$1(ptrDest, SMVM_MI_ARG_AS(1, sizet));
             m4_ifelse($2, [imm],,
-                [const SMVM_CodeBlock * sizeReg;
+                [const SHAREMIND_CodeBlock * sizeReg;
                  SMVM_MI_GET_CONST_$2(sizeReg, SMVM_MI_ARG_AS(2, sizet));])
             SMVM_MI_MEM_ALLOC(ptrDest,m4_ifelse($2, [imm], [SMVM_MI_ARG_P(2)], [sizeReg]))]),
         DO_DISPATCH, PREPARE_FINISH)])
@@ -822,7 +822,7 @@ m4_define([MEM_FREE_DEFINE], [
         CODE(0x00, 0x03, 0x01, OLB_CODE_$1, 0x00, 0x00, 0x00, 0x00),
         ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX,
         IMPL([
-            const SMVM_CodeBlock * restrict ptr;
+            const SHAREMIND_CodeBlock * restrict ptr;
             SMVM_MI_GET_CONST_$1(ptr, SMVM_MI_ARG_AS(1, sizet));
             SMVM_MI_MEM_FREE(ptr)]),
         DO_DISPATCH, PREPARE_FINISH)])
@@ -836,10 +836,10 @@ m4_define([MEM_GET_SIZE_DEFINE], [
         ARGS(2), NO_PREPARATION, NO_IMPL_SUFFIX,
         IMPL([
             m4_ifelse($1, [imm],
-                      [const SMVM_CodeBlock * const ptr = SMVM_MI_ARG_P(1);],
-                      [const SMVM_CodeBlock * ptr;
+                      [const SHAREMIND_CodeBlock * const ptr = SMVM_MI_ARG_P(1);],
+                      [const SHAREMIND_CodeBlock * ptr;
                        SMVM_MI_GET_CONST_$1(ptr, SMVM_MI_ARG_AS(1, sizet));])
-            SMVM_CodeBlock * sizedest;
+            SHAREMIND_CodeBlock * sizedest;
             SMVM_MI_GET_$2(sizedest, SMVM_MI_ARG_AS(2, sizet));
             SMVM_MI_MEM_GET_SIZE(ptr,sizedest);]),
         DO_DISPATCH, PREPARE_FINISH
@@ -857,9 +857,9 @@ m4_define([_CONVERT_DEFINE], [m4_ifelse($1, $3, [], [
         CODE(0x00, 0x04, DTB_CODE_$1, OLB_CODE_$2, DTB_CODE_$3, OLB_CODE_$4, 0x00, 0x00),
         ARGS(2), NO_PREPARATION, NO_IMPL_SUFFIX,
         IMPL([
-            const SMVM_CodeBlock * s;
+            const SHAREMIND_CodeBlock * s;
             SMVM_MI_GET_CONST_$2(s, SMVM_MI_ARG_AS(1, sizet));
-            SMVM_CodeBlock * d;
+            SHAREMIND_CodeBlock * d;
             SMVM_MI_GET_$4(d, SMVM_MI_ARG_AS(2, sizet));
             m4_ifelse($1, [float32],
                       [SMVM_MI_CONVERT_$1_TO_$3(SMVM_MI_BLOCK_AS(d,$3), SMVM_MI_BLOCK_AS(s,$1))],
@@ -877,7 +877,7 @@ m4_define([HALT_DEFINE], [
         CODE(0x00, 0xff, 0x00, OLB_CODE_$1, 0x00, 0x00, 0x00, 0x00),
         ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX,
         IMPL([
-            const SMVM_CodeBlock * restrict c;
+            const SHAREMIND_CodeBlock * restrict c;
             m4_ifelse($1, [imm],
                       [c = SMVM_MI_ARG_P(1);],
                       [SMVM_MI_GET_CONST_$1(c, SMVM_MI_ARG_AS(1, sizet));])
@@ -901,7 +901,7 @@ m4_define([ALBI_D_DEFINE], [
         CODE($2, $3, DTB_CODE_$4, OLB_CODE_$5, 0x00, 0x00, 0x00, 0x00),
         ARGS(1), $6, NO_IMPL_SUFFIX,
         IMPL([
-            SMVM_CodeBlock * restrict bd;
+            SHAREMIND_CodeBlock * restrict bd;
             SMVM_MI_GET_$5(bd, SMVM_MI_ARG_AS(1, sizet));
             {
                 DTB_TYPE_$4 * restrict d = SMVM_MI_BLOCK_AS_P(bd,$4);
@@ -915,8 +915,8 @@ m4_define([ALBI_DS_DEFINE], [
         CODE($2, $3, DTB_CODE_$4, OLB_CODE_$5, OLB_CODE_$6, 0x00, 0x00, 0x00),
         ARGS(2), $7, NO_IMPL_SUFFIX,
         IMPL([
-            SMVM_CodeBlock * m4_ifelse($6, [imm], [restrict]) bd;
-            const SMVM_CodeBlock * m4_ifelse($6, [imm], [restrict]) bs;
+            SHAREMIND_CodeBlock * m4_ifelse($6, [imm], [restrict]) bd;
+            const SHAREMIND_CodeBlock * m4_ifelse($6, [imm], [restrict]) bs;
             SMVM_MI_GET_$5(bd, SMVM_MI_ARG_AS(1, sizet));
             m4_ifelse($6, [imm], [bs = SMVM_MI_ARG_P(2)], [SMVM_MI_GET_CONST_$6(bs, SMVM_MI_ARG_AS(2, sizet))]);
             {
@@ -934,9 +934,9 @@ m4_define([_ALBI_DSS_DEFINE], [
         CODE($2, $3, DTB_CODE_$4, OLB_CODE_$5, OLB_CODE_$6, OLB_CODE_$7, 0x00, 0x00),
         ARGS(3), $8, NO_IMPL_SUFFIX,
         IMPL([
-            SMVM_CodeBlock * m4_ifelse($6, [imm], m4_ifelse($7, [imm], [restrict])) bd;
-            const SMVM_CodeBlock * m4_ifelse($6, [imm], [restrict]) bs1;
-            const SMVM_CodeBlock * m4_ifelse($7, [imm], [restrict]) bs2;
+            SHAREMIND_CodeBlock * m4_ifelse($6, [imm], m4_ifelse($7, [imm], [restrict])) bd;
+            const SHAREMIND_CodeBlock * m4_ifelse($6, [imm], [restrict]) bs1;
+            const SHAREMIND_CodeBlock * m4_ifelse($7, [imm], [restrict]) bs2;
             SMVM_MI_GET_$5(bd, SMVM_MI_ARG_AS(1, sizet));
             m4_ifelse($6, [imm], [bs1 = SMVM_MI_ARG_P(2);], [SMVM_MI_GET_CONST_$6(bs1, SMVM_MI_ARG_AS(2, sizet));])
             m4_ifelse($7, [imm], [bs2 = SMVM_MI_ARG_P(3);], [SMVM_MI_GET_CONST_$7(bs2, SMVM_MI_ARG_AS(3, sizet));])
@@ -1479,7 +1479,7 @@ m4_define([INSTR_JUMP_DEFINE], [
         IMPL([
             m4_ifelse([$9], [NO_JUMP_PRECODE], [], [$9;])
             m4_ifelse([$10], [NO_JUMP_CONDITION], [], [if ($10) ]){
-            const SMVM_CodeBlock * const restrict addr = SMVM_MI_ARG_P(1);
+            const SHAREMIND_CodeBlock * const restrict addr = SMVM_MI_ARG_P(1);
             SMVM_MI_JUMP_REL(addr);
             }]),
         $11, PREPARE_FINISH)
@@ -1491,7 +1491,7 @@ m4_define([INSTR_JUMP_DEFINE], [
         IMPL([
             m4_ifelse([$9], [NO_JUMP_PRECODE], [], [$9;])
             m4_ifelse([$10], [NO_JUMP_CONDITION], [], [if ($10) ]){
-            const SMVM_CodeBlock * restrict t;
+            const SHAREMIND_CodeBlock * restrict t;
             SMVM_MI_GET_reg(t, SMVM_MI_ARG_AS(1, sizet));
             SMVM_MI_CHECK_JUMP_REL(SMVM_MI_BLOCK_AS(t,int64));
             }]),
@@ -1504,7 +1504,7 @@ m4_define([INSTR_JUMP_DEFINE], [
         IMPL([
             m4_ifelse([$9], [NO_JUMP_PRECODE], [], [$9;])
             m4_ifelse([$10], [NO_JUMP_CONDITION], [], [if ($10) ]){
-            const SMVM_CodeBlock * restrict t;
+            const SHAREMIND_CodeBlock * restrict t;
             SMVM_MI_GET_stack(t, SMVM_MI_ARG_AS(1, sizet));
             SMVM_MI_CHECK_JUMP_REL(SMVM_MI_BLOCK_AS(t,int64));
             }]),
@@ -1520,7 +1520,7 @@ m4_define([INSTR_JUMP_COND_1_DEFINE], [
         $2, DTB_CODE_$4, OLB_CODE_$5, 0x00, 2,
         NO_PREPARATION,
         [
-        m4_ifelse($1, [dnjz],, $1, [dnjnz],, [const]) SMVM_CodeBlock * m4_ifelse($5, [imm], [restrict]) c;
+        m4_ifelse($1, [dnjz],, $1, [dnjnz],, [const]) SHAREMIND_CodeBlock * m4_ifelse($5, [imm], [restrict]) c;
         SMVM_MI_GET_[]$5(c, SMVM_MI_ARG_AS(2, sizet))],
         $3, DO_DISPATCH)])
 
@@ -1532,8 +1532,8 @@ m4_define([INSTR_JUMP_COND_2_DEFINE], [
         m4_ifelse([$5], [$7], [SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(1,uint64) != SMVM_PREPARE_ARG_AS(2,uint64),
                                     SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);], [NO_PREPARATION]),
         [
-        const SMVM_CodeBlock * m4_ifelse($5, [imm], [restrict]) c1;
-        const SMVM_CodeBlock * m4_ifelse($6, [imm], [restrict]) c2;
+        const SHAREMIND_CodeBlock * m4_ifelse($5, [imm], [restrict]) c1;
+        const SHAREMIND_CodeBlock * m4_ifelse($6, [imm], [restrict]) c2;
         m4_ifelse([$5], [imm], [],
                   [SMVM_MI_GET_$5(c1, SMVM_MI_ARG_AS(2, sizet));])
         m4_ifelse([$6], [imm], [],
