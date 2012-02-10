@@ -114,11 +114,11 @@ m4_define([COMPOSE], [$1$2])
 
 INSTR_DEFINE([common.nop],
     CODE(0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00),
-    NO_ARGS, NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([SMVM_MI_NOP]), DO_DISPATCH, PREPARE_FINISH)
+    NO_ARGS, NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([SHAREMIND_MI_NOP]), DO_DISPATCH, PREPARE_FINISH)
 
 INSTR_DEFINE([common.trap],
     CODE(0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00),
-    NO_ARGS, NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([SMVM_MI_TRAP]), DO_DISPATCH, PREPARE_FINISH)
+    NO_ARGS, NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([SHAREMIND_MI_TRAP]), DO_DISPATCH, PREPARE_FINISH)
 
 # common.mov (imm, reg, stack) >> (reg, stack)
 # (1=olbsrc,2=olbdest)
@@ -127,12 +127,12 @@ m4_define([_MOV_REGS_TO_REGS_DEFINE], [
         CODE(0x00, 0x01, OLB_CODE_$1, 0x00, OLB_CODE_$2, 0x00, 0x00, 0x00),
         ARGS(2), NO_PREPARATION, NO_IMPL_SUFFIX,
         IMPL([
-            const SHAREMIND_CodeBlock * s;
+            const SharemindCodeBlock * s;
             m4_ifelse($1, [imm],
-                      [s = SMVM_MI_ARG_P(1);],
-                      [SMVM_MI_GET_CONST_$1(s, SMVM_MI_ARG_AS(1, sizet));])
-            SHAREMIND_CodeBlock * d;
-            SMVM_MI_GET_$2(d, SMVM_MI_ARG_AS(2, sizet));
+                      [s = SHAREMIND_MI_ARG_P(1);],
+                      [SHAREMIND_MI_GET_CONST_$1(s, SHAREMIND_MI_ARG_AS(1, sizet));])
+            SharemindCodeBlock * d;
+            SHAREMIND_MI_GET_$2(d, SHAREMIND_MI_ARG_AS(2, sizet));
             (*d) = *s]),
         DO_DISPATCH, PREPARE_FINISH)])
 m4_define([MOV_REGS_TO_REGS_DEFINE], [_MOV_REGS_TO_REGS_DEFINE(_ARG1$1, _ARG2$1)])
@@ -146,36 +146,36 @@ m4_define([_MOV_MEM_TO_REGS_DEFINE], [
         ARGS(4),
         PREPARATION([
             m4_ifelse($1, [imm],
-                      [SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(1,uint64) >= 1u,
-                                                   SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
-                       SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(1,uint64) <= 3u,
-                                                   SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);])
+                      [SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(1,uint64) >= 1u,
+                                                   SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);
+                       SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(1,uint64) <= 3u,
+                                                   SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);])
             m4_ifelse($4, [imm],
-                      [SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(4,uint64) > 0u,
-                                                   SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
-                       SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(4,uint64) <= 8u,
-                                                   SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);])]),
+                      [SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(4,uint64) > 0u,
+                                                   SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);
+                       SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(4,uint64) <= 8u,
+                                                   SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);])]),
         NO_IMPL_SUFFIX, IMPL([
-            const SHAREMIND_CodeBlock * src;
-            SMVM_MemorySlot * restrict srcSlot;
-            const SHAREMIND_CodeBlock * m4_ifelse($2, [imm], [restrict]) srcOffset;
-            SHAREMIND_CodeBlock * dest;
-            const SHAREMIND_CodeBlock * m4_ifelse($4, [imm], [restrict]) numBytes;
+            const SharemindCodeBlock * src;
+            SharemindMemorySlot * restrict srcSlot;
+            const SharemindCodeBlock * m4_ifelse($2, [imm], [restrict]) srcOffset;
+            SharemindCodeBlock * dest;
+            const SharemindCodeBlock * m4_ifelse($4, [imm], [restrict]) numBytes;
             m4_ifelse($1, [imm],
-                      [src = SMVM_MI_ARG_P(1);],
-                      [SMVM_MI_GET_CONST_$1(src, SMVM_MI_ARG_AS(1, sizet));])
-            SMVM_MI_MEM_GET_SLOT_OR_EXCEPT(SMVM_MI_BLOCK_AS(src,uint64), srcSlot);
-            SMVM_MI_TRY_EXCEPT(SMVM_MI_MEM_CAN_READ(srcSlot), SMVM_E_READ_DENIED);
+                      [src = SHAREMIND_MI_ARG_P(1);],
+                      [SHAREMIND_MI_GET_CONST_$1(src, SHAREMIND_MI_ARG_AS(1, sizet));])
+            SHAREMIND_MI_MEM_GET_SLOT_OR_EXCEPT(SHAREMIND_MI_BLOCK_AS(src,uint64), srcSlot);
+            SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_MEM_CAN_READ(srcSlot), SHAREMIND_VM_PROCESS_READ_DENIED);
             m4_ifelse($2, [imm], [],
-                      [SMVM_MI_GET_CONST_$2(srcOffset, SMVM_MI_ARG_AS(2, sizet));])
-            SMVM_MI_GET_$3(dest, SMVM_MI_ARG_AS(3, sizet));
+                      [SHAREMIND_MI_GET_CONST_$2(srcOffset, SHAREMIND_MI_ARG_AS(2, sizet));])
+            SHAREMIND_MI_GET_$3(dest, SHAREMIND_MI_ARG_AS(3, sizet));
             m4_ifelse($4, [imm], [],
-                      [SMVM_MI_GET_CONST_$4(numBytes, SMVM_MI_ARG_AS(4,sizet));
-                       SMVM_MI_TRY_EXCEPT(SMVM_MI_BLOCK_AS(numBytes,uint64) <= 8u, SMVM_E_OUT_OF_BOUNDS_WRITE);])
-            m4_ifelse($2, [imm], [srcOffset = SMVM_MI_ARG_P(2);])
-            m4_ifelse($4, [imm], [numBytes = SMVM_MI_ARG_P(4);])
-            SMVM_MI_TRY_MEMRANGE(srcSlot->size, SMVM_MI_BLOCK_AS(srcOffset,uint64), SMVM_MI_BLOCK_AS(numBytes,uint64), SMVM_E_OUT_OF_BOUNDS_READ);
-            SMVM_MI_MEMCPY(&(SMVM_MI_BLOCK_AS(dest,uint64)), ((const uint8_t *) srcSlot->pData) + SMVM_MI_BLOCK_AS(srcOffset,uint64), SMVM_MI_BLOCK_AS(numBytes,uint64))]),
+                      [SHAREMIND_MI_GET_CONST_$4(numBytes, SHAREMIND_MI_ARG_AS(4,sizet));
+                       SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_BLOCK_AS(numBytes,uint64) <= 8u, SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_WRITE);])
+            m4_ifelse($2, [imm], [srcOffset = SHAREMIND_MI_ARG_P(2);])
+            m4_ifelse($4, [imm], [numBytes = SHAREMIND_MI_ARG_P(4);])
+            SHAREMIND_MI_TRY_MEMRANGE(srcSlot->size, SHAREMIND_MI_BLOCK_AS(srcOffset,uint64), SHAREMIND_MI_BLOCK_AS(numBytes,uint64), SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_READ);
+            SHAREMIND_MI_MEMCPY(&(SHAREMIND_MI_BLOCK_AS(dest,uint64)), ((const uint8_t *) srcSlot->pData) + SHAREMIND_MI_BLOCK_AS(srcOffset,uint64), SHAREMIND_MI_BLOCK_AS(numBytes,uint64))]),
         DO_DISPATCH, PREPARE_FINISH)])
 m4_define([MOV_MEM_TO_REGS_DEFINE], [_MOV_MEM_TO_REGS_DEFINE(_ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1)])
 foreach([MOV_MEM_TO_REGS_DEFINE], (product(([imm], [reg], [stack]), ([imm], [reg], [stack]), ([reg], [stack]), ([imm], [reg], [stack]))))
@@ -188,38 +188,38 @@ m4_define([_MOV_REGS_TO_MEM_DEFINE], [
         ARGS(4),
         PREPARATION([
             m4_ifelse($2, [imm],
-                      [SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(2,uint64) >= 1u,
-                                                   SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
-                       SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(2,uint64) <= 3u,
-                                                   SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);])
+                      [SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(2,uint64) >= 1u,
+                                                   SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);
+                       SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(2,uint64) <= 3u,
+                                                   SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);])
             m4_ifelse($4, [imm],
-                      [SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(4,uint64) > 0u,
-                                                   SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
-                       SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(4,uint64) <= 8u,
-                                                   SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);])]),
+                      [SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(4,uint64) > 0u,
+                                                   SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);
+                       SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(4,uint64) <= 8u,
+                                                   SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);])]),
         NO_IMPL_SUFFIX, IMPL([
-            const SHAREMIND_CodeBlock * m4_ifelse($1, [imm], [restrict]) src;
-            const SHAREMIND_CodeBlock * dest;
-            const SMVM_MemorySlot * restrict destSlot;
-            const SHAREMIND_CodeBlock * m4_ifelse($3, [imm], [restrict]) destOffset;
-            const SHAREMIND_CodeBlock * m4_ifelse($4, [imm], [restrict]) numBytes;
+            const SharemindCodeBlock * m4_ifelse($1, [imm], [restrict]) src;
+            const SharemindCodeBlock * dest;
+            const SharemindMemorySlot * restrict destSlot;
+            const SharemindCodeBlock * m4_ifelse($3, [imm], [restrict]) destOffset;
+            const SharemindCodeBlock * m4_ifelse($4, [imm], [restrict]) numBytes;
             m4_ifelse($1, [imm], [],
-                      [SMVM_MI_GET_CONST_$1(src, SMVM_MI_ARG_AS(1, sizet));])
+                      [SHAREMIND_MI_GET_CONST_$1(src, SHAREMIND_MI_ARG_AS(1, sizet));])
             m4_ifelse($2, [imm],
-                      [dest = SMVM_MI_ARG_P(2);],
-                      [SMVM_MI_GET_CONST_$2(dest, SMVM_MI_ARG_AS(2, sizet));])
-            SMVM_MI_MEM_GET_SLOT_OR_EXCEPT(SMVM_MI_BLOCK_AS(dest,uint64), destSlot);
-            SMVM_MI_TRY_EXCEPT(SMVM_MI_MEM_CAN_WRITE(destSlot), SMVM_E_WRITE_DENIED);
+                      [dest = SHAREMIND_MI_ARG_P(2);],
+                      [SHAREMIND_MI_GET_CONST_$2(dest, SHAREMIND_MI_ARG_AS(2, sizet));])
+            SHAREMIND_MI_MEM_GET_SLOT_OR_EXCEPT(SHAREMIND_MI_BLOCK_AS(dest,uint64), destSlot);
+            SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_MEM_CAN_WRITE(destSlot), SHAREMIND_VM_PROCESS_WRITE_DENIED);
             m4_ifelse($3, [imm], [],
-                      [SMVM_MI_GET_CONST_$3(destOffset, SMVM_MI_ARG_AS(3, sizet));])
+                      [SHAREMIND_MI_GET_CONST_$3(destOffset, SHAREMIND_MI_ARG_AS(3, sizet));])
             m4_ifelse($4, [imm], [],
-                      [SMVM_MI_GET_CONST_$4(numBytes, SMVM_MI_ARG_AS(4,sizet));
-                       SMVM_MI_TRY_EXCEPT(SMVM_MI_BLOCK_AS(numBytes,uint64) <= 8u, SMVM_E_OUT_OF_BOUNDS_READ);])
-            m4_ifelse($3, [imm], [destOffset = SMVM_MI_ARG_P(3);])
-            m4_ifelse($4, [imm], [numBytes = SMVM_MI_ARG_P(4);])
-            SMVM_MI_TRY_MEMRANGE(destSlot->size, SMVM_MI_BLOCK_AS(destOffset,uint64), SMVM_MI_BLOCK_AS(numBytes,uint64), SMVM_E_OUT_OF_BOUNDS_WRITE);
-            m4_ifelse($1, [imm], [src = SMVM_MI_ARG_P(1);])
-            SMVM_MI_MEMCPY(((uint8_t *) destSlot->pData) + SMVM_MI_BLOCK_AS(destOffset,uint64), &(SMVM_MI_BLOCK_AS(src,uint64)), SMVM_MI_BLOCK_AS(numBytes,uint64))]),
+                      [SHAREMIND_MI_GET_CONST_$4(numBytes, SHAREMIND_MI_ARG_AS(4,sizet));
+                       SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_BLOCK_AS(numBytes,uint64) <= 8u, SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_READ);])
+            m4_ifelse($3, [imm], [destOffset = SHAREMIND_MI_ARG_P(3);])
+            m4_ifelse($4, [imm], [numBytes = SHAREMIND_MI_ARG_P(4);])
+            SHAREMIND_MI_TRY_MEMRANGE(destSlot->size, SHAREMIND_MI_BLOCK_AS(destOffset,uint64), SHAREMIND_MI_BLOCK_AS(numBytes,uint64), SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_WRITE);
+            m4_ifelse($1, [imm], [src = SHAREMIND_MI_ARG_P(1);])
+            SHAREMIND_MI_MEMCPY(((uint8_t *) destSlot->pData) + SHAREMIND_MI_BLOCK_AS(destOffset,uint64), &(SHAREMIND_MI_BLOCK_AS(src,uint64)), SHAREMIND_MI_BLOCK_AS(numBytes,uint64))]),
         DO_DISPATCH, PREPARE_FINISH)])
 m4_define([MOV_REGS_TO_MEM_DEFINE], [_MOV_REGS_TO_MEM_DEFINE(_ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1)])
 foreach([MOV_REGS_TO_MEM_DEFINE], (product(([imm], [reg], [stack]), ([imm], [reg], [stack]), ([imm], [reg], [stack]), ([imm], [reg], [stack]))))
@@ -232,55 +232,55 @@ m4_define([_MOV_MEM_TO_MEM_DEFINE], [
         ARGS(5),
         PREPARATION([
             m4_ifelse($1, [imm],
-                      [SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(1,uint64) >= 1u,
-                                                   SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
-                       SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(1,uint64) <= 3u,
-                                                   SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);])
+                      [SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(1,uint64) >= 1u,
+                                                   SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);
+                       SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(1,uint64) <= 3u,
+                                                   SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);])
             m4_ifelse($3, [imm],
-                      [SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(3,uint64) >= 1u,
-                                                   SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
-                       SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(3,uint64) <= 3u,
-                                                   SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);])
+                      [SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(3,uint64) >= 1u,
+                                                   SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);
+                       SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(3,uint64) <= 3u,
+                                                   SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);])
             m4_ifelse($5, [imm],
-                      [SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(5,uint64) > 0u,
-                                                   SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);])]),
+                      [SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(5,uint64) > 0u,
+                                                   SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);])]),
         NO_IMPL_SUFFIX,
         IMPL([
-            const SHAREMIND_CodeBlock * src;
-            const SMVM_MemorySlot * srcSlot;
-            const SHAREMIND_CodeBlock * m4_ifelse($2, [imm], [restrict]) srcOffset;
-            const SHAREMIND_CodeBlock * dest;
-            const SMVM_MemorySlot * destSlot;
-            const SHAREMIND_CodeBlock * m4_ifelse($4, [imm], [restrict]) destOffset;
-            const SHAREMIND_CodeBlock * m4_ifelse($5, [imm], [restrict]) numBytes;
+            const SharemindCodeBlock * src;
+            const SharemindMemorySlot * srcSlot;
+            const SharemindCodeBlock * m4_ifelse($2, [imm], [restrict]) srcOffset;
+            const SharemindCodeBlock * dest;
+            const SharemindMemorySlot * destSlot;
+            const SharemindCodeBlock * m4_ifelse($4, [imm], [restrict]) destOffset;
+            const SharemindCodeBlock * m4_ifelse($5, [imm], [restrict]) numBytes;
             m4_ifelse($1, [imm],
-                      [src = SMVM_MI_ARG_P(1);],
-                      [SMVM_MI_GET_CONST_$1(src, SMVM_MI_ARG_AS(1, sizet));])
-            SMVM_MI_MEM_GET_SLOT_OR_EXCEPT(SMVM_MI_BLOCK_AS(src,uint64), srcSlot);
-            SMVM_MI_TRY_EXCEPT(SMVM_MI_MEM_CAN_READ(srcSlot), SMVM_E_READ_DENIED);
+                      [src = SHAREMIND_MI_ARG_P(1);],
+                      [SHAREMIND_MI_GET_CONST_$1(src, SHAREMIND_MI_ARG_AS(1, sizet));])
+            SHAREMIND_MI_MEM_GET_SLOT_OR_EXCEPT(SHAREMIND_MI_BLOCK_AS(src,uint64), srcSlot);
+            SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_MEM_CAN_READ(srcSlot), SHAREMIND_VM_PROCESS_READ_DENIED);
             m4_ifelse($2, [imm], [],
-                      [SMVM_MI_GET_CONST_$2(srcOffset, SMVM_MI_ARG_AS(2, sizet));])
+                      [SHAREMIND_MI_GET_CONST_$2(srcOffset, SHAREMIND_MI_ARG_AS(2, sizet));])
             m4_ifelse($3, [imm],
-                      [dest = SMVM_MI_ARG_P(3);],
-                      [SMVM_MI_GET_CONST_$3(dest, SMVM_MI_ARG_AS(3, sizet));])
-            SMVM_MI_MEM_GET_SLOT_OR_EXCEPT(SMVM_MI_BLOCK_AS(dest,uint64), destSlot);
-            SMVM_MI_TRY_EXCEPT(SMVM_MI_MEM_CAN_WRITE(destSlot), SMVM_E_WRITE_DENIED);
+                      [dest = SHAREMIND_MI_ARG_P(3);],
+                      [SHAREMIND_MI_GET_CONST_$3(dest, SHAREMIND_MI_ARG_AS(3, sizet));])
+            SHAREMIND_MI_MEM_GET_SLOT_OR_EXCEPT(SHAREMIND_MI_BLOCK_AS(dest,uint64), destSlot);
+            SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_MEM_CAN_WRITE(destSlot), SHAREMIND_VM_PROCESS_WRITE_DENIED);
             m4_ifelse($4, [imm], [],
-                      [SMVM_MI_GET_CONST_$4(destOffset, SMVM_MI_ARG_AS(4, sizet));])
+                      [SHAREMIND_MI_GET_CONST_$4(destOffset, SHAREMIND_MI_ARG_AS(4, sizet));])
             m4_ifelse($5, [imm], [],
-                      [SMVM_MI_GET_CONST_$5(numBytes, SMVM_MI_ARG_AS(5, sizet));])
-            m4_ifelse($2, [imm], [srcOffset = SMVM_MI_ARG_P(2);])
-            m4_ifelse($5, [imm], [numBytes = SMVM_MI_ARG_P(5);])
-            SMVM_MI_TRY_MEMRANGE(srcSlot->size, SMVM_MI_BLOCK_AS(srcOffset,uint64), SMVM_MI_BLOCK_AS(numBytes,uint64), SMVM_E_OUT_OF_BOUNDS_READ);
-            m4_ifelse($4, [imm], [destOffset = SMVM_MI_ARG_P(4);])
-            SMVM_MI_TRY_MEMRANGE(destSlot->size, SMVM_MI_BLOCK_AS(destOffset,uint64), SMVM_MI_BLOCK_AS(numBytes,uint64), SMVM_E_OUT_OF_BOUNDS_WRITE);
-            m4_pushdef([CPY_ARGS], [((uint8_t *) destSlot->pData) + SMVM_MI_BLOCK_AS(destOffset,uint64),
-                                    ((const uint8_t *) srcSlot->pData) + SMVM_MI_BLOCK_AS(srcOffset,uint64),
-                                    SMVM_MI_BLOCK_AS(numBytes,uint64)])
+                      [SHAREMIND_MI_GET_CONST_$5(numBytes, SHAREMIND_MI_ARG_AS(5, sizet));])
+            m4_ifelse($2, [imm], [srcOffset = SHAREMIND_MI_ARG_P(2);])
+            m4_ifelse($5, [imm], [numBytes = SHAREMIND_MI_ARG_P(5);])
+            SHAREMIND_MI_TRY_MEMRANGE(srcSlot->size, SHAREMIND_MI_BLOCK_AS(srcOffset,uint64), SHAREMIND_MI_BLOCK_AS(numBytes,uint64), SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_READ);
+            m4_ifelse($4, [imm], [destOffset = SHAREMIND_MI_ARG_P(4);])
+            SHAREMIND_MI_TRY_MEMRANGE(destSlot->size, SHAREMIND_MI_BLOCK_AS(destOffset,uint64), SHAREMIND_MI_BLOCK_AS(numBytes,uint64), SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_WRITE);
+            m4_pushdef([CPY_ARGS], [((uint8_t *) destSlot->pData) + SHAREMIND_MI_BLOCK_AS(destOffset,uint64),
+                                    ((const uint8_t *) srcSlot->pData) + SHAREMIND_MI_BLOCK_AS(srcOffset,uint64),
+                                    SHAREMIND_MI_BLOCK_AS(numBytes,uint64)])
             if (srcSlot != destSlot) {
-                SMVM_MI_MEMCPY(CPY_ARGS);
+                SHAREMIND_MI_MEMCPY(CPY_ARGS);
             } else {
-                SMVM_MI_MEMMOVE(CPY_ARGS);
+                SHAREMIND_MI_MEMMOVE(CPY_ARGS);
             }m4_popdef([CPY_ARGS])]),
         DO_DISPATCH, PREPARE_FINISH)])
 m4_define([MOV_MEM_TO_MEM_DEFINE], [_MOV_MEM_TO_MEM_DEFINE(_ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, _ARG5$1)])
@@ -294,36 +294,36 @@ m4_define([_MOV_REF_TO_REGS_DEFINE], [
         ARGS(4),
         m4_ifelse($4, [imm],
                   [PREPARATION([
-                      SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(4,uint64) > 0u,
-                                                  SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
-                      SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(4,uint64) <= 8u,
-                                                  SMVM_PREPARE_ERROR_INVALID_ARGUMENTS)])],
+                      SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(4,uint64) > 0u,
+                                                  SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);
+                      SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(4,uint64) <= 8u,
+                                                  SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS)])],
                   [NO_PREPARATION]),
         NO_IMPL_SUFFIX, IMPL([
-            const SMVM_[]m4_ifelse($1, [cref], [C])[]Reference * restrict srcRef;
-            const SHAREMIND_CodeBlock * m4_ifelse($2, [imm], [restrict]) srcOffset;
-            SHAREMIND_CodeBlock * dest;
-            const SHAREMIND_CodeBlock * m4_ifelse($4, [imm], [restrict]) numBytes;
-            SMVM_MI_GET_$1(srcRef, SMVM_MI_ARG_AS(1, sizet));
-            m4_ifelse($1, [ref], [SMVM_MI_TRY_EXCEPT(SMVM_MI_REF_CAN_READ(srcRef), SMVM_E_READ_DENIED);])
+            const Sharemind[]m4_ifelse($1, [cref], [C])[]Reference * restrict srcRef;
+            const SharemindCodeBlock * m4_ifelse($2, [imm], [restrict]) srcOffset;
+            SharemindCodeBlock * dest;
+            const SharemindCodeBlock * m4_ifelse($4, [imm], [restrict]) numBytes;
+            SHAREMIND_MI_GET_$1(srcRef, SHAREMIND_MI_ARG_AS(1, sizet));
+            m4_ifelse($1, [ref], [SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_REF_CAN_READ(srcRef), SHAREMIND_VM_PROCESS_READ_DENIED);])
             m4_ifelse($2, [imm], [],
-                      [SMVM_MI_GET_CONST_$2(srcOffset, SMVM_MI_ARG_AS(2, sizet));])
-            SMVM_MI_GET_$3(dest, SMVM_MI_ARG_AS(3, sizet));
+                      [SHAREMIND_MI_GET_CONST_$2(srcOffset, SHAREMIND_MI_ARG_AS(2, sizet));])
+            SHAREMIND_MI_GET_$3(dest, SHAREMIND_MI_ARG_AS(3, sizet));
             m4_ifelse($4, [imm], [],
-                      [SMVM_MI_GET_CONST_$4(numBytes, SMVM_MI_ARG_AS(4,sizet));
-                       SMVM_MI_TRY_EXCEPT(SMVM_MI_BLOCK_AS(numBytes,uint64) <= 8u, SMVM_E_OUT_OF_BOUNDS_WRITE);])
-            m4_ifelse($2, [imm], [srcOffset = SMVM_MI_ARG_P(2);])
-            m4_ifelse($4, [imm], [numBytes = SMVM_MI_ARG_P(4);])
-            SMVM_MI_TRY_MEMRANGE(SMVM_MI_REFERENCE_GET_SIZE(srcRef), SMVM_MI_BLOCK_AS(srcOffset,uint64), SMVM_MI_BLOCK_AS(numBytes,uint64), SMVM_E_OUT_OF_BOUNDS_READ);
-            m4_pushdef([CPY_ARGS], [&(SMVM_MI_BLOCK_AS(dest,uint64)),
-                                    SMVM_MI_REFERENCE_GET_CONST_PTR(srcRef) + SMVM_MI_BLOCK_AS(srcOffset,uint64),
-                                    SMVM_MI_BLOCK_AS(numBytes,uint64)])
+                      [SHAREMIND_MI_GET_CONST_$4(numBytes, SHAREMIND_MI_ARG_AS(4,sizet));
+                       SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_BLOCK_AS(numBytes,uint64) <= 8u, SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_WRITE);])
+            m4_ifelse($2, [imm], [srcOffset = SHAREMIND_MI_ARG_P(2);])
+            m4_ifelse($4, [imm], [numBytes = SHAREMIND_MI_ARG_P(4);])
+            SHAREMIND_MI_TRY_MEMRANGE(SHAREMIND_MI_REFERENCE_GET_SIZE(srcRef), SHAREMIND_MI_BLOCK_AS(srcOffset,uint64), SHAREMIND_MI_BLOCK_AS(numBytes,uint64), SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_READ);
+            m4_pushdef([CPY_ARGS], [&(SHAREMIND_MI_BLOCK_AS(dest,uint64)),
+                                    SHAREMIND_MI_REFERENCE_GET_CONST_PTR(srcRef) + SHAREMIND_MI_BLOCK_AS(srcOffset,uint64),
+                                    SHAREMIND_MI_BLOCK_AS(numBytes,uint64)])
             m4_ifelse($3, [stack],
-                      [SMVM_MI_MEMCPY(CPY_ARGS);],
-                      [if (SMVM_MI_REFERENCE_GET_MEMORY_PTR(srcRef)) {
-                           SMVM_MI_MEMCPY(CPY_ARGS);
+                      [SHAREMIND_MI_MEMCPY(CPY_ARGS);],
+                      [if (SHAREMIND_MI_REFERENCE_GET_MEMORY_PTR(srcRef)) {
+                           SHAREMIND_MI_MEMCPY(CPY_ARGS);
                        } else {
-                           SMVM_MI_MEMMOVE(CPY_ARGS);
+                           SHAREMIND_MI_MEMMOVE(CPY_ARGS);
                        }])
             m4_popdef([CPY_ARGS])]),
         DO_DISPATCH, PREPARE_FINISH)])
@@ -338,39 +338,39 @@ m4_define([_MOV_REGS_TO_REF_DEFINE], [
         ARGS(4),
         m4_ifelse($3, [imm],
                   [PREPARATION([
-                      SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(4,uint64) > 0u,
-                                                  SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
-                      SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(4,uint64) <= 8u,
-                                                  SMVM_PREPARE_ERROR_INVALID_ARGUMENTS)])],
+                      SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(4,uint64) > 0u,
+                                                  SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);
+                      SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(4,uint64) <= 8u,
+                                                  SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS)])],
                   [NO_PREPARATION]),
         NO_IMPL_SUFFIX, IMPL([
-            const SHAREMIND_CodeBlock * m4_ifelse($1, [imm], [restrict]) src;
-            const SMVM_Reference * restrict destRef;
-            const SHAREMIND_CodeBlock * m4_ifelse($2, [imm], [restrict]) destOffset;
-            const SHAREMIND_CodeBlock * m4_ifelse($3, [imm], [restrict]) numBytes;
+            const SharemindCodeBlock * m4_ifelse($1, [imm], [restrict]) src;
+            const SharemindReference * restrict destRef;
+            const SharemindCodeBlock * m4_ifelse($2, [imm], [restrict]) destOffset;
+            const SharemindCodeBlock * m4_ifelse($3, [imm], [restrict]) numBytes;
             m4_ifelse($1, [imm], [],
-                      [SMVM_MI_GET_CONST_$1(src, SMVM_MI_ARG_AS(1, sizet));])
-            SMVM_MI_GET_ref(destRef, SMVM_MI_ARG_AS(2, sizet));
-            SMVM_MI_TRY_EXCEPT(SMVM_MI_REF_CAN_WRITE(destRef), SMVM_E_WRITE_DENIED);
+                      [SHAREMIND_MI_GET_CONST_$1(src, SHAREMIND_MI_ARG_AS(1, sizet));])
+            SHAREMIND_MI_GET_ref(destRef, SHAREMIND_MI_ARG_AS(2, sizet));
+            SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_REF_CAN_WRITE(destRef), SHAREMIND_VM_PROCESS_WRITE_DENIED);
             m4_ifelse($2, [imm], [],
-                      [SMVM_MI_GET_CONST_$2(destOffset, SMVM_MI_ARG_AS(3, sizet));])
+                      [SHAREMIND_MI_GET_CONST_$2(destOffset, SHAREMIND_MI_ARG_AS(3, sizet));])
             m4_ifelse($3, [imm], [],
-                      [SMVM_MI_GET_CONST_$3(numBytes, SMVM_MI_ARG_AS(4,sizet));
-                       SMVM_MI_TRY_EXCEPT(SMVM_MI_BLOCK_AS(numBytes,uint64) <= 8u, SMVM_E_OUT_OF_BOUNDS_READ);])
-            m4_ifelse($2, [imm], [destOffset = SMVM_MI_ARG_P(3);])
-            m4_ifelse($3, [imm], [numBytes = SMVM_MI_ARG_P(4);])
-            SMVM_MI_TRY_MEMRANGE(SMVM_MI_REFERENCE_GET_SIZE(destRef), SMVM_MI_BLOCK_AS(destOffset,uint64), SMVM_MI_BLOCK_AS(numBytes,uint64), SMVM_E_OUT_OF_BOUNDS_WRITE);
-            m4_ifelse($1, [imm], [src = SMVM_MI_ARG_P(1);])
-            m4_pushdef([CPY_ARGS], [SMVM_MI_REFERENCE_GET_PTR(destRef) + SMVM_MI_BLOCK_AS(destOffset,uint64),
-                                    &(SMVM_MI_BLOCK_AS(src,uint64)),
-                                    SMVM_MI_BLOCK_AS(numBytes,uint64)])
+                      [SHAREMIND_MI_GET_CONST_$3(numBytes, SHAREMIND_MI_ARG_AS(4,sizet));
+                       SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_BLOCK_AS(numBytes,uint64) <= 8u, SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_READ);])
+            m4_ifelse($2, [imm], [destOffset = SHAREMIND_MI_ARG_P(3);])
+            m4_ifelse($3, [imm], [numBytes = SHAREMIND_MI_ARG_P(4);])
+            SHAREMIND_MI_TRY_MEMRANGE(SHAREMIND_MI_REFERENCE_GET_SIZE(destRef), SHAREMIND_MI_BLOCK_AS(destOffset,uint64), SHAREMIND_MI_BLOCK_AS(numBytes,uint64), SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_WRITE);
+            m4_ifelse($1, [imm], [src = SHAREMIND_MI_ARG_P(1);])
+            m4_pushdef([CPY_ARGS], [SHAREMIND_MI_REFERENCE_GET_PTR(destRef) + SHAREMIND_MI_BLOCK_AS(destOffset,uint64),
+                                    &(SHAREMIND_MI_BLOCK_AS(src,uint64)),
+                                    SHAREMIND_MI_BLOCK_AS(numBytes,uint64)])
             m4_ifelse($1, [reg],
-                      [if (SMVM_MI_REFERENCE_GET_MEMORY_PTR(destRef)) {
-                           SMVM_MI_MEMCPY(CPY_ARGS);
+                      [if (SHAREMIND_MI_REFERENCE_GET_MEMORY_PTR(destRef)) {
+                           SHAREMIND_MI_MEMCPY(CPY_ARGS);
                        } else {
-                           SMVM_MI_MEMMOVE(CPY_ARGS);
+                           SHAREMIND_MI_MEMMOVE(CPY_ARGS);
                        }],
-                      [SMVM_MI_MEMCPY(CPY_ARGS)])m4_popdef([CPY_ARGS])]),
+                      [SHAREMIND_MI_MEMCPY(CPY_ARGS)])m4_popdef([CPY_ARGS])]),
         DO_DISPATCH, PREPARE_FINISH)])
 m4_define([MOV_REGS_TO_REF_DEFINE], [_MOV_REGS_TO_REF_DEFINE(_ARG1$1, _ARG2$1, _ARG3$1)])
 foreach([MOV_REGS_TO_REF_DEFINE], (product(([imm], [reg], [stack]), ([imm], [reg], [stack]), ([imm], [reg], [stack]))))
@@ -383,38 +383,38 @@ m4_define([_MOV_REF_TO_REF_DEFINE], [
         ARGS(5),
         m4_ifelse($4, [imm],
                   [PREPARATION([
-                      SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(5,uint64) > 0u,
-                                                  SMVM_PREPARE_ERROR_INVALID_ARGUMENTS)])],
+                      SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(5,uint64) > 0u,
+                                                  SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS)])],
                   [NO_PREPARATION]),
         NO_IMPL_SUFFIX,
         IMPL([
-            const SMVM_[]m4_ifelse($1, [cref], [C])Reference * srcRef;
-            const SHAREMIND_CodeBlock * m4_ifelse($2, [imm], [restrict]) srcOffset;
-            const SMVM_Reference * destRef;
-            const SHAREMIND_CodeBlock * m4_ifelse($3, [imm], [restrict]) destOffset;
-            const SHAREMIND_CodeBlock * m4_ifelse($4, [imm], [restrict]) numBytes;
-            SMVM_MI_GET_$1(srcRef, SMVM_MI_ARG_AS(1, sizet));
-            m4_ifelse($1, [ref], [SMVM_MI_TRY_EXCEPT(SMVM_MI_REF_CAN_READ(srcRef), SMVM_E_READ_DENIED);])
+            const Sharemind[]m4_ifelse($1, [cref], [C])Reference * srcRef;
+            const SharemindCodeBlock * m4_ifelse($2, [imm], [restrict]) srcOffset;
+            const SharemindReference * destRef;
+            const SharemindCodeBlock * m4_ifelse($3, [imm], [restrict]) destOffset;
+            const SharemindCodeBlock * m4_ifelse($4, [imm], [restrict]) numBytes;
+            SHAREMIND_MI_GET_$1(srcRef, SHAREMIND_MI_ARG_AS(1, sizet));
+            m4_ifelse($1, [ref], [SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_REF_CAN_READ(srcRef), SHAREMIND_VM_PROCESS_READ_DENIED);])
             m4_ifelse($2, [imm], [],
-                      [SMVM_MI_GET_CONST_$2(srcOffset, SMVM_MI_ARG_AS(2, sizet));])
-            SMVM_MI_GET_ref(destRef, SMVM_MI_ARG_AS(3, sizet));
-            SMVM_MI_TRY_EXCEPT(SMVM_MI_REF_CAN_WRITE(destRef), SMVM_E_WRITE_DENIED);
+                      [SHAREMIND_MI_GET_CONST_$2(srcOffset, SHAREMIND_MI_ARG_AS(2, sizet));])
+            SHAREMIND_MI_GET_ref(destRef, SHAREMIND_MI_ARG_AS(3, sizet));
+            SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_REF_CAN_WRITE(destRef), SHAREMIND_VM_PROCESS_WRITE_DENIED);
             m4_ifelse($3, [imm], [],
-                      [SMVM_MI_GET_CONST_$3(destOffset, SMVM_MI_ARG_AS(4, sizet));])
+                      [SHAREMIND_MI_GET_CONST_$3(destOffset, SHAREMIND_MI_ARG_AS(4, sizet));])
             m4_ifelse($4, [imm], [],
-                      [SMVM_MI_GET_CONST_$4(numBytes, SMVM_MI_ARG_AS(5,sizet));])
-            m4_ifelse($2, [imm], [srcOffset = SMVM_MI_ARG_P(2);])
-            m4_ifelse($4, [imm], [numBytes = SMVM_MI_ARG_P(5);])
-            SMVM_MI_TRY_MEMRANGE(SMVM_MI_REFERENCE_GET_SIZE(srcRef), SMVM_MI_BLOCK_AS(srcOffset,uint64), SMVM_MI_BLOCK_AS(numBytes,uint64), SMVM_E_OUT_OF_BOUNDS_READ);
-            m4_ifelse($3, [imm], [destOffset = SMVM_MI_ARG_P(4);])
-            SMVM_MI_TRY_MEMRANGE(SMVM_MI_REFERENCE_GET_SIZE(destRef), SMVM_MI_BLOCK_AS(destOffset,uint64), SMVM_MI_BLOCK_AS(numBytes,uint64), SMVM_E_OUT_OF_BOUNDS_WRITE);
-            m4_pushdef([CPY_ARGS], [SMVM_MI_REFERENCE_GET_PTR(destRef) + SMVM_MI_BLOCK_AS(destOffset,uint64),
-                                    SMVM_MI_REFERENCE_GET_CONST_PTR(srcRef) + SMVM_MI_BLOCK_AS(srcOffset,uint64),
-                                    SMVM_MI_BLOCK_AS(numBytes,uint64)])
-            if (SMVM_MI_REFERENCE_GET_MEMORY_PTR(srcRef) != SMVM_MI_REFERENCE_GET_MEMORY_PTR(destRef)) {
-                SMVM_MI_MEMCPY(CPY_ARGS);
+                      [SHAREMIND_MI_GET_CONST_$4(numBytes, SHAREMIND_MI_ARG_AS(5,sizet));])
+            m4_ifelse($2, [imm], [srcOffset = SHAREMIND_MI_ARG_P(2);])
+            m4_ifelse($4, [imm], [numBytes = SHAREMIND_MI_ARG_P(5);])
+            SHAREMIND_MI_TRY_MEMRANGE(SHAREMIND_MI_REFERENCE_GET_SIZE(srcRef), SHAREMIND_MI_BLOCK_AS(srcOffset,uint64), SHAREMIND_MI_BLOCK_AS(numBytes,uint64), SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_READ);
+            m4_ifelse($3, [imm], [destOffset = SHAREMIND_MI_ARG_P(4);])
+            SHAREMIND_MI_TRY_MEMRANGE(SHAREMIND_MI_REFERENCE_GET_SIZE(destRef), SHAREMIND_MI_BLOCK_AS(destOffset,uint64), SHAREMIND_MI_BLOCK_AS(numBytes,uint64), SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_WRITE);
+            m4_pushdef([CPY_ARGS], [SHAREMIND_MI_REFERENCE_GET_PTR(destRef) + SHAREMIND_MI_BLOCK_AS(destOffset,uint64),
+                                    SHAREMIND_MI_REFERENCE_GET_CONST_PTR(srcRef) + SHAREMIND_MI_BLOCK_AS(srcOffset,uint64),
+                                    SHAREMIND_MI_BLOCK_AS(numBytes,uint64)])
+            if (SHAREMIND_MI_REFERENCE_GET_MEMORY_PTR(srcRef) != SHAREMIND_MI_REFERENCE_GET_MEMORY_PTR(destRef)) {
+                SHAREMIND_MI_MEMCPY(CPY_ARGS);
             } else {
-                SMVM_MI_MEMMOVE(CPY_ARGS);
+                SHAREMIND_MI_MEMMOVE(CPY_ARGS);
             }m4_popdef([CPY_ARGS])]),
         DO_DISPATCH, PREPARE_FINISH)])
 m4_define([MOV_REF_TO_REF_DEFINE], [_MOV_REF_TO_REF_DEFINE(_ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1)])
@@ -428,46 +428,46 @@ m4_define([_MOV_REF_TO_MEM_DEFINE], [
         ARGS(5),
         PREPARATION([
             m4_ifelse($3, [imm],
-                      [SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(3,uint64) >= 1u,
-                                                   SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
-                       SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(3,uint64) <= 3u,
-                                                   SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);])
+                      [SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(3,uint64) >= 1u,
+                                                   SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);
+                       SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(3,uint64) <= 3u,
+                                                   SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);])
             m4_ifelse($5, [imm],
-                      [SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(5,uint64) > 0u,
-                                                   SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);])]),
+                      [SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(5,uint64) > 0u,
+                                                   SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);])]),
         NO_IMPL_SUFFIX,
         IMPL([
-            const SMVM_[]m4_ifelse($1, [cref], [C])Reference * restrict srcRef;
-            const SHAREMIND_CodeBlock * m4_ifelse($2, [imm], [restrict]) srcOffset;
-            const SHAREMIND_CodeBlock * restrict dest;
-            const SMVM_MemorySlot * restrict destSlot;
-            const SHAREMIND_CodeBlock * m4_ifelse($4, [imm], [restrict]) destOffset;
-            const SHAREMIND_CodeBlock * m4_ifelse($5, [imm], [restrict]) numBytes;
-            SMVM_MI_GET_$1(srcRef, SMVM_MI_ARG_AS(1, sizet));
-            m4_ifelse($1, [ref], [SMVM_MI_TRY_EXCEPT(SMVM_MI_REF_CAN_READ(srcRef), SMVM_E_READ_DENIED);])
+            const Sharemind[]m4_ifelse($1, [cref], [C])Reference * restrict srcRef;
+            const SharemindCodeBlock * m4_ifelse($2, [imm], [restrict]) srcOffset;
+            const SharemindCodeBlock * restrict dest;
+            const SharemindMemorySlot * restrict destSlot;
+            const SharemindCodeBlock * m4_ifelse($4, [imm], [restrict]) destOffset;
+            const SharemindCodeBlock * m4_ifelse($5, [imm], [restrict]) numBytes;
+            SHAREMIND_MI_GET_$1(srcRef, SHAREMIND_MI_ARG_AS(1, sizet));
+            m4_ifelse($1, [ref], [SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_REF_CAN_READ(srcRef), SHAREMIND_VM_PROCESS_READ_DENIED);])
             m4_ifelse($2, [imm], [],
-                      [SMVM_MI_GET_CONST_$2(srcOffset, SMVM_MI_ARG_AS(2, sizet));])
+                      [SHAREMIND_MI_GET_CONST_$2(srcOffset, SHAREMIND_MI_ARG_AS(2, sizet));])
             m4_ifelse($3, [imm],
-                      [dest = SMVM_MI_ARG_P(3);],
-                      [SMVM_MI_GET_CONST_$3(dest, SMVM_MI_ARG_AS(3, sizet));])
-            SMVM_MI_MEM_GET_SLOT_OR_EXCEPT(SMVM_MI_BLOCK_AS(dest,uint64), destSlot);
-            SMVM_MI_TRY_EXCEPT(SMVM_MI_MEM_CAN_WRITE(destSlot), SMVM_E_WRITE_DENIED);
+                      [dest = SHAREMIND_MI_ARG_P(3);],
+                      [SHAREMIND_MI_GET_CONST_$3(dest, SHAREMIND_MI_ARG_AS(3, sizet));])
+            SHAREMIND_MI_MEM_GET_SLOT_OR_EXCEPT(SHAREMIND_MI_BLOCK_AS(dest,uint64), destSlot);
+            SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_MEM_CAN_WRITE(destSlot), SHAREMIND_VM_PROCESS_WRITE_DENIED);
             m4_ifelse($4, [imm], [],
-                      [SMVM_MI_GET_CONST_$4(destOffset, SMVM_MI_ARG_AS(4, sizet));])
+                      [SHAREMIND_MI_GET_CONST_$4(destOffset, SHAREMIND_MI_ARG_AS(4, sizet));])
             m4_ifelse($5, [imm], [],
-                      [SMVM_MI_GET_CONST_$5(numBytes, SMVM_MI_ARG_AS(5,sizet));])
-            m4_ifelse($2, [imm], [srcOffset = SMVM_MI_ARG_P(2);])
-            m4_ifelse($5, [imm], [numBytes = SMVM_MI_ARG_P(5);])
-            SMVM_MI_TRY_MEMRANGE(SMVM_MI_REFERENCE_GET_SIZE(srcRef), SMVM_MI_BLOCK_AS(srcOffset,uint64), SMVM_MI_BLOCK_AS(numBytes,uint64), SMVM_E_OUT_OF_BOUNDS_READ);
-            m4_ifelse($4, [imm], [destOffset = SMVM_MI_ARG_P(4);])
-            SMVM_MI_TRY_MEMRANGE(destSlot->size, SMVM_MI_BLOCK_AS(destOffset,uint64), SMVM_MI_BLOCK_AS(numBytes,uint64), SMVM_E_OUT_OF_BOUNDS_WRITE);
-            m4_pushdef([CPY_ARGS], [((uint8_t *) destSlot->pData) + SMVM_MI_BLOCK_AS(destOffset,uint64),
-                                    SMVM_MI_REFERENCE_GET_CONST_PTR(srcRef) + SMVM_MI_BLOCK_AS(srcOffset,uint64),
-                                    SMVM_MI_BLOCK_AS(numBytes,uint64)])
-            if (SMVM_MI_REFERENCE_GET_MEMORY_PTR(srcRef) != destSlot) {
-                SMVM_MI_MEMCPY(CPY_ARGS);
+                      [SHAREMIND_MI_GET_CONST_$5(numBytes, SHAREMIND_MI_ARG_AS(5,sizet));])
+            m4_ifelse($2, [imm], [srcOffset = SHAREMIND_MI_ARG_P(2);])
+            m4_ifelse($5, [imm], [numBytes = SHAREMIND_MI_ARG_P(5);])
+            SHAREMIND_MI_TRY_MEMRANGE(SHAREMIND_MI_REFERENCE_GET_SIZE(srcRef), SHAREMIND_MI_BLOCK_AS(srcOffset,uint64), SHAREMIND_MI_BLOCK_AS(numBytes,uint64), SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_READ);
+            m4_ifelse($4, [imm], [destOffset = SHAREMIND_MI_ARG_P(4);])
+            SHAREMIND_MI_TRY_MEMRANGE(destSlot->size, SHAREMIND_MI_BLOCK_AS(destOffset,uint64), SHAREMIND_MI_BLOCK_AS(numBytes,uint64), SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_WRITE);
+            m4_pushdef([CPY_ARGS], [((uint8_t *) destSlot->pData) + SHAREMIND_MI_BLOCK_AS(destOffset,uint64),
+                                    SHAREMIND_MI_REFERENCE_GET_CONST_PTR(srcRef) + SHAREMIND_MI_BLOCK_AS(srcOffset,uint64),
+                                    SHAREMIND_MI_BLOCK_AS(numBytes,uint64)])
+            if (SHAREMIND_MI_REFERENCE_GET_MEMORY_PTR(srcRef) != destSlot) {
+                SHAREMIND_MI_MEMCPY(CPY_ARGS);
             } else {
-                SMVM_MI_MEMMOVE(CPY_ARGS);
+                SHAREMIND_MI_MEMMOVE(CPY_ARGS);
             }m4_popdef([CPY_ARGS])]),
         DO_DISPATCH, PREPARE_FINISH)])
 m4_define([MOV_REF_TO_MEM_DEFINE], [_MOV_REF_TO_MEM_DEFINE(_ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, _ARG5$1)])
@@ -481,71 +481,71 @@ m4_define([_MOV_MEM_TO_REF_DEFINE], [
         ARGS(5),
         PREPARATION([
             m4_ifelse($1, [imm],
-                      [SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(1,uint64) >= 1u,
-                                                   SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
-                       SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(1,uint64) <= 3u,
-                                                   SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);])
+                      [SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(1,uint64) >= 1u,
+                                                   SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);
+                       SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(1,uint64) <= 3u,
+                                                   SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);])
             m4_ifelse($4, [imm],
-                      [SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(5,uint64) > 0u,
-                                                   SMVM_PREPARE_ERROR_INVALID_ARGUMENTS)])]),
+                      [SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(5,uint64) > 0u,
+                                                   SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS)])]),
         NO_IMPL_SUFFIX,
         IMPL([
-            const SHAREMIND_CodeBlock * restrict src;
-            const SMVM_MemorySlot * restrict srcSlot;
-            const SHAREMIND_CodeBlock * m4_ifelse($2, [imm], [restrict]) srcOffset;
-            const SMVM_Reference * restrict destRef;
-            const SHAREMIND_CodeBlock * m4_ifelse($3, [imm], [restrict]) destOffset;
-            const SHAREMIND_CodeBlock * m4_ifelse($4, [imm], [restrict]) numBytes;
+            const SharemindCodeBlock * restrict src;
+            const SharemindMemorySlot * restrict srcSlot;
+            const SharemindCodeBlock * m4_ifelse($2, [imm], [restrict]) srcOffset;
+            const SharemindReference * restrict destRef;
+            const SharemindCodeBlock * m4_ifelse($3, [imm], [restrict]) destOffset;
+            const SharemindCodeBlock * m4_ifelse($4, [imm], [restrict]) numBytes;
             m4_ifelse($1, [imm],
-                      [src = SMVM_MI_ARG_P(1);],
-                      [SMVM_MI_GET_CONST_$1(src, SMVM_MI_ARG_AS(1, sizet));])
-            SMVM_MI_MEM_GET_SLOT_OR_EXCEPT(SMVM_MI_BLOCK_AS(src,uint64), srcSlot);
-            SMVM_MI_TRY_EXCEPT(SMVM_MI_MEM_CAN_READ(srcSlot), SMVM_E_READ_DENIED);
+                      [src = SHAREMIND_MI_ARG_P(1);],
+                      [SHAREMIND_MI_GET_CONST_$1(src, SHAREMIND_MI_ARG_AS(1, sizet));])
+            SHAREMIND_MI_MEM_GET_SLOT_OR_EXCEPT(SHAREMIND_MI_BLOCK_AS(src,uint64), srcSlot);
+            SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_MEM_CAN_READ(srcSlot), SHAREMIND_VM_PROCESS_READ_DENIED);
             m4_ifelse($2, [imm], [],
-                      [SMVM_MI_GET_CONST_$2(srcOffset, SMVM_MI_ARG_AS(2, sizet));])
-            SMVM_MI_GET_ref(destRef, SMVM_MI_ARG_AS(3, sizet));
-            SMVM_MI_TRY_EXCEPT(SMVM_MI_REF_CAN_WRITE(destRef), SMVM_E_WRITE_DENIED);
+                      [SHAREMIND_MI_GET_CONST_$2(srcOffset, SHAREMIND_MI_ARG_AS(2, sizet));])
+            SHAREMIND_MI_GET_ref(destRef, SHAREMIND_MI_ARG_AS(3, sizet));
+            SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_REF_CAN_WRITE(destRef), SHAREMIND_VM_PROCESS_WRITE_DENIED);
             m4_ifelse($3, [imm], [],
-                      [SMVM_MI_GET_CONST_$3(destOffset, SMVM_MI_ARG_AS(4, sizet));])
+                      [SHAREMIND_MI_GET_CONST_$3(destOffset, SHAREMIND_MI_ARG_AS(4, sizet));])
             m4_ifelse($4, [imm], [],
-                      [SMVM_MI_GET_CONST_$4(numBytes, SMVM_MI_ARG_AS(5,sizet));])
-            m4_ifelse($2, [imm], [srcOffset = SMVM_MI_ARG_P(2);])
-            m4_ifelse($4, [imm], [numBytes = SMVM_MI_ARG_P(5);])
-            SMVM_MI_TRY_MEMRANGE(srcSlot->size, SMVM_MI_BLOCK_AS(srcOffset,uint64), SMVM_MI_BLOCK_AS(numBytes,uint64), SMVM_E_OUT_OF_BOUNDS_READ);
-            m4_ifelse($3, [imm], [destOffset = SMVM_MI_ARG_P(4);])
-            SMVM_MI_TRY_MEMRANGE(SMVM_MI_REFERENCE_GET_SIZE(destRef), SMVM_MI_BLOCK_AS(destOffset,uint64), SMVM_MI_BLOCK_AS(numBytes,uint64), SMVM_E_OUT_OF_BOUNDS_WRITE);
-            m4_pushdef([CPY_ARGS], [SMVM_MI_REFERENCE_GET_PTR(destRef) + SMVM_MI_BLOCK_AS(destOffset,uint64),
-                                    ((const uint8_t *) srcSlot->pData) + SMVM_MI_BLOCK_AS(srcOffset,uint64),
-                                    SMVM_MI_BLOCK_AS(numBytes,uint64)])
-            if (srcSlot != SMVM_MI_REFERENCE_GET_MEMORY_PTR(destRef)) {
-                SMVM_MI_MEMCPY(CPY_ARGS);
+                      [SHAREMIND_MI_GET_CONST_$4(numBytes, SHAREMIND_MI_ARG_AS(5,sizet));])
+            m4_ifelse($2, [imm], [srcOffset = SHAREMIND_MI_ARG_P(2);])
+            m4_ifelse($4, [imm], [numBytes = SHAREMIND_MI_ARG_P(5);])
+            SHAREMIND_MI_TRY_MEMRANGE(srcSlot->size, SHAREMIND_MI_BLOCK_AS(srcOffset,uint64), SHAREMIND_MI_BLOCK_AS(numBytes,uint64), SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_READ);
+            m4_ifelse($3, [imm], [destOffset = SHAREMIND_MI_ARG_P(4);])
+            SHAREMIND_MI_TRY_MEMRANGE(SHAREMIND_MI_REFERENCE_GET_SIZE(destRef), SHAREMIND_MI_BLOCK_AS(destOffset,uint64), SHAREMIND_MI_BLOCK_AS(numBytes,uint64), SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_WRITE);
+            m4_pushdef([CPY_ARGS], [SHAREMIND_MI_REFERENCE_GET_PTR(destRef) + SHAREMIND_MI_BLOCK_AS(destOffset,uint64),
+                                    ((const uint8_t *) srcSlot->pData) + SHAREMIND_MI_BLOCK_AS(srcOffset,uint64),
+                                    SHAREMIND_MI_BLOCK_AS(numBytes,uint64)])
+            if (srcSlot != SHAREMIND_MI_REFERENCE_GET_MEMORY_PTR(destRef)) {
+                SHAREMIND_MI_MEMCPY(CPY_ARGS);
             } else {
-                SMVM_MI_MEMMOVE(CPY_ARGS);
+                SHAREMIND_MI_MEMMOVE(CPY_ARGS);
             }m4_popdef([CPY_ARGS])]),
         DO_DISPATCH, PREPARE_FINISH)])
 m4_define([MOV_MEM_TO_REF_DEFINE], [_MOV_MEM_TO_REF_DEFINE(_ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1)])
 foreach([MOV_MEM_TO_REF_DEFINE], (product(([reg], [stack]), ([imm], [reg], [stack]), ([imm], [reg], [stack]), ([imm], [reg], [stack]))))
 
-m4_define([CHECK_CALL_TARGET], [SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_IS_INSTR($1), SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);])
+m4_define([CHECK_CALL_TARGET], [SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_IS_INSTR($1), SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);])
 
 # common.proc.call
 m4_define([_CALL_DEFINE], [
     INSTR_DEFINE([common.proc.call_$1_$2],
         CODE(0x00, 0x02, 0x00, OLB_CODE_$1, OLB_CODE_$2, 0x00, 0x00, 0x00),
         ARGS(m4_ifelse($2, [imm], 1, 2)),
-        m4_ifelse($1, [imm], CHECK_CALL_TARGET(SMVM_PREPARE_ARG_AS(1,sizet)), NO_PREPARATION),
+        m4_ifelse($1, [imm], CHECK_CALL_TARGET(SHAREMIND_PREPARE_ARG_AS(1,sizet)), NO_PREPARATION),
         NO_IMPL_SUFFIX,
         IMPL([
-            const SHAREMIND_CodeBlock * m4_ifelse($1, [imm], [restrict]) addr;
-            m4_ifelse($2, [imm], [], [SHAREMIND_CodeBlock * rv;])
+            const SharemindCodeBlock * m4_ifelse($1, [imm], [restrict]) addr;
+            m4_ifelse($2, [imm], [], [SharemindCodeBlock * rv;])
             m4_ifelse($1, [imm], [],
-                      [SMVM_MI_GET_CONST_$1(addr, SMVM_MI_ARG_AS(1, sizet));])
+                      [SHAREMIND_MI_GET_CONST_$1(addr, SHAREMIND_MI_ARG_AS(1, sizet));])
             m4_ifelse($2, [imm], [],
-                      [SMVM_MI_GET_$2(rv, SMVM_MI_ARG_AS(2, sizet));])
-            m4_ifelse($1, [imm], [addr = SMVM_MI_ARG_P(1);])
+                      [SHAREMIND_MI_GET_$2(rv, SHAREMIND_MI_ARG_AS(2, sizet));])
+            m4_ifelse($1, [imm], [addr = SHAREMIND_MI_ARG_P(1);])
             m4_ifelse($1, [imm],
-                [SMVM_MI_CALL(SMVM_MI_BLOCK_AS(addr, sizet),m4_ifelse($2, [imm], [NULL], [rv]), m4_ifelse($2, [imm], [1], [2]))],
-                [SMVM_MI_CHECK_CALL(addr,m4_ifelse($2, [imm], [NULL], [rv]), m4_ifelse($2, [imm], [1], [2]))])]),
+                [SHAREMIND_MI_CALL(SHAREMIND_MI_BLOCK_AS(addr, sizet),m4_ifelse($2, [imm], [NULL], [rv]), m4_ifelse($2, [imm], [1], [2]))],
+                [SHAREMIND_MI_CHECK_CALL(addr,m4_ifelse($2, [imm], [NULL], [rv]), m4_ifelse($2, [imm], [1], [2]))])]),
         NO_DISPATCH, PREPARE_FINISH)
 ])
 m4_define([CALL_DEFINE], [_CALL_DEFINE(_ARG1$1, _ARG2$1)])
@@ -557,20 +557,20 @@ m4_define([_SYSCALL_DEFINE], [
         CODE(0x00, 0x02, 0x02, OLB_CODE_$1, OLB_CODE_$2, 0x00, 0x00, 0x00),
         ARGS(m4_ifelse($2, [imm], 1, 2)),
         m4_ifelse($1, [imm],
-                  [SMVM_PREPARE_SYSCALL(1);],
+                  [SHAREMIND_PREPARE_SYSCALL(1);],
                   NO_PREPARATION),
         NO_IMPL_SUFFIX,
         IMPL([
-            const SHAREMIND_CodeBlock * m4_ifelse($1, [imm], [restrict]) addr;
-            m4_ifelse($2, [imm], [], [SHAREMIND_CodeBlock * rv;])
+            const SharemindCodeBlock * m4_ifelse($1, [imm], [restrict]) addr;
+            m4_ifelse($2, [imm], [], [SharemindCodeBlock * rv;])
             m4_ifelse($1, [imm], [],
-                      [SMVM_MI_GET_CONST_$1(addr, SMVM_MI_ARG_AS(1, sizet));])
+                      [SHAREMIND_MI_GET_CONST_$1(addr, SHAREMIND_MI_ARG_AS(1, sizet));])
             m4_ifelse($2, [imm], [],
-                      [SMVM_MI_GET_$2(rv, SMVM_MI_ARG_AS(2, sizet));])
-            m4_ifelse($1, [imm], [addr = SMVM_MI_ARG_P(1);])
+                      [SHAREMIND_MI_GET_$2(rv, SHAREMIND_MI_ARG_AS(2, sizet));])
+            m4_ifelse($1, [imm], [addr = SHAREMIND_MI_ARG_P(1);])
             m4_ifelse($1, [imm],
-                [SMVM_MI_SYSCALL(SMVM_MI_BLOCK_AS(addr, cp),m4_ifelse($2, [imm], [NULL], [rv]), m4_ifelse($2, [imm], [1], [2]))],
-                [SMVM_MI_CHECK_SYSCALL(addr,m4_ifelse($2, [imm], [NULL], [rv]), m4_ifelse($2, [imm], [1], [2]))])]),
+                [SHAREMIND_MI_SYSCALL(SHAREMIND_MI_BLOCK_AS(addr, cp),m4_ifelse($2, [imm], [NULL], [rv]), m4_ifelse($2, [imm], [1], [2]))],
+                [SHAREMIND_MI_CHECK_SYSCALL(addr,m4_ifelse($2, [imm], [NULL], [rv]), m4_ifelse($2, [imm], [1], [2]))])]),
         DO_DISPATCH, PREPARE_FINISH)
 ])
 m4_define([SYSCALL_DEFINE], [_SYSCALL_DEFINE(_ARG1$1, _ARG2$1)])
@@ -582,11 +582,11 @@ m4_define([RETURN_DEFINE], [
         CODE(0x00, 0x02, 0x03, OLB_CODE_$1, 0x00, 0x00, 0x00, 0x00),
         ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX,
         IMPL([
-            const SHAREMIND_CodeBlock * restrict v;
+            const SharemindCodeBlock * restrict v;
             m4_ifelse($1, [imm],
-                      [v = SMVM_MI_ARG_P(1);],
-                      [SMVM_MI_GET_CONST_$1(v, SMVM_MI_ARG_AS(1, sizet));])
-            SMVM_MI_RETURN(*v);]),
+                      [v = SHAREMIND_MI_ARG_P(1);],
+                      [SHAREMIND_MI_GET_CONST_$1(v, SHAREMIND_MI_ARG_AS(1, sizet));])
+            SHAREMIND_MI_RETURN(*v);]),
         NO_DISPATCH, PREPARE_FINISH)])
 RETURN_DEFINE([imm])
 RETURN_DEFINE([reg])
@@ -598,11 +598,11 @@ m4_define([PUSH_DEFINE], [
         CODE(0x00, 0x02, 0x04, OLB_CODE_$1, 0x00, 0x00, 0x00, 0x00),
         ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX,
         IMPL([
-            const SHAREMIND_CodeBlock * restrict v;
+            const SharemindCodeBlock * restrict v;
             m4_ifelse($1, [imm],
-                      [v = SMVM_MI_ARG_P(1);],
-                      [SMVM_MI_GET_CONST_$1(v, SMVM_MI_ARG_AS(1, sizet));])
-            SMVM_MI_PUSH(*v);]),
+                      [v = SHAREMIND_MI_ARG_P(1);],
+                      [SHAREMIND_MI_GET_CONST_$1(v, SHAREMIND_MI_ARG_AS(1, sizet));])
+            SHAREMIND_MI_PUSH(*v);]),
         DO_DISPATCH, PREPARE_FINISH)])
 PUSH_DEFINE([imm])
 PUSH_DEFINE([reg])
@@ -615,13 +615,13 @@ m4_define([_PUSHREF_BLOCK_DEFINE], [
         CODE(0x00, 0x02, m4_ifelse($1, [ref], [0x05], [0x07]), OLB_CODE_$2, 0x00, 0x00, 0x00, 0x00),
         ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX,
         IMPL([
-            m4_ifelse($1, [cref], [const]) SHAREMIND_CodeBlock * restrict b;
+            m4_ifelse($1, [cref], [const]) SharemindCodeBlock * restrict b;
             m4_ifelse($2, [imm],
-                      [b = SMVM_MI_ARG_P(1);],
+                      [b = SHAREMIND_MI_ARG_P(1);],
                       $1, [cref],
-                      [SMVM_MI_GET_CONST_$2(b, SMVM_MI_ARG_AS(1, sizet));],
-                      [SMVM_MI_GET_$2(b, SMVM_MI_ARG_AS(1, sizet));])
-            SMVM_MI_PUSHREF_BLOCK_$1(b)]),
+                      [SHAREMIND_MI_GET_CONST_$2(b, SHAREMIND_MI_ARG_AS(1, sizet));],
+                      [SHAREMIND_MI_GET_$2(b, SHAREMIND_MI_ARG_AS(1, sizet));])
+            SHAREMIND_MI_PUSHREF_BLOCK_$1(b)]),
         DO_DISPATCH, PREPARE_FINISH)])
 m4_define([PUSHREF_BLOCK_DEFINE], [_PUSHREF_BLOCK_DEFINE(_ARG1$1, _ARG2$1)])
 foreach([PUSHREF_BLOCK_DEFINE], (product(([cref], [ref]), ([reg], [stack]))))
@@ -634,10 +634,10 @@ m4_define([PUSHREF_REF_DEFINE], [
     CODE(0x00, 0x02, m4_ifelse($1, [ref], [0x05], [0x07]), OLB_CODE_$2, 0x00, 0x00, 0x00, 0x00),
     ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX,
     IMPL([
-        const SMVM_[]m4_ifelse($2, [cref], [C])Reference * restrict srcRef;
-        SMVM_MI_GET_$2(srcRef, SMVM_MI_ARG_AS(1, sizet));
-        m4_ifelse($1, [cref], [SMVM_MI_TRY_EXCEPT(SMVM_MI_REF_CAN_READ(srcRef), SMVM_E_INVALID_ARGUMENT);])
-        SMVM_MI_PUSHREF_REF_$1(srcRef)]),
+        const Sharemind[]m4_ifelse($2, [cref], [C])Reference * restrict srcRef;
+        SHAREMIND_MI_GET_$2(srcRef, SHAREMIND_MI_ARG_AS(1, sizet));
+        m4_ifelse($1, [cref], [SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_REF_CAN_READ(srcRef), SHAREMIND_VM_PROCESS_INVALID_ARGUMENT);])
+        SHAREMIND_MI_PUSHREF_REF_$1(srcRef)]),
     DO_DISPATCH, PREPARE_FINISH)])
 PUSHREF_REF_DEFINE([cref], [cref])
 PUSHREF_REF_DEFINE([cref], [ref])
@@ -650,12 +650,12 @@ m4_define([_PUSHREF_MEM_DEFINE], [
     CODE(0x00, 0x02, m4_ifelse($1, [ref], [0x05], [0x07]), OLB_CODE_mem_$2, 0x00, 0x00, 0x00, 0x00),
     ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX,
     IMPL([
-        const SHAREMIND_CodeBlock * restrict srcPtr;
-        SMVM_MemorySlot * srcSlot;
-        SMVM_MI_GET_CONST_$2(srcPtr, SMVM_MI_ARG_AS(1, sizet));
-        SMVM_MI_MEM_GET_SLOT_OR_EXCEPT(SMVM_MI_BLOCK_AS(srcPtr,uint64), srcSlot);
-        m4_ifelse($1, [cref], [SMVM_MI_TRY_EXCEPT(SMVM_MI_MEM_CAN_READ(srcSlot), SMVM_E_INVALID_ARGUMENT);])
-        SMVM_MI_PUSHREF_MEM_$1(srcSlot)]),
+        const SharemindCodeBlock * restrict srcPtr;
+        SharemindMemorySlot * srcSlot;
+        SHAREMIND_MI_GET_CONST_$2(srcPtr, SHAREMIND_MI_ARG_AS(1, sizet));
+        SHAREMIND_MI_MEM_GET_SLOT_OR_EXCEPT(SHAREMIND_MI_BLOCK_AS(srcPtr,uint64), srcSlot);
+        m4_ifelse($1, [cref], [SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_MEM_CAN_READ(srcSlot), SHAREMIND_VM_PROCESS_INVALID_ARGUMENT);])
+        SHAREMIND_MI_PUSHREF_MEM_$1(srcSlot)]),
     DO_DISPATCH, PREPARE_FINISH)])
 m4_define([PUSHREF_MEM_DEFINE], [_PUSHREF_MEM_DEFINE(_ARG1$1, _ARG2$1)])
 foreach([PUSHREF_MEM_DEFINE], (product(([cref], [ref]), ([reg], [stack]))))
@@ -668,49 +668,49 @@ m4_define([_PUSHREFPART_BLOCK_DEFINE], [
         ARGS(3),
         m4_ifelse($3_$4, [imm_imm],
                   PREPARATION([
-                      SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(2,uint64) < 8u,
-                                                  SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
-                      SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(3,uint64) > 0u,
-                                                  SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
-                      SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(2,uint64) + SMVM_PREPARE_ARG_AS(3,uint64) <= 8u,
-                                                  SMVM_PREPARE_ERROR_INVALID_ARGUMENTS)]),
+                      SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(2,uint64) < 8u,
+                                                  SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);
+                      SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(3,uint64) > 0u,
+                                                  SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);
+                      SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(2,uint64) + SHAREMIND_PREPARE_ARG_AS(3,uint64) <= 8u,
+                                                  SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS)]),
                   $3, [imm],
                   PREPARATION([
-                      SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(2,uint64) < 8u,
-                                                  SMVM_PREPARE_ERROR_INVALID_ARGUMENTS)]),
+                      SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(2,uint64) < 8u,
+                                                  SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS)]),
                   $4, [imm],
                   PREPARATION([
-                      SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(3,uint64) > 0u,
-                                                  SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
-                      SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(3,uint64) <= 8u,
-                                                  SMVM_PREPARE_ERROR_INVALID_ARGUMENTS)]),
+                      SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(3,uint64) > 0u,
+                                                  SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);
+                      SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(3,uint64) <= 8u,
+                                                  SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS)]),
                   NO_PREPARATION),
         NO_IMPL_SUFFIX,
         IMPL([
-            m4_ifelse($1, [cref], [const]) SHAREMIND_CodeBlock * m4_ifelse($2, [imm], [restrict]) b;
-            const SHAREMIND_CodeBlock * m4_ifelse($3, [imm], [restrict]) offset;
-            const SHAREMIND_CodeBlock * m4_ifelse($4, [imm], [restrict]) nBytes;
+            m4_ifelse($1, [cref], [const]) SharemindCodeBlock * m4_ifelse($2, [imm], [restrict]) b;
+            const SharemindCodeBlock * m4_ifelse($3, [imm], [restrict]) offset;
+            const SharemindCodeBlock * m4_ifelse($4, [imm], [restrict]) nBytes;
             m4_ifelse($2, [imm],
-                      [b = SMVM_MI_ARG_P(1);],
+                      [b = SHAREMIND_MI_ARG_P(1);],
                       $1, [cref],
-                      [SMVM_MI_GET_CONST_$2(b, SMVM_MI_ARG_AS(1, sizet));]
-                      [SMVM_MI_GET_$2(b, SMVM_MI_ARG_AS(1, sizet));])
+                      [SHAREMIND_MI_GET_CONST_$2(b, SHAREMIND_MI_ARG_AS(1, sizet));]
+                      [SHAREMIND_MI_GET_$2(b, SHAREMIND_MI_ARG_AS(1, sizet));])
             m4_ifelse($3, [imm],
-                      [offset = SMVM_MI_ARG_P(2);],
-                      [SMVM_MI_GET_CONST_$3(offset, SMVM_MI_ARG_AS(2, sizet));
-                       SMVM_MI_TRY_EXCEPT(SMVM_MI_BLOCK_AS(offset, uint64) < 8u,
-                                          SMVM_E_OUT_OF_BOUNDS_REFERENCE_INDEX);])
+                      [offset = SHAREMIND_MI_ARG_P(2);],
+                      [SHAREMIND_MI_GET_CONST_$3(offset, SHAREMIND_MI_ARG_AS(2, sizet));
+                       SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_BLOCK_AS(offset, uint64) < 8u,
+                                          SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_REFERENCE_INDEX);])
             m4_ifelse($4, [imm],
-                      [nBytes = SMVM_MI_ARG_P(3);],
-                      [SMVM_MI_GET_CONST_$4(nBytes, SMVM_MI_ARG_AS(3, sizet));
-                       SMVM_MI_TRY_EXCEPT(SMVM_MI_BLOCK_AS(nBytes, uint64) > 0u,
-                                          SMVM_E_OUT_OF_BOUNDS_REFERENCE_SIZE);
-                       SMVM_MI_TRY_EXCEPT(SMVM_MI_BLOCK_AS(nBytes, uint64) <= 8u,
-                                          SMVM_E_OUT_OF_BOUNDS_REFERENCE_SIZE);])
+                      [nBytes = SHAREMIND_MI_ARG_P(3);],
+                      [SHAREMIND_MI_GET_CONST_$4(nBytes, SHAREMIND_MI_ARG_AS(3, sizet));
+                       SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_BLOCK_AS(nBytes, uint64) > 0u,
+                                          SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_REFERENCE_SIZE);
+                       SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_BLOCK_AS(nBytes, uint64) <= 8u,
+                                          SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_REFERENCE_SIZE);])
             m4_ifelse($3_$4, [imm_imm], [],
-                      [SMVM_MI_TRY_EXCEPT(SMVM_MI_BLOCK_AS(offset, uint64) + SMVM_MI_BLOCK_AS(nBytes, uint64) <= 8u,
-                                          SMVM_E_OUT_OF_BOUNDS_REFERENCE_SIZE);])
-            SMVM_MI_PUSHREFPART_BLOCK_$1(b,SMVM_MI_BLOCK_AS(offset,uint64),SMVM_MI_BLOCK_AS(nBytes,uint64))]),
+                      [SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_BLOCK_AS(offset, uint64) + SHAREMIND_MI_BLOCK_AS(nBytes, uint64) <= 8u,
+                                          SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_REFERENCE_SIZE);])
+            SHAREMIND_MI_PUSHREFPART_BLOCK_$1(b,SHAREMIND_MI_BLOCK_AS(offset,uint64),SHAREMIND_MI_BLOCK_AS(nBytes,uint64))]),
         DO_DISPATCH, PREPARE_FINISH)])
 m4_define([PUSHREFPART_BLOCK_DEFINE], [_PUSHREFPART_BLOCK_DEFINE(_ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1)])
 foreach([PUSHREFPART_BLOCK_DEFINE], (product(([cref], [ref]), ([reg], [stack]), ([imm], [reg], [stack]), ([imm], [reg], [stack]))))
@@ -723,29 +723,29 @@ m4_define([_PUSHREFPART_REF_DEFINE], [
     CODE(0x00, 0x02, m4_ifelse($1, [ref], [0x06], [0x08]), OLB_CODE_$2, OLB_CODE_$3, OLB_CODE_$4, 0x00, 0x00),
     ARGS(3),
     m4_ifelse($4, [imm],
-              PREPARATION([SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(3,uint64) > 0u,
-                                                       SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);]),
+              PREPARATION([SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(3,uint64) > 0u,
+                                                       SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);]),
               NO_PREPARATION),
     NO_IMPL_SUFFIX,
     IMPL([
-        const SMVM_[]m4_ifelse($2, [cref], [C])Reference * restrict srcRef;
-        const SHAREMIND_CodeBlock * m4_ifelse($3, [imm], [restrict]) offset;
-        const SHAREMIND_CodeBlock * m4_ifelse($3, [imm], [restrict]) nBytes;
-        SMVM_MI_GET_$2(srcRef, SMVM_MI_ARG_AS(1, sizet));
-        m4_ifelse($1, [cref], [SMVM_MI_TRY_EXCEPT(SMVM_MI_REF_CAN_READ(srcRef), SMVM_E_INVALID_ARGUMENT);])
+        const Sharemind[]m4_ifelse($2, [cref], [C])Reference * restrict srcRef;
+        const SharemindCodeBlock * m4_ifelse($3, [imm], [restrict]) offset;
+        const SharemindCodeBlock * m4_ifelse($3, [imm], [restrict]) nBytes;
+        SHAREMIND_MI_GET_$2(srcRef, SHAREMIND_MI_ARG_AS(1, sizet));
+        m4_ifelse($1, [cref], [SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_REF_CAN_READ(srcRef), SHAREMIND_VM_PROCESS_INVALID_ARGUMENT);])
         m4_ifelse($3, [imm],
-                  [offset = SMVM_MI_ARG_P(2);],
-                  [SMVM_MI_GET_CONST_$3(offset, SMVM_MI_ARG_AS(2, sizet));])
-        SMVM_MI_TRY_EXCEPT(SMVM_MI_BLOCK_AS(offset,sizet) < srcRef->size,
-                           SMVM_E_OUT_OF_BOUNDS_REFERENCE_INDEX);
+                  [offset = SHAREMIND_MI_ARG_P(2);],
+                  [SHAREMIND_MI_GET_CONST_$3(offset, SHAREMIND_MI_ARG_AS(2, sizet));])
+        SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_BLOCK_AS(offset,sizet) < srcRef->size,
+                           SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_REFERENCE_INDEX);
         m4_ifelse($4, [imm],
-                  [nBytes = SMVM_MI_ARG_P(3);],
-                  [SMVM_MI_GET_CONST_$4(nBytes, SMVM_MI_ARG_AS(3, sizet));])
-        SMVM_MI_TRY_EXCEPT(SMVM_MI_BLOCK_AS(nBytes,uint64) <= srcRef->size,
-                           SMVM_E_OUT_OF_BOUNDS_REFERENCE_SIZE);
-        SMVM_MI_TRY_EXCEPT(SMVM_MI_BLOCK_AS(offset,uint64) < srcRef->size - SMVM_MI_BLOCK_AS(nBytes,uint64),
-                           SMVM_E_OUT_OF_BOUNDS_REFERENCE_SIZE);
-        SMVM_MI_PUSHREFPART_REF_$1(srcRef, SMVM_MI_BLOCK_AS(offset,uint64), SMVM_MI_BLOCK_AS(nBytes,uint64))]),
+                  [nBytes = SHAREMIND_MI_ARG_P(3);],
+                  [SHAREMIND_MI_GET_CONST_$4(nBytes, SHAREMIND_MI_ARG_AS(3, sizet));])
+        SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_BLOCK_AS(nBytes,uint64) <= srcRef->size,
+                           SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_REFERENCE_SIZE);
+        SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_BLOCK_AS(offset,uint64) < srcRef->size - SHAREMIND_MI_BLOCK_AS(nBytes,uint64),
+                           SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_REFERENCE_SIZE);
+        SHAREMIND_MI_PUSHREFPART_REF_$1(srcRef, SHAREMIND_MI_BLOCK_AS(offset,uint64), SHAREMIND_MI_BLOCK_AS(nBytes,uint64))]),
     DO_DISPATCH, PREPARE_FINISH)])
 m4_define([PUSHREFPART_REF_DEFINE], [_PUSHREFPART_REF_DEFINE(_ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1)])
 foreach([PUSHREFPART_REF_DEFINE], (product(([cref], [ref]), ([ref]), ([imm], [reg], [stack]), ([imm], [reg], [stack]))))
@@ -758,31 +758,31 @@ m4_define([_PUSHREFPART_MEM_DEFINE], [
     CODE(0x00, 0x02, m4_ifelse($1, [ref], [0x06], [0x08]), OLB_CODE_mem_$2, OLB_CODE_$3, OLB_CODE_$4, 0x00, 0x00),
     ARGS(3),
     m4_ifelse($4, [imm],
-              PREPARATION([SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(3,uint64) > 0u,
-                                                       SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);]),
+              PREPARATION([SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(3,uint64) > 0u,
+                                                       SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);]),
               NO_PREPARATION),
     NO_IMPL_SUFFIX,
     IMPL([
-        const SHAREMIND_CodeBlock * srcPtr;
-        const SHAREMIND_CodeBlock * m4_ifelse($2, [imm], [restrict]) offset;
-        const SHAREMIND_CodeBlock * m4_ifelse($2, [imm], [restrict]) nBytes;
-        SMVM_MemorySlot * srcSlot;
-        SMVM_MI_GET_CONST_$2(srcPtr, SMVM_MI_ARG_AS(1, sizet));
-        SMVM_MI_MEM_GET_SLOT_OR_EXCEPT(SMVM_MI_BLOCK_AS(srcPtr,uint64), srcSlot);
-        m4_ifelse($1, [cref], [SMVM_MI_TRY_EXCEPT(SMVM_MI_MEM_CAN_READ(srcSlot), SMVM_E_INVALID_ARGUMENT);])
+        const SharemindCodeBlock * srcPtr;
+        const SharemindCodeBlock * m4_ifelse($2, [imm], [restrict]) offset;
+        const SharemindCodeBlock * m4_ifelse($2, [imm], [restrict]) nBytes;
+        SharemindMemorySlot * srcSlot;
+        SHAREMIND_MI_GET_CONST_$2(srcPtr, SHAREMIND_MI_ARG_AS(1, sizet));
+        SHAREMIND_MI_MEM_GET_SLOT_OR_EXCEPT(SHAREMIND_MI_BLOCK_AS(srcPtr,uint64), srcSlot);
+        m4_ifelse($1, [cref], [SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_MEM_CAN_READ(srcSlot), SHAREMIND_VM_PROCESS_INVALID_ARGUMENT);])
         m4_ifelse($3, [imm],
-                  [offset = SMVM_MI_ARG_P(2);],
-                  [SMVM_MI_GET_CONST_$3(offset, SMVM_MI_ARG_AS(2, sizet));])
-        SMVM_MI_TRY_EXCEPT(SMVM_MI_BLOCK_AS(offset,sizet) < srcSlot->size,
-                           SMVM_E_OUT_OF_BOUNDS_REFERENCE_INDEX);
+                  [offset = SHAREMIND_MI_ARG_P(2);],
+                  [SHAREMIND_MI_GET_CONST_$3(offset, SHAREMIND_MI_ARG_AS(2, sizet));])
+        SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_BLOCK_AS(offset,sizet) < srcSlot->size,
+                           SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_REFERENCE_INDEX);
         m4_ifelse($4, [imm],
-                  [nBytes = SMVM_MI_ARG_P(3);],
-                  [SMVM_MI_GET_CONST_$4(nBytes, SMVM_MI_ARG_AS(3, sizet));])
-        SMVM_MI_TRY_EXCEPT(SMVM_MI_BLOCK_AS(nBytes,uint64) <= srcSlot->size,
-                           SMVM_E_OUT_OF_BOUNDS_REFERENCE_SIZE);
-        SMVM_MI_TRY_EXCEPT(SMVM_MI_BLOCK_AS(offset,uint64) < srcSlot->size - SMVM_MI_BLOCK_AS(nBytes,uint64),
-                           SMVM_E_OUT_OF_BOUNDS_REFERENCE_SIZE);
-        SMVM_MI_PUSHREFPART_MEM_$1(srcSlot, SMVM_MI_BLOCK_AS(offset,uint64), SMVM_MI_BLOCK_AS(nBytes,uint64))]),
+                  [nBytes = SHAREMIND_MI_ARG_P(3);],
+                  [SHAREMIND_MI_GET_CONST_$4(nBytes, SHAREMIND_MI_ARG_AS(3, sizet));])
+        SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_BLOCK_AS(nBytes,uint64) <= srcSlot->size,
+                           SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_REFERENCE_SIZE);
+        SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_BLOCK_AS(offset,uint64) < srcSlot->size - SHAREMIND_MI_BLOCK_AS(nBytes,uint64),
+                           SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_REFERENCE_SIZE);
+        SHAREMIND_MI_PUSHREFPART_MEM_$1(srcSlot, SHAREMIND_MI_BLOCK_AS(offset,uint64), SHAREMIND_MI_BLOCK_AS(nBytes,uint64))]),
     DO_DISPATCH, PREPARE_FINISH)])
 m4_define([PUSHREFPART_MEM_DEFINE], [_PUSHREFPART_MEM_DEFINE(_ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1)])
 foreach([PUSHREFPART_MEM_DEFINE], (product(([cref], [ref]), ([reg], [stack]), ([imm], [reg], [stack]), ([imm], [reg], [stack]))))
@@ -791,14 +791,14 @@ INSTR_DEFINE([common.proc.clearstack],
     CODE(0x00, 0x02, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00),
     NO_ARGS, NO_PREPARATION, NO_IMPL_SUFFIX,
     IMPL([
-        if (likely(SMVM_MI_HAS_STACK)) {
-            SMVM_MI_CLEAR_STACK;
+        if (likely(SHAREMIND_MI_HAS_STACK)) {
+            SHAREMIND_MI_CLEAR_STACK;
         }]),
     DO_DISPATCH, PREPARE_FINISH)
 
 INSTR_DEFINE([common.proc.resizestack],
     CODE(0x00, 0x02, 0x0a, 0x00, 0x00, 0x00, 0x00, 0x00),
-    ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([SMVM_MI_RESIZE_STACK(SMVM_MI_ARG_AS(1, uint64))]), DO_DISPATCH, PREPARE_FINISH)
+    ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([SHAREMIND_MI_RESIZE_STACK(SHAREMIND_MI_ARG_AS(1, uint64))]), DO_DISPATCH, PREPARE_FINISH)
 
 # common.mem.alloc
 m4_define([_MEM_ALLOC_DEFINE], [
@@ -806,12 +806,12 @@ m4_define([_MEM_ALLOC_DEFINE], [
         CODE(0x00, 0x03, 0x00, OLB_CODE_$1, OLB_CODE_$2, 0x00, 0x00, 0x00),
         ARGS(2), NO_PREPARATION, NO_IMPL_SUFFIX,
         IMPL([
-            SHAREMIND_CodeBlock * m4_ifelse($2, [imm], [restrict]) ptrDest;
-            SMVM_MI_GET_$1(ptrDest, SMVM_MI_ARG_AS(1, sizet));
+            SharemindCodeBlock * m4_ifelse($2, [imm], [restrict]) ptrDest;
+            SHAREMIND_MI_GET_$1(ptrDest, SHAREMIND_MI_ARG_AS(1, sizet));
             m4_ifelse($2, [imm],,
-                [const SHAREMIND_CodeBlock * sizeReg;
-                 SMVM_MI_GET_CONST_$2(sizeReg, SMVM_MI_ARG_AS(2, sizet));])
-            SMVM_MI_MEM_ALLOC(ptrDest,m4_ifelse($2, [imm], [SMVM_MI_ARG_P(2)], [sizeReg]))]),
+                [const SharemindCodeBlock * sizeReg;
+                 SHAREMIND_MI_GET_CONST_$2(sizeReg, SHAREMIND_MI_ARG_AS(2, sizet));])
+            SHAREMIND_MI_MEM_ALLOC(ptrDest,m4_ifelse($2, [imm], [SHAREMIND_MI_ARG_P(2)], [sizeReg]))]),
         DO_DISPATCH, PREPARE_FINISH)])
 m4_define([MEM_ALLOC_DEFINE], [_MEM_ALLOC_DEFINE(_ARG1$1, _ARG2$1)])
 foreach([MEM_ALLOC_DEFINE], (product(([[reg]], [[stack]]),([[imm]], [[reg]], [[stack]]))))
@@ -822,9 +822,9 @@ m4_define([MEM_FREE_DEFINE], [
         CODE(0x00, 0x03, 0x01, OLB_CODE_$1, 0x00, 0x00, 0x00, 0x00),
         ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX,
         IMPL([
-            const SHAREMIND_CodeBlock * restrict ptr;
-            SMVM_MI_GET_CONST_$1(ptr, SMVM_MI_ARG_AS(1, sizet));
-            SMVM_MI_MEM_FREE(ptr)]),
+            const SharemindCodeBlock * restrict ptr;
+            SHAREMIND_MI_GET_CONST_$1(ptr, SHAREMIND_MI_ARG_AS(1, sizet));
+            SHAREMIND_MI_MEM_FREE(ptr)]),
         DO_DISPATCH, PREPARE_FINISH)])
 MEM_FREE_DEFINE([reg])
 MEM_FREE_DEFINE([stack])
@@ -836,12 +836,12 @@ m4_define([MEM_GET_SIZE_DEFINE], [
         ARGS(2), NO_PREPARATION, NO_IMPL_SUFFIX,
         IMPL([
             m4_ifelse($1, [imm],
-                      [const SHAREMIND_CodeBlock * const ptr = SMVM_MI_ARG_P(1);],
-                      [const SHAREMIND_CodeBlock * ptr;
-                       SMVM_MI_GET_CONST_$1(ptr, SMVM_MI_ARG_AS(1, sizet));])
-            SHAREMIND_CodeBlock * sizedest;
-            SMVM_MI_GET_$2(sizedest, SMVM_MI_ARG_AS(2, sizet));
-            SMVM_MI_MEM_GET_SIZE(ptr,sizedest);]),
+                      [const SharemindCodeBlock * const ptr = SHAREMIND_MI_ARG_P(1);],
+                      [const SharemindCodeBlock * ptr;
+                       SHAREMIND_MI_GET_CONST_$1(ptr, SHAREMIND_MI_ARG_AS(1, sizet));])
+            SharemindCodeBlock * sizedest;
+            SHAREMIND_MI_GET_$2(sizedest, SHAREMIND_MI_ARG_AS(2, sizet));
+            SHAREMIND_MI_MEM_GET_SIZE(ptr,sizedest);]),
         DO_DISPATCH, PREPARE_FINISH
     )])
 MEM_GET_SIZE_DEFINE([imm],[reg])
@@ -857,15 +857,15 @@ m4_define([_CONVERT_DEFINE], [m4_ifelse($1, $3, [], [
         CODE(0x00, 0x04, DTB_CODE_$1, OLB_CODE_$2, DTB_CODE_$3, OLB_CODE_$4, 0x00, 0x00),
         ARGS(2), NO_PREPARATION, NO_IMPL_SUFFIX,
         IMPL([
-            const SHAREMIND_CodeBlock * s;
-            SMVM_MI_GET_CONST_$2(s, SMVM_MI_ARG_AS(1, sizet));
-            SHAREMIND_CodeBlock * d;
-            SMVM_MI_GET_$4(d, SMVM_MI_ARG_AS(2, sizet));
+            const SharemindCodeBlock * s;
+            SHAREMIND_MI_GET_CONST_$2(s, SHAREMIND_MI_ARG_AS(1, sizet));
+            SharemindCodeBlock * d;
+            SHAREMIND_MI_GET_$4(d, SHAREMIND_MI_ARG_AS(2, sizet));
             m4_ifelse($1, [float32],
-                      [SMVM_MI_CONVERT_$1_TO_$3(SMVM_MI_BLOCK_AS(d,$3), SMVM_MI_BLOCK_AS(s,$1))],
+                      [SHAREMIND_MI_CONVERT_$1_TO_$3(SHAREMIND_MI_BLOCK_AS(d,$3), SHAREMIND_MI_BLOCK_AS(s,$1))],
                       $3, [float32],
-                      [SMVM_MI_CONVERT_$1_TO_$3(SMVM_MI_BLOCK_AS(d,$3), SMVM_MI_BLOCK_AS(s,$1))],
-                      [SMVM_MI_BLOCK_AS(d,$3) = (DTB_TYPE_$3) SMVM_MI_BLOCK_AS(s,$1)])]),
+                      [SHAREMIND_MI_CONVERT_$1_TO_$3(SHAREMIND_MI_BLOCK_AS(d,$3), SHAREMIND_MI_BLOCK_AS(s,$1))],
+                      [SHAREMIND_MI_BLOCK_AS(d,$3) = (DTB_TYPE_$3) SHAREMIND_MI_BLOCK_AS(s,$1)])]),
         DO_DISPATCH, PREPARE_FINISH
     )])])
 m4_define([CONVERT_DEFINE], [_$0(_ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1)])
@@ -877,11 +877,11 @@ m4_define([HALT_DEFINE], [
         CODE(0x00, 0xff, 0x00, OLB_CODE_$1, 0x00, 0x00, 0x00, 0x00),
         ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX,
         IMPL([
-            const SHAREMIND_CodeBlock * restrict c;
+            const SharemindCodeBlock * restrict c;
             m4_ifelse($1, [imm],
-                      [c = SMVM_MI_ARG_P(1);],
-                      [SMVM_MI_GET_CONST_$1(c, SMVM_MI_ARG_AS(1, sizet));])
-            SMVM_MI_HALT(*c)]),
+                      [c = SHAREMIND_MI_ARG_P(1);],
+                      [SHAREMIND_MI_GET_CONST_$1(c, SHAREMIND_MI_ARG_AS(1, sizet));])
+            SHAREMIND_MI_HALT(*c)]),
         NO_DISPATCH, PREPARE_FINISH)])
 HALT_DEFINE([imm])
 HALT_DEFINE([reg])
@@ -890,9 +890,9 @@ HALT_DEFINE([stack])
 INSTR_DEFINE([common.except],
     CODE(0x00, 0xff, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00),
     ARGS(1), PREPARATION([
-        SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_IS_EXCEPTIONCODE(SMVM_PREPARE_ARG_AS(1,int64)),
-                                    SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
-    ]), NO_IMPL_SUFFIX, IMPL([SMVM_MI_DO_EXCEPT(SMVM_MI_ARG_AS(1,int64))]), DO_DISPATCH, PREPARE_FINISH)
+        SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_IS_EXCEPTIONCODE(SHAREMIND_PREPARE_ARG_AS(1,int64)),
+                                    SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);
+    ]), NO_IMPL_SUFFIX, IMPL([SHAREMIND_MI_DO_EXCEPT(SHAREMIND_MI_ARG_AS(1,int64))]), DO_DISPATCH, PREPARE_FINISH)
 
 
 # (1=name,2=namespace,3=class,4=dtb,5=olb,6=prepare,7=impl)
@@ -901,10 +901,10 @@ m4_define([ALBI_D_DEFINE], [
         CODE($2, $3, DTB_CODE_$4, OLB_CODE_$5, 0x00, 0x00, 0x00, 0x00),
         ARGS(1), $6, NO_IMPL_SUFFIX,
         IMPL([
-            SHAREMIND_CodeBlock * restrict bd;
-            SMVM_MI_GET_$5(bd, SMVM_MI_ARG_AS(1, sizet));
+            SharemindCodeBlock * restrict bd;
+            SHAREMIND_MI_GET_$5(bd, SHAREMIND_MI_ARG_AS(1, sizet));
             {
-                DTB_TYPE_$4 * restrict d = SMVM_MI_BLOCK_AS_P(bd,$4);
+                DTB_TYPE_$4 * restrict d = SHAREMIND_MI_BLOCK_AS_P(bd,$4);
                 $7;
             }]),
         DO_DISPATCH, PREPARE_FINISH)])
@@ -915,13 +915,13 @@ m4_define([ALBI_DS_DEFINE], [
         CODE($2, $3, DTB_CODE_$4, OLB_CODE_$5, OLB_CODE_$6, 0x00, 0x00, 0x00),
         ARGS(2), $7, NO_IMPL_SUFFIX,
         IMPL([
-            SHAREMIND_CodeBlock * m4_ifelse($6, [imm], [restrict]) bd;
-            const SHAREMIND_CodeBlock * m4_ifelse($6, [imm], [restrict]) bs;
-            SMVM_MI_GET_$5(bd, SMVM_MI_ARG_AS(1, sizet));
-            m4_ifelse($6, [imm], [bs = SMVM_MI_ARG_P(2)], [SMVM_MI_GET_CONST_$6(bs, SMVM_MI_ARG_AS(2, sizet))]);
+            SharemindCodeBlock * m4_ifelse($6, [imm], [restrict]) bd;
+            const SharemindCodeBlock * m4_ifelse($6, [imm], [restrict]) bs;
+            SHAREMIND_MI_GET_$5(bd, SHAREMIND_MI_ARG_AS(1, sizet));
+            m4_ifelse($6, [imm], [bs = SHAREMIND_MI_ARG_P(2)], [SHAREMIND_MI_GET_CONST_$6(bs, SHAREMIND_MI_ARG_AS(2, sizet))]);
             {
-                DTB_TYPE_$4 * m4_ifelse($6, [imm], [restrict]) d = SMVM_MI_BLOCK_AS_P(bd,$4);
-                const DTB_TYPE_$4 * m4_ifelse($6, [imm], [restrict]) s = SMVM_MI_BLOCK_AS_P(bs,$4);
+                DTB_TYPE_$4 * m4_ifelse($6, [imm], [restrict]) d = SHAREMIND_MI_BLOCK_AS_P(bd,$4);
+                const DTB_TYPE_$4 * m4_ifelse($6, [imm], [restrict]) s = SHAREMIND_MI_BLOCK_AS_P(bs,$4);
                 $8;
             }]),
         DO_DISPATCH, PREPARE_FINISH)])
@@ -934,20 +934,20 @@ m4_define([_ALBI_DSS_DEFINE], [
         CODE($2, $3, DTB_CODE_$4, OLB_CODE_$5, OLB_CODE_$6, OLB_CODE_$7, 0x00, 0x00),
         ARGS(3), $8, NO_IMPL_SUFFIX,
         IMPL([
-            SHAREMIND_CodeBlock * m4_ifelse($6, [imm], m4_ifelse($7, [imm], [restrict])) bd;
-            const SHAREMIND_CodeBlock * m4_ifelse($6, [imm], [restrict]) bs1;
-            const SHAREMIND_CodeBlock * m4_ifelse($7, [imm], [restrict]) bs2;
-            SMVM_MI_GET_$5(bd, SMVM_MI_ARG_AS(1, sizet));
-            m4_ifelse($6, [imm], [bs1 = SMVM_MI_ARG_P(2);], [SMVM_MI_GET_CONST_$6(bs1, SMVM_MI_ARG_AS(2, sizet));])
-            m4_ifelse($7, [imm], [bs2 = SMVM_MI_ARG_P(3);], [SMVM_MI_GET_CONST_$7(bs2, SMVM_MI_ARG_AS(3, sizet));])
+            SharemindCodeBlock * m4_ifelse($6, [imm], m4_ifelse($7, [imm], [restrict])) bd;
+            const SharemindCodeBlock * m4_ifelse($6, [imm], [restrict]) bs1;
+            const SharemindCodeBlock * m4_ifelse($7, [imm], [restrict]) bs2;
+            SHAREMIND_MI_GET_$5(bd, SHAREMIND_MI_ARG_AS(1, sizet));
+            m4_ifelse($6, [imm], [bs1 = SHAREMIND_MI_ARG_P(2);], [SHAREMIND_MI_GET_CONST_$6(bs1, SHAREMIND_MI_ARG_AS(2, sizet));])
+            m4_ifelse($7, [imm], [bs2 = SHAREMIND_MI_ARG_P(3);], [SHAREMIND_MI_GET_CONST_$7(bs2, SHAREMIND_MI_ARG_AS(3, sizet));])
             {
-                DTB_TYPE_$4 * m4_ifelse($6, [imm], m4_ifelse($7, [imm], [restrict])) d = SMVM_MI_BLOCK_AS_P(bd,$4);
-                const DTB_TYPE_$4 * m4_ifelse($6, [imm], [restrict]) s1 = SMVM_MI_BLOCK_AS_P(bs1,$4);
-                const DTB_TYPE_$4 * m4_ifelse($7, [imm], [restrict]) s2 = SMVM_MI_BLOCK_AS_P(bs2,$4);
+                DTB_TYPE_$4 * m4_ifelse($6, [imm], m4_ifelse($7, [imm], [restrict])) d = SHAREMIND_MI_BLOCK_AS_P(bd,$4);
+                const DTB_TYPE_$4 * m4_ifelse($6, [imm], [restrict]) s1 = SHAREMIND_MI_BLOCK_AS_P(bs1,$4);
+                const DTB_TYPE_$4 * m4_ifelse($7, [imm], [restrict]) s2 = SHAREMIND_MI_BLOCK_AS_P(bs2,$4);
                 m4_ifelse(DTB_CAT_$4, [float], [], [
                     m4_ifelse($1, [arith.tdiv], [
-                        if ((*s2) == 0) { SMVM_MI_DO_EXCEPT(SMVM_E_INTEGER_DIVIDE_BY_ZERO); }
-                        m4_ifelse(DTB_CAT_$4, [signed], [else if ((*s2) == -1 && (*s1) == DTB_MIN_$4) { SMVM_MI_DO_EXCEPT(SMVM_E_INTEGER_OVERFLOW); }])])])
+                        if ((*s2) == 0) { SHAREMIND_MI_DO_EXCEPT(SHAREMIND_VM_PROCESS_INTEGER_DIVIDE_BY_ZERO); }
+                        m4_ifelse(DTB_CAT_$4, [signed], [else if ((*s2) == -1 && (*s1) == DTB_MIN_$4) { SHAREMIND_MI_DO_EXCEPT(SHAREMIND_VM_PROCESS_INTEGER_OVERFLOW); }])])])
                 $9;
             }]),
         DO_DISPATCH, PREPARE_FINISH)])
@@ -956,64 +956,64 @@ m4_define([_ALBI_DSS_DEFINE], [
 m4_define([GCC_BUG_50865_WORKAROUND], [if (($4) == -1) { ($1) = ($2) (($3) % 1); } else { ($1) = ($2) (($3) % -($4)); }])
 
 # arith.uneg
-m4_define([ARITH_UNEG_OP], [m4_ifelse($1, [float32], [SMVM_MI_UNEG_FLOAT32(*d)], [(*d) = (DTB_TYPE_$1) -(*d)])])
+m4_define([ARITH_UNEG_OP], [m4_ifelse($1, [float32], [SHAREMIND_MI_UNEG_FLOAT32(*d)], [(*d) = (DTB_TYPE_$1) -(*d)])])
 m4_define([ARITH_UNEG_DEFINE], [ALBI_D_DEFINE([[arith.uneg]], 0x1, 0x00, _ARG1$1, _ARG2$1, NO_PREPARATION, ARITH_UNEG_OP(_ARG1$1))])
 foreach([ARITH_UNEG_DEFINE], (product(([int8], [int16], [int32], [int64], [float32]), ([reg], [stack]))))
 
 # arith.uinc
-m4_define([ARITH_UINC_OP], [m4_ifelse($1, [float32], [SMVM_MI_UINC_FLOAT32(*d)], [(*d)++])])
+m4_define([ARITH_UINC_OP], [m4_ifelse($1, [float32], [SHAREMIND_MI_UINC_FLOAT32(*d)], [(*d)++])])
 m4_define([ARITH_UINC_DEFINE], [ALBI_D_DEFINE([[arith.uinc]], 0x1, 0x01, _ARG1$1, _ARG2$1, NO_PREPARATION, ARITH_UINC_OP(_ARG1$1))])
 foreach([ARITH_UINC_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]), ([reg], [stack]))))
 
 # arith.udec
-m4_define([ARITH_UDEC_OP], [m4_ifelse($1, [float32], [SMVM_MI_UDEC_FLOAT32(*d)], [(*d)--])])
+m4_define([ARITH_UDEC_OP], [m4_ifelse($1, [float32], [SHAREMIND_MI_UDEC_FLOAT32(*d)], [(*d)--])])
 m4_define([ARITH_UDEC_DEFINE], [ALBI_D_DEFINE([[arith.udec]], 0x1, 0x02, _ARG1$1, _ARG2$1, NO_PREPARATION, ARITH_UDEC_OP(_ARG1$1))])
 foreach([ARITH_UDEC_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]), ([reg], [stack]))))
 
 # arith.bneg
-m4_define([ARITH_BNEG_OP], [m4_ifelse($1, [float32], [SMVM_MI_BNEG_FLOAT32(*d,*s)], [(*d) = (DTB_TYPE_$1) -(*s)])])
+m4_define([ARITH_BNEG_OP], [m4_ifelse($1, [float32], [SHAREMIND_MI_BNEG_FLOAT32(*d,*s)], [(*d) = (DTB_TYPE_$1) -(*s)])])
 m4_define([ARITH_BNEG_DEFINE], [ALBI_DS_DEFINE([[arith.bneg]], 0x1, 0x40, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, ARITH_BNEG_OP(_ARG1$1))])
 foreach([ARITH_BNEG_DEFINE], (product(([int8], [int16], [int32], [int64], [float32]),
                                       ([reg], [stack]),
                                       ([reg], [stack]))))
 
 # arith.binc
-m4_define([ARITH_BINC_OP], [m4_ifelse($1, [float32], [SMVM_MI_BINC_FLOAT32(*d,*s)], [(*d) = (DTB_TYPE_$1) ((*s) + 1)])])
+m4_define([ARITH_BINC_OP], [m4_ifelse($1, [float32], [SHAREMIND_MI_BINC_FLOAT32(*d,*s)], [(*d) = (DTB_TYPE_$1) ((*s) + 1)])])
 m4_define([ARITH_BINC_DEFINE], [ALBI_DS_DEFINE([[arith.binc]], 0x1, 0x41, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, ARITH_BINC_OP(_ARG1$1))])
 foreach([ARITH_BINC_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
                                       ([reg], [stack]),
                                       ([reg], [stack]))))
 
 # arith.bdec
-m4_define([ARITH_BDEC_OP], [m4_ifelse($1, [float32], [SMVM_MI_BDEC_FLOAT32(*d,*s)], [(*d) = (DTB_TYPE_$1) ((*s) - 1)])])
+m4_define([ARITH_BDEC_OP], [m4_ifelse($1, [float32], [SHAREMIND_MI_BDEC_FLOAT32(*d,*s)], [(*d) = (DTB_TYPE_$1) ((*s) - 1)])])
 m4_define([ARITH_BDEC_DEFINE], [ALBI_DS_DEFINE([[arith.bdec]], 0x1, 0x42, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, ARITH_BDEC_OP(_ARG1$1))])
 foreach([ARITH_BDEC_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
                                       ([reg], [stack]),
                                       ([reg], [stack]))))
 
 # arith.badd
-m4_define([ARITH_BADD_OP], [m4_ifelse($1, [float32], [SMVM_MI_BADD_FLOAT32(*d,*s)], [(*d) = (DTB_TYPE_$1) ((*d) + (*s))])])
+m4_define([ARITH_BADD_OP], [m4_ifelse($1, [float32], [SHAREMIND_MI_BADD_FLOAT32(*d,*s)], [(*d) = (DTB_TYPE_$1) ((*d) + (*s))])])
 m4_define([ARITH_BADD_DEFINE], [ALBI_DS_DEFINE([[arith.badd]], 0x1, 0x80, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, ARITH_BADD_OP(_ARG1$1))])
 foreach([ARITH_BADD_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
                                       ([reg], [stack]),
                                       ([imm], [reg], [stack]))))
 
 # arith.bsub
-m4_define([ARITH_BSUB_OP], [m4_ifelse($1, [float32], [SMVM_MI_BSUB_FLOAT32(*d,*s)], [(*d) = (DTB_TYPE_$1) ((*d) - (*s))])])
+m4_define([ARITH_BSUB_OP], [m4_ifelse($1, [float32], [SHAREMIND_MI_BSUB_FLOAT32(*d,*s)], [(*d) = (DTB_TYPE_$1) ((*d) - (*s))])])
 m4_define([ARITH_BSUB_DEFINE], [ALBI_DS_DEFINE([[arith.bsub]], 0x1, 0x81, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, ARITH_BSUB_OP(_ARG1$1))])
 foreach([ARITH_BSUB_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
                                       ([reg], [stack]),
                                       ([imm], [reg], [stack]))))
 
 # arith.bsub2
-m4_define([ARITH_BSUB2_OP], [m4_ifelse($1, [float32], [SMVM_MI_BSUB2_FLOAT32(*d,*s)], [(*d) = (DTB_TYPE_$1) ((*s) - (*d))])])
+m4_define([ARITH_BSUB2_OP], [m4_ifelse($1, [float32], [SHAREMIND_MI_BSUB2_FLOAT32(*d,*s)], [(*d) = (DTB_TYPE_$1) ((*s) - (*d))])])
 m4_define([ARITH_BSUB2_DEFINE], [ALBI_DS_DEFINE([[arith.bsub2]], 0x1, 0x82, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, ARITH_BSUB2_OP(_ARG1$1))])
 foreach([ARITH_BSUB2_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
                                        ([reg], [stack]),
                                        ([imm], [reg], [stack]))))
 
 # arith.bmul
-m4_define([ARITH_BMUL_OP], [m4_ifelse($1, [float32], [SMVM_MI_BMUL_FLOAT32(*d,*s)], [(*d) = (DTB_TYPE_$1) ((*d) * (*s))])])
+m4_define([ARITH_BMUL_OP], [m4_ifelse($1, [float32], [SHAREMIND_MI_BMUL_FLOAT32(*d,*s)], [(*d) = (DTB_TYPE_$1) ((*d) * (*s))])])
 m4_define([ARITH_BMUL_DEFINE], [ALBI_DS_DEFINE([[arith.bmul]], 0x1, 0x83, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, ARITH_BMUL_OP(_ARG1$1))])
 foreach([ARITH_BMUL_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
                                       ([reg], [stack]),
@@ -1022,9 +1022,9 @@ foreach([ARITH_BMUL_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [i
 # arith.bdiv
 m4_define([ARITH_BDIV_OP],
           [m4_ifelse($1, [float32],
-                     [SMVM_MI_BDIV_FLOAT32(*d,*s)],
-                     [if ((*s) == 0) { SMVM_MI_DO_EXCEPT(SMVM_E_INTEGER_DIVIDE_BY_ZERO); }
-                      m4_ifelse(DTB_CAT_$1, [signed], [else if ((*s) == -1 && (*d) == DTB_MIN_$1) { SMVM_MI_DO_EXCEPT(SMVM_E_INTEGER_OVERFLOW); }])
+                     [SHAREMIND_MI_BDIV_FLOAT32(*d,*s)],
+                     [if ((*s) == 0) { SHAREMIND_MI_DO_EXCEPT(SHAREMIND_VM_PROCESS_INTEGER_DIVIDE_BY_ZERO); }
+                      m4_ifelse(DTB_CAT_$1, [signed], [else if ((*s) == -1 && (*d) == DTB_MIN_$1) { SHAREMIND_MI_DO_EXCEPT(SHAREMIND_VM_PROCESS_INTEGER_OVERFLOW); }])
                       (*d) = (DTB_TYPE_$1) ((*d) / (*s))])])
 m4_define([ARITH_BDIV_DEFINE], [ALBI_DS_DEFINE([[arith.bdiv]], 0x1, 0x84, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, ARITH_BDIV_OP(_ARG1$1))])
 foreach([ARITH_BDIV_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
@@ -1034,9 +1034,9 @@ foreach([ARITH_BDIV_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [i
 # arith.bdiv2
 m4_define([ARITH_BDIV2_OP],
           [m4_ifelse($1, [float32],
-                     [SMVM_MI_BDIV2_FLOAT32(*d,*s)],
-                     [if ((*d) == 0) { SMVM_MI_DO_EXCEPT(SMVM_E_INTEGER_DIVIDE_BY_ZERO); }
-                      m4_ifelse(DTB_CAT_$1, [signed], [else if ((*d) == -1 && (*s) == DTB_MIN_$1) { SMVM_MI_DO_EXCEPT(SMVM_E_INTEGER_OVERFLOW); }])
+                     [SHAREMIND_MI_BDIV2_FLOAT32(*d,*s)],
+                     [if ((*d) == 0) { SHAREMIND_MI_DO_EXCEPT(SHAREMIND_VM_PROCESS_INTEGER_DIVIDE_BY_ZERO); }
+                      m4_ifelse(DTB_CAT_$1, [signed], [else if ((*d) == -1 && (*s) == DTB_MIN_$1) { SHAREMIND_MI_DO_EXCEPT(SHAREMIND_VM_PROCESS_INTEGER_OVERFLOW); }])
                       (*d) = (DTB_TYPE_$1) ((*s) / (*d))])])
 m4_define([ARITH_BDIV2_DEFINE], [ALBI_DS_DEFINE([[arith.bdiv2]], 0x1, 0x85, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, ARITH_BDIV2_OP(_ARG1$1))])
 foreach([ARITH_BDIV2_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
@@ -1046,8 +1046,8 @@ foreach([ARITH_BDIV2_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [
 # arith.bmod
 m4_define([ARITH_BMOD_OP],
           [m4_ifelse($1, [float32],
-                     [SMVM_MI_BMOD_FLOAT32(*d,*s)],
-                     [if ((*s) == 0) { SMVM_MI_DO_EXCEPT(SMVM_E_INTEGER_DIVIDE_BY_ZERO); }
+                     [SHAREMIND_MI_BMOD_FLOAT32(*d,*s)],
+                     [if ((*s) == 0) { SHAREMIND_MI_DO_EXCEPT(SHAREMIND_VM_PROCESS_INTEGER_DIVIDE_BY_ZERO); }
                       m4_ifelse(DTB_CAT_$1, [signed], [else if (((*s) < 0) && ((*s) != DTB_MIN_$1)) { GCC_BUG_50865_WORKAROUND((*d), DTB_TYPE_$1, (*d), (*s)); }])
                       else (*d) = (DTB_TYPE_$1) ((*d) % (*s))])])
 m4_define([ARITH_BMOD_DEFINE], [ALBI_DS_DEFINE([[arith.bmod]], 0x1, 0x86, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, ARITH_BMOD_OP(_ARG1$1))])
@@ -1058,8 +1058,8 @@ foreach([ARITH_BMOD_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [i
 # arith.bmod2
 m4_define([ARITH_BMOD2_OP],
           [m4_ifelse($1, [float32],
-                     [SMVM_MI_BMOD2_FLOAT32(*d,*s)],
-                     [if ((*d) == 0) { SMVM_MI_DO_EXCEPT(SMVM_E_INTEGER_DIVIDE_BY_ZERO); }
+                     [SHAREMIND_MI_BMOD2_FLOAT32(*d,*s)],
+                     [if ((*d) == 0) { SHAREMIND_MI_DO_EXCEPT(SHAREMIND_VM_PROCESS_INTEGER_DIVIDE_BY_ZERO); }
                       m4_ifelse(DTB_CAT_$1, [signed], [else if (((*d) < 0) && ((*d) != DTB_MIN_$1)) { GCC_BUG_50865_WORKAROUND((*d), DTB_TYPE_$1, (*s), (*d)); }])
                       else (*d) = (DTB_TYPE_$1) ((*s) % (*d))])])
 m4_define([ARITH_BMOD2_DEFINE], [ALBI_DS_DEFINE([[arith.bmod2]], 0x1, 0x87, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, ARITH_BMOD2_OP(_ARG1$1))])
@@ -1068,7 +1068,7 @@ foreach([ARITH_BMOD2_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [
                                        ([imm], [reg], [stack]))))
 
 # arith.tadd
-m4_define([ARITH_TADD_OP], [m4_ifelse($1, [float32], [SMVM_MI_TADD_FLOAT32(*d,*s1,*s2)], [(*d) = (DTB_TYPE_$1) ((*s1) + (*s2))])])
+m4_define([ARITH_TADD_OP], [m4_ifelse($1, [float32], [SHAREMIND_MI_TADD_FLOAT32(*d,*s1,*s2)], [(*d) = (DTB_TYPE_$1) ((*s1) + (*s2))])])
 m4_define([ARITH_TADD_DEFINE], [ALBI_DSS_DEFINE([[arith.tadd]], 0x1, 0xc0, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, ARITH_TADD_OP(_ARG1$1))])
 foreach([ARITH_TADD_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
                                       ([reg], [stack]),
@@ -1076,7 +1076,7 @@ foreach([ARITH_TADD_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [i
                                       ([imm], [reg], [stack]))))
 
 # arith.tsub
-m4_define([ARITH_TSUB_OP], [m4_ifelse($1, [float32], [SMVM_MI_TSUB_FLOAT32(*d,*s1,*s2)], [(*d) = (DTB_TYPE_$1) ((*s1) - (*s2))])])
+m4_define([ARITH_TSUB_OP], [m4_ifelse($1, [float32], [SHAREMIND_MI_TSUB_FLOAT32(*d,*s1,*s2)], [(*d) = (DTB_TYPE_$1) ((*s1) - (*s2))])])
 m4_define([ARITH_TSUB_DEFINE], [ALBI_DSS_DEFINE([[arith.tsub]], 0x1, 0xc1, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, ARITH_TSUB_OP(_ARG1$1))])
 foreach([ARITH_TSUB_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
                                       ([reg], [stack]),
@@ -1084,7 +1084,7 @@ foreach([ARITH_TSUB_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [i
                                       ([imm], [reg], [stack]))))
 
 # arith.tmul
-m4_define([ARITH_TMUL_OP], [m4_ifelse($1, [float32], [SMVM_MI_TMUL_FLOAT32(*d,*s1,*s2)], [(*d) = (DTB_TYPE_$1) ((*s1) * (*s2))])])
+m4_define([ARITH_TMUL_OP], [m4_ifelse($1, [float32], [SHAREMIND_MI_TMUL_FLOAT32(*d,*s1,*s2)], [(*d) = (DTB_TYPE_$1) ((*s1) * (*s2))])])
 m4_define([ARITH_TMUL_DEFINE], [ALBI_DSS_DEFINE([[arith.tmul]], 0x1, 0xc2, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, ARITH_TMUL_OP(_ARG1$1))])
 foreach([ARITH_TMUL_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
                                       ([reg], [stack]),
@@ -1092,7 +1092,7 @@ foreach([ARITH_TMUL_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [i
                                       ([imm], [reg], [stack]))))
 
 # arith.tdiv
-m4_define([ARITH_TDIV_OP], [m4_ifelse($1, [float32], [SMVM_MI_TDIV_FLOAT32(*d,*s1,*s2)], [(*d) = (DTB_TYPE_$1) ((*s1) / (*s2))])])
+m4_define([ARITH_TDIV_OP], [m4_ifelse($1, [float32], [SHAREMIND_MI_TDIV_FLOAT32(*d,*s1,*s2)], [(*d) = (DTB_TYPE_$1) ((*s1) / (*s2))])])
 m4_define([ARITH_TDIV_DEFINE], [ALBI_DSS_DEFINE([[arith.tdiv]], 0x1, 0xc3, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, ARITH_TDIV_OP(_ARG1$1))])
 foreach([ARITH_TDIV_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
                                       ([reg], [stack]),
@@ -1102,8 +1102,8 @@ foreach([ARITH_TDIV_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [i
 # arith.tmod
 m4_define([ARITH_TMOD_OP],
           [m4_ifelse($1, [float32],
-                     [SMVM_MI_TMOD_FLOAT32(*d,*s1,*s2)],
-                     [if ((*s2) == 0) { SMVM_MI_DO_EXCEPT(SMVM_E_INTEGER_DIVIDE_BY_ZERO); }
+                     [SHAREMIND_MI_TMOD_FLOAT32(*d,*s1,*s2)],
+                     [if ((*s2) == 0) { SHAREMIND_MI_DO_EXCEPT(SHAREMIND_VM_PROCESS_INTEGER_DIVIDE_BY_ZERO); }
                       m4_ifelse(DTB_CAT_$1, [signed], [else if (((*s2) < 0) && ((*s2) != DTB_MIN_$1)) { GCC_BUG_50865_WORKAROUND((*d), DTB_TYPE_$1, (*s1), (*s2)); }])
                       else (*d) = (DTB_TYPE_$1) ((*s1) % (*s2))])])
 m4_define([ARITH_TMOD_DEFINE], [ALBI_DSS_DEFINE([[arith.tmod]], 0x1, 0xc4, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, ARITH_TMOD_OP(_ARG1$1))])
@@ -1457,30 +1457,30 @@ m4_define([INSTR_JUMP_DEFINE], [
         [if (1) {
             m4_ifelse([$8], [NO_PREPARATION], [], [$8;
             ])
-            if (SMVM_PREPARE_ARG_AS(1,int64) < 0) {
-                uint64_t delta_minus_one = (uint64_t) -(SMVM_PREPARE_ARG_AS(1,int64) + 1);
-                SMVM_PREPARE_CHECK_OR_ERROR(
-                    delta_minus_one < SMVM_PREPARE_CURRENT_I,
-                    SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
-                SMVM_PREPARE_CHECK_OR_ERROR(
-                    SMVM_PREPARE_IS_INSTR((uintptr_t) (SMVM_PREPARE_CURRENT_I - 1u - delta_minus_one)),
-                    SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
+            if (SHAREMIND_PREPARE_ARG_AS(1,int64) < 0) {
+                uint64_t delta_minus_one = (uint64_t) -(SHAREMIND_PREPARE_ARG_AS(1,int64) + 1);
+                SHAREMIND_PREPARE_CHECK_OR_ERROR(
+                    delta_minus_one < SHAREMIND_PREPARE_CURRENT_I,
+                    SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);
+                SHAREMIND_PREPARE_CHECK_OR_ERROR(
+                    SHAREMIND_PREPARE_IS_INSTR((uintptr_t) (SHAREMIND_PREPARE_CURRENT_I - 1u - delta_minus_one)),
+                    SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);
             } else {
-                uint64_t delta = (uint64_t) SMVM_PREPARE_ARG_AS(1,int64);
-                SMVM_PREPARE_CHECK_OR_ERROR(
-                    delta < (size_t) (SMVM_PREPARE_CODESIZE - SMVM_PREPARE_CURRENT_I - 1u),
-                    SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
-                SMVM_PREPARE_CHECK_OR_ERROR(
-                    delta == 0u || SMVM_PREPARE_IS_INSTR((uintptr_t) (SMVM_PREPARE_CURRENT_I + delta)),
-                    SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);
+                uint64_t delta = (uint64_t) SHAREMIND_PREPARE_ARG_AS(1,int64);
+                SHAREMIND_PREPARE_CHECK_OR_ERROR(
+                    delta < (size_t) (SHAREMIND_PREPARE_CODESIZE - SHAREMIND_PREPARE_CURRENT_I - 1u),
+                    SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);
+                SHAREMIND_PREPARE_CHECK_OR_ERROR(
+                    delta == 0u || SHAREMIND_PREPARE_IS_INSTR((uintptr_t) (SHAREMIND_PREPARE_CURRENT_I + delta)),
+                    SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);
             }
         }],
         NO_IMPL_SUFFIX,
         IMPL([
             m4_ifelse([$9], [NO_JUMP_PRECODE], [], [$9;])
             m4_ifelse([$10], [NO_JUMP_CONDITION], [], [if ($10) ]){
-            const SHAREMIND_CodeBlock * const restrict addr = SMVM_MI_ARG_P(1);
-            SMVM_MI_JUMP_REL(addr);
+            const SharemindCodeBlock * const restrict addr = SHAREMIND_MI_ARG_P(1);
+            SHAREMIND_MI_JUMP_REL(addr);
             }]),
         $11, PREPARE_FINISH)
     INSTR_DEFINE($1[_reg]$2,
@@ -1491,9 +1491,9 @@ m4_define([INSTR_JUMP_DEFINE], [
         IMPL([
             m4_ifelse([$9], [NO_JUMP_PRECODE], [], [$9;])
             m4_ifelse([$10], [NO_JUMP_CONDITION], [], [if ($10) ]){
-            const SHAREMIND_CodeBlock * restrict t;
-            SMVM_MI_GET_reg(t, SMVM_MI_ARG_AS(1, sizet));
-            SMVM_MI_CHECK_JUMP_REL(SMVM_MI_BLOCK_AS(t,int64));
+            const SharemindCodeBlock * restrict t;
+            SHAREMIND_MI_GET_reg(t, SHAREMIND_MI_ARG_AS(1, sizet));
+            SHAREMIND_MI_CHECK_JUMP_REL(SHAREMIND_MI_BLOCK_AS(t,int64));
             }]),
         $11, PREPARE_FINISH)
     INSTR_DEFINE($1[_stack]$2,
@@ -1504,9 +1504,9 @@ m4_define([INSTR_JUMP_DEFINE], [
         IMPL([
             m4_ifelse([$9], [NO_JUMP_PRECODE], [], [$9;])
             m4_ifelse([$10], [NO_JUMP_CONDITION], [], [if ($10) ]){
-            const SHAREMIND_CodeBlock * restrict t;
-            SMVM_MI_GET_stack(t, SMVM_MI_ARG_AS(1, sizet));
-            SMVM_MI_CHECK_JUMP_REL(SMVM_MI_BLOCK_AS(t,int64));
+            const SharemindCodeBlock * restrict t;
+            SHAREMIND_MI_GET_stack(t, SHAREMIND_MI_ARG_AS(1, sizet));
+            SHAREMIND_MI_CHECK_JUMP_REL(SHAREMIND_MI_BLOCK_AS(t,int64));
             }]),
         $11, PREPARE_FINISH)
 ])
@@ -1520,8 +1520,8 @@ m4_define([INSTR_JUMP_COND_1_DEFINE], [
         $2, DTB_CODE_$4, OLB_CODE_$5, 0x00, 2,
         NO_PREPARATION,
         [
-        m4_ifelse($1, [dnjz],, $1, [dnjnz],, [const]) SHAREMIND_CodeBlock * m4_ifelse($5, [imm], [restrict]) c;
-        SMVM_MI_GET_[]$5(c, SMVM_MI_ARG_AS(2, sizet))],
+        m4_ifelse($1, [dnjz],, $1, [dnjnz],, [const]) SharemindCodeBlock * m4_ifelse($5, [imm], [restrict]) c;
+        SHAREMIND_MI_GET_[]$5(c, SHAREMIND_MI_ARG_AS(2, sizet))],
         $3, DO_DISPATCH)])
 
 # (name, code, cond, dtb, olb, olb2)
@@ -1529,55 +1529,55 @@ m4_define([INSTR_JUMP_COND_2_DEFINE], [
     INSTR_JUMP_DEFINE(
         jump.$1, _$4_$5_$6,
         $2, DTB_CODE_$4, OLB_CODE_$5, OLB_CODE_$6, 3,
-        m4_ifelse([$5], [$7], [SMVM_PREPARE_CHECK_OR_ERROR(SMVM_PREPARE_ARG_AS(1,uint64) != SMVM_PREPARE_ARG_AS(2,uint64),
-                                    SMVM_PREPARE_ERROR_INVALID_ARGUMENTS);], [NO_PREPARATION]),
+        m4_ifelse([$5], [$7], [SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(1,uint64) != SHAREMIND_PREPARE_ARG_AS(2,uint64),
+                                    SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);], [NO_PREPARATION]),
         [
-        const SHAREMIND_CodeBlock * m4_ifelse($5, [imm], [restrict]) c1;
-        const SHAREMIND_CodeBlock * m4_ifelse($6, [imm], [restrict]) c2;
+        const SharemindCodeBlock * m4_ifelse($5, [imm], [restrict]) c1;
+        const SharemindCodeBlock * m4_ifelse($6, [imm], [restrict]) c2;
         m4_ifelse([$5], [imm], [],
-                  [SMVM_MI_GET_$5(c1, SMVM_MI_ARG_AS(2, sizet));])
+                  [SHAREMIND_MI_GET_$5(c1, SHAREMIND_MI_ARG_AS(2, sizet));])
         m4_ifelse([$6], [imm], [],
-                  [SMVM_MI_GET_$6(c2, SMVM_MI_ARG_AS(3, sizet));])
-        m4_ifelse([$5], [imm], [c1 = SMVM_MI_ARG_P(2);])
-        m4_ifelse([$6], [imm], [c2 = SMVM_MI_ARG_P(3);])],
+                  [SHAREMIND_MI_GET_$6(c2, SHAREMIND_MI_ARG_AS(3, sizet));])
+        m4_ifelse([$5], [imm], [c1 = SHAREMIND_MI_ARG_P(2);])
+        m4_ifelse([$6], [imm], [c2 = SHAREMIND_MI_ARG_P(3);])],
         $3, DO_DISPATCH)])
 
 m4_define([INSTR_JUMP_JZ_DEFINE],
-          [INSTR_JUMP_COND_1_DEFINE([jz],0x01,(SMVM_MI_BLOCK_AS(c,_ARG1$1) == 0),_ARG1$1,_ARG2$1)])
+          [INSTR_JUMP_COND_1_DEFINE([jz],0x01,(SHAREMIND_MI_BLOCK_AS(c,_ARG1$1) == 0),_ARG1$1,_ARG2$1)])
 foreach([INSTR_JUMP_JZ_DEFINE], (product(([[uint8]], [[uint16]], [[uint32]], [[uint64]]),([[reg]], [[stack]]))))
 
 m4_define([INSTR_JUMP_JNZ_DEFINE],
-          [INSTR_JUMP_COND_1_DEFINE([jnz],0x02,(SMVM_MI_BLOCK_AS(c,_ARG1$1) != 0),_ARG1$1,_ARG2$1)])
+          [INSTR_JUMP_COND_1_DEFINE([jnz],0x02,(SHAREMIND_MI_BLOCK_AS(c,_ARG1$1) != 0),_ARG1$1,_ARG2$1)])
 foreach([INSTR_JUMP_JNZ_DEFINE], (product(([[uint8]], [[uint16]], [[uint32]], [[uint64]]),([[reg]], [[stack]]))))
 
 m4_define([INSTR_JUMP_DNJZ_DEFINE],
-          [INSTR_JUMP_COND_1_DEFINE([dnjz],0x03,(--(SMVM_MI_BLOCK_AS(c,_ARG1$1)) == 0),_ARG1$1,_ARG2$1)])
+          [INSTR_JUMP_COND_1_DEFINE([dnjz],0x03,(--(SHAREMIND_MI_BLOCK_AS(c,_ARG1$1)) == 0),_ARG1$1,_ARG2$1)])
 foreach([INSTR_JUMP_DNJZ_DEFINE], (product(([[uint8]], [[uint16]], [[uint32]], [[uint64]]),([[reg]], [[stack]]))))
 
 m4_define([INSTR_JUMP_DNJNZ_DEFINE],
-          [INSTR_JUMP_COND_1_DEFINE([dnjnz],0x04,(--(SMVM_MI_BLOCK_AS(c,_ARG1$1)) != 0),_ARG1$1,_ARG2$1)])
+          [INSTR_JUMP_COND_1_DEFINE([dnjnz],0x04,(--(SHAREMIND_MI_BLOCK_AS(c,_ARG1$1)) != 0),_ARG1$1,_ARG2$1)])
 foreach([INSTR_JUMP_DNJNZ_DEFINE], (product(([[uint8]], [[uint16]], [[uint32]], [[uint64]]),([[reg]], [[stack]]))))
 
 m4_define([INSTR_JUMP_JEQ_DEFINE],
-          [INSTR_JUMP_COND_2_DEFINE([jeq],0x05,(SMVM_MI_BLOCK_AS(c1,_ARG1$1) == SMVM_MI_BLOCK_AS(c2,_ARG1$1)),_ARG1$1,_ARG2$1,_ARG3$1)])
+          [INSTR_JUMP_COND_2_DEFINE([jeq],0x05,(SHAREMIND_MI_BLOCK_AS(c1,_ARG1$1) == SHAREMIND_MI_BLOCK_AS(c2,_ARG1$1)),_ARG1$1,_ARG2$1,_ARG3$1)])
 foreach([INSTR_JUMP_JEQ_DEFINE], (product(([[int8]], [[int16]], [[int32]], [[int64]], [[uint8]], [[uint16]], [[uint32]], [[uint64]], [[float32]]),([[imm]], [[reg]], [[stack]]),([[reg]], [[stack]]))))
 
 m4_define([INSTR_JUMP_JNE_DEFINE],
-          [INSTR_JUMP_COND_2_DEFINE([jne],0x06,(SMVM_MI_BLOCK_AS(c1,_ARG1$1) != SMVM_MI_BLOCK_AS(c2,_ARG1$1)),_ARG1$1,_ARG2$1,_ARG3$1)])
+          [INSTR_JUMP_COND_2_DEFINE([jne],0x06,(SHAREMIND_MI_BLOCK_AS(c1,_ARG1$1) != SHAREMIND_MI_BLOCK_AS(c2,_ARG1$1)),_ARG1$1,_ARG2$1,_ARG3$1)])
 foreach([INSTR_JUMP_JNE_DEFINE], (product(([[int8]], [[int16]], [[int32]], [[int64]], [[uint8]], [[uint16]], [[uint32]], [[uint64]], [[float32]]),([[imm]], [[reg]], [[stack]]),([[reg]], [[stack]]))))
 
 m4_define([INSTR_JUMP_JGE_DEFINE],
-          [INSTR_JUMP_COND_2_DEFINE([jge],0x07,(SMVM_MI_BLOCK_AS(c1,_ARG1$1) >= SMVM_MI_BLOCK_AS(c2,_ARG1$1)),_ARG1$1,_ARG2$1,_ARG3$1)])
+          [INSTR_JUMP_COND_2_DEFINE([jge],0x07,(SHAREMIND_MI_BLOCK_AS(c1,_ARG1$1) >= SHAREMIND_MI_BLOCK_AS(c2,_ARG1$1)),_ARG1$1,_ARG2$1,_ARG3$1)])
 foreach([INSTR_JUMP_JGE_DEFINE], (product(([[int8]], [[int16]], [[int32]], [[int64]], [[uint8]], [[uint16]], [[uint32]], [[uint64]], [[float32]]),([[imm]], [[reg]], [[stack]]),([[reg]], [[stack]]))))
 
 m4_define([INSTR_JUMP_JGT_DEFINE],
-          [INSTR_JUMP_COND_2_DEFINE([jgt],0x08,(SMVM_MI_BLOCK_AS(c1,_ARG1$1) > SMVM_MI_BLOCK_AS(c2,_ARG1$1)),_ARG1$1,_ARG2$1,_ARG3$1)])
+          [INSTR_JUMP_COND_2_DEFINE([jgt],0x08,(SHAREMIND_MI_BLOCK_AS(c1,_ARG1$1) > SHAREMIND_MI_BLOCK_AS(c2,_ARG1$1)),_ARG1$1,_ARG2$1,_ARG3$1)])
 foreach([INSTR_JUMP_JGT_DEFINE], (product(([[int8]], [[int16]], [[int32]], [[int64]], [[uint8]], [[uint16]], [[uint32]], [[uint64]], [[float32]]),([[imm]], [[reg]], [[stack]]),([[reg]], [[stack]]))))
 
 m4_define([INSTR_JUMP_JLE_DEFINE],
-          [INSTR_JUMP_COND_2_DEFINE([jle],0x09,(SMVM_MI_BLOCK_AS(c1,_ARG1$1) <= SMVM_MI_BLOCK_AS(c2,_ARG1$1)),_ARG1$1,_ARG2$1,_ARG3$1)])
+          [INSTR_JUMP_COND_2_DEFINE([jle],0x09,(SHAREMIND_MI_BLOCK_AS(c1,_ARG1$1) <= SHAREMIND_MI_BLOCK_AS(c2,_ARG1$1)),_ARG1$1,_ARG2$1,_ARG3$1)])
 foreach([INSTR_JUMP_JLE_DEFINE], (product(([[int8]], [[int16]], [[int32]], [[int64]], [[uint8]], [[uint16]], [[uint32]], [[uint64]], [[float32]]),([[imm]], [[reg]], [[stack]]),([[reg]], [[stack]]))))
 
 m4_define([INSTR_JUMP_JLT_DEFINE],
-          [INSTR_JUMP_COND_2_DEFINE([jlt],0x0a,(SMVM_MI_BLOCK_AS(c1,_ARG1$1) < SMVM_MI_BLOCK_AS(c2,_ARG1$1)),_ARG1$1,_ARG2$1,_ARG3$1)])
+          [INSTR_JUMP_COND_2_DEFINE([jlt],0x0a,(SHAREMIND_MI_BLOCK_AS(c1,_ARG1$1) < SHAREMIND_MI_BLOCK_AS(c2,_ARG1$1)),_ARG1$1,_ARG2$1,_ARG3$1)])
 foreach([INSTR_JUMP_JLT_DEFINE], (product(([[int8]], [[int16]], [[int32]], [[int64]], [[uint8]], [[uint16]], [[uint32]], [[uint64]], [[float32]]),([[imm]], [[reg]], [[stack]]),([[reg]], [[stack]]))))
