@@ -147,14 +147,14 @@ m4_define([_MOV_MEM_TO_REGS_DEFINE], [
         PREPARATION([
             m4_ifelse($1, [imm],
                       [SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(1,uint64) >= 1u,
-                                                   SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);
+                                                        SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);
                        SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(1,uint64) <= 3u,
-                                                   SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);])
+                                                        SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);])
             m4_ifelse($4, [imm],
                       [SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(4,uint64) > 0u,
-                                                   SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);
+                                                        SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);
                        SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(4,uint64) <= 8u,
-                                                   SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);])]),
+                                                        SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);])]),
         NO_IMPL_SUFFIX, IMPL([
             const SharemindCodeBlock * src;
             SharemindMemorySlot * restrict srcSlot;
@@ -189,14 +189,14 @@ m4_define([_MOV_REGS_TO_MEM_DEFINE], [
         PREPARATION([
             m4_ifelse($2, [imm],
                       [SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(2,uint64) >= 1u,
-                                                   SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);
+                                                        SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);
                        SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(2,uint64) <= 3u,
-                                                   SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);])
+                                                        SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);])
             m4_ifelse($4, [imm],
                       [SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(4,uint64) > 0u,
-                                                   SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);
+                                                        SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);
                        SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(4,uint64) <= 8u,
-                                                   SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);])]),
+                                                        SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);])]),
         NO_IMPL_SUFFIX, IMPL([
             const SharemindCodeBlock * m4_ifelse($1, [imm], [restrict]) src;
             const SharemindCodeBlock * dest;
@@ -233,17 +233,17 @@ m4_define([_MOV_MEM_TO_MEM_DEFINE], [
         PREPARATION([
             m4_ifelse($1, [imm],
                       [SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(1,uint64) >= 1u,
-                                                   SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);
+                                                        SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);
                        SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(1,uint64) <= 3u,
-                                                   SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);])
+                                                        SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);])
             m4_ifelse($3, [imm],
                       [SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(3,uint64) >= 1u,
-                                                   SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);
+                                                        SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);
                        SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(3,uint64) <= 3u,
-                                                   SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);])
+                                                        SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);])
             m4_ifelse($5, [imm],
                       [SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(5,uint64) > 0u,
-                                                   SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);])]),
+                                                        SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);])]),
         NO_IMPL_SUFFIX,
         IMPL([
             const SharemindCodeBlock * src;
@@ -295,9 +295,9 @@ m4_define([_MOV_REF_TO_REGS_DEFINE], [
         m4_ifelse($4, [imm],
                   [PREPARATION([
                       SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(4,uint64) > 0u,
-                                                  SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);
+                                                       SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);
                       SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(4,uint64) <= 8u,
-                                                  SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS)])],
+                                                       SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS)])],
                   [NO_PREPARATION]),
         NO_IMPL_SUFFIX, IMPL([
             const Sharemind[]m4_ifelse($1, [cref], [C])[]Reference * restrict srcRef;
@@ -339,9 +339,9 @@ m4_define([_MOV_REGS_TO_REF_DEFINE], [
         m4_ifelse($3, [imm],
                   [PREPARATION([
                       SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(4,uint64) > 0u,
-                                                  SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);
+                                                       SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);
                       SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(4,uint64) <= 8u,
-                                                  SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS)])],
+                                                       SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS)])],
                   [NO_PREPARATION]),
         NO_IMPL_SUFFIX, IMPL([
             const SharemindCodeBlock * m4_ifelse($1, [imm], [restrict]) src;
@@ -429,12 +429,12 @@ m4_define([_MOV_REF_TO_MEM_DEFINE], [
         PREPARATION([
             m4_ifelse($3, [imm],
                       [SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(3,uint64) >= 1u,
-                                                   SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);
+                                                        SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);
                        SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(3,uint64) <= 3u,
-                                                   SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);])
+                                                        SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);])
             m4_ifelse($5, [imm],
                       [SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(5,uint64) > 0u,
-                                                   SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);])]),
+                                                        SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);])]),
         NO_IMPL_SUFFIX,
         IMPL([
             const Sharemind[]m4_ifelse($1, [cref], [C])Reference * restrict srcRef;
@@ -482,12 +482,12 @@ m4_define([_MOV_MEM_TO_REF_DEFINE], [
         PREPARATION([
             m4_ifelse($1, [imm],
                       [SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(1,uint64) >= 1u,
-                                                   SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);
+                                                        SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);
                        SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(1,uint64) <= 3u,
-                                                   SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);])
+                                                        SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);])
             m4_ifelse($4, [imm],
                       [SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(5,uint64) > 0u,
-                                                   SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS)])]),
+                                                        SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS)])]),
         NO_IMPL_SUFFIX,
         IMPL([
             const SharemindCodeBlock * restrict src;
@@ -669,21 +669,21 @@ m4_define([_PUSHREFPART_BLOCK_DEFINE], [
         m4_ifelse($3_$4, [imm_imm],
                   PREPARATION([
                       SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(2,uint64) < 8u,
-                                                  SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);
+                                                       SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);
                       SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(3,uint64) > 0u,
-                                                  SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);
+                                                       SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);
                       SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(2,uint64) + SHAREMIND_PREPARE_ARG_AS(3,uint64) <= 8u,
-                                                  SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS)]),
+                                                       SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS)]),
                   $3, [imm],
                   PREPARATION([
                       SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(2,uint64) < 8u,
-                                                  SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS)]),
+                                                       SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS)]),
                   $4, [imm],
                   PREPARATION([
                       SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(3,uint64) > 0u,
-                                                  SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);
+                                                       SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);
                       SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(3,uint64) <= 8u,
-                                                  SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS)]),
+                                                       SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS)]),
                   NO_PREPARATION),
         NO_IMPL_SUFFIX,
         IMPL([
@@ -699,17 +699,17 @@ m4_define([_PUSHREFPART_BLOCK_DEFINE], [
                       [offset = SHAREMIND_MI_ARG_P(2);],
                       [SHAREMIND_MI_GET_CONST_$3(offset, SHAREMIND_MI_ARG_AS(2, sizet));
                        SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_BLOCK_AS(offset, uint64) < 8u,
-                                          SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_REFERENCE_INDEX);])
+                                               SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_REFERENCE_INDEX);])
             m4_ifelse($4, [imm],
                       [nBytes = SHAREMIND_MI_ARG_P(3);],
                       [SHAREMIND_MI_GET_CONST_$4(nBytes, SHAREMIND_MI_ARG_AS(3, sizet));
                        SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_BLOCK_AS(nBytes, uint64) > 0u,
-                                          SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_REFERENCE_SIZE);
+                                               SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_REFERENCE_SIZE);
                        SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_BLOCK_AS(nBytes, uint64) <= 8u,
-                                          SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_REFERENCE_SIZE);])
+                                               SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_REFERENCE_SIZE);])
             m4_ifelse($3_$4, [imm_imm], [],
                       [SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_BLOCK_AS(offset, uint64) + SHAREMIND_MI_BLOCK_AS(nBytes, uint64) <= 8u,
-                                          SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_REFERENCE_SIZE);])
+                                               SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_REFERENCE_SIZE);])
             SHAREMIND_MI_PUSHREFPART_BLOCK_$1(b,SHAREMIND_MI_BLOCK_AS(offset,uint64),SHAREMIND_MI_BLOCK_AS(nBytes,uint64))]),
         DO_DISPATCH, PREPARE_FINISH)])
 m4_define([PUSHREFPART_BLOCK_DEFINE], [_PUSHREFPART_BLOCK_DEFINE(_ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1)])
@@ -724,7 +724,7 @@ m4_define([_PUSHREFPART_REF_DEFINE], [
     ARGS(3),
     m4_ifelse($4, [imm],
               PREPARATION([SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(3,uint64) > 0u,
-                                                       SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);]),
+                                                            SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);]),
               NO_PREPARATION),
     NO_IMPL_SUFFIX,
     IMPL([
@@ -737,14 +737,14 @@ m4_define([_PUSHREFPART_REF_DEFINE], [
                   [offset = SHAREMIND_MI_ARG_P(2);],
                   [SHAREMIND_MI_GET_CONST_$3(offset, SHAREMIND_MI_ARG_AS(2, sizet));])
         SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_BLOCK_AS(offset,sizet) < srcRef->size,
-                           SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_REFERENCE_INDEX);
+                                SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_REFERENCE_INDEX);
         m4_ifelse($4, [imm],
                   [nBytes = SHAREMIND_MI_ARG_P(3);],
                   [SHAREMIND_MI_GET_CONST_$4(nBytes, SHAREMIND_MI_ARG_AS(3, sizet));])
         SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_BLOCK_AS(nBytes,uint64) <= srcRef->size,
-                           SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_REFERENCE_SIZE);
+                                SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_REFERENCE_SIZE);
         SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_BLOCK_AS(offset,uint64) < srcRef->size - SHAREMIND_MI_BLOCK_AS(nBytes,uint64),
-                           SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_REFERENCE_SIZE);
+                                SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_REFERENCE_SIZE);
         SHAREMIND_MI_PUSHREFPART_REF_$1(srcRef, SHAREMIND_MI_BLOCK_AS(offset,uint64), SHAREMIND_MI_BLOCK_AS(nBytes,uint64))]),
     DO_DISPATCH, PREPARE_FINISH)])
 m4_define([PUSHREFPART_REF_DEFINE], [_PUSHREFPART_REF_DEFINE(_ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1)])
@@ -774,14 +774,14 @@ m4_define([_PUSHREFPART_MEM_DEFINE], [
                   [offset = SHAREMIND_MI_ARG_P(2);],
                   [SHAREMIND_MI_GET_CONST_$3(offset, SHAREMIND_MI_ARG_AS(2, sizet));])
         SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_BLOCK_AS(offset,sizet) < srcSlot->size,
-                           SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_REFERENCE_INDEX);
+                                SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_REFERENCE_INDEX);
         m4_ifelse($4, [imm],
                   [nBytes = SHAREMIND_MI_ARG_P(3);],
                   [SHAREMIND_MI_GET_CONST_$4(nBytes, SHAREMIND_MI_ARG_AS(3, sizet));])
         SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_BLOCK_AS(nBytes,uint64) <= srcSlot->size,
-                           SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_REFERENCE_SIZE);
+                                SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_REFERENCE_SIZE);
         SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_BLOCK_AS(offset,uint64) < srcSlot->size - SHAREMIND_MI_BLOCK_AS(nBytes,uint64),
-                           SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_REFERENCE_SIZE);
+                                SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_REFERENCE_SIZE);
         SHAREMIND_MI_PUSHREFPART_MEM_$1(srcSlot, SHAREMIND_MI_BLOCK_AS(offset,uint64), SHAREMIND_MI_BLOCK_AS(nBytes,uint64))]),
     DO_DISPATCH, PREPARE_FINISH)])
 m4_define([PUSHREFPART_MEM_DEFINE], [_PUSHREFPART_MEM_DEFINE(_ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1)])
@@ -891,7 +891,7 @@ INSTR_DEFINE([common.except],
     CODE(0x00, 0xff, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00),
     ARGS(1), PREPARATION([
         SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_IS_EXCEPTIONCODE(SHAREMIND_PREPARE_ARG_AS(1,int64)),
-                                    SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);
+                                         SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);
     ]), NO_IMPL_SUFFIX, IMPL([SHAREMIND_MI_DO_EXCEPT(SHAREMIND_MI_ARG_AS(1,int64))]), DO_DISPATCH, PREPARE_FINISH)
 
 
