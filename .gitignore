@@ -9,7 +9,6 @@ Makefile
 /qtcreator-build/
 !/doc/Makefile
 /Testing/
-/tests/*.sb
 .help/
 .moc/
 .obj/
@@ -17,4 +16,3 @@ Makefile
 .ui/
 *~
 *.kate-swp
-/doc/deps.png
