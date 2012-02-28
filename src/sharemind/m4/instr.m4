@@ -693,7 +693,7 @@ m4_define([_PUSHREFPART_BLOCK_DEFINE], [
             m4_ifelse($2, [imm],
                       [b = SHAREMIND_MI_ARG_P(1);],
                       $1, [cref],
-                      [SHAREMIND_MI_GET_CONST_$2(b, SHAREMIND_MI_ARG_AS(1, sizet));]
+                      [SHAREMIND_MI_GET_CONST_$2(b, SHAREMIND_MI_ARG_AS(1, sizet));],
                       [SHAREMIND_MI_GET_$2(b, SHAREMIND_MI_ARG_AS(1, sizet));])
             m4_ifelse($3, [imm],
                       [offset = SHAREMIND_MI_ARG_P(2);],
