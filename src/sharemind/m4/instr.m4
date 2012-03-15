@@ -800,6 +800,27 @@ INSTR_DEFINE([common.proc.resizestack],
     CODE(0x00, 0x02, 0x0a, 0x00, 0x00, 0x00, 0x00, 0x00),
     ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([SHAREMIND_MI_RESIZE_STACK(SHAREMIND_MI_ARG_AS(1, uint64))]), DO_DISPATCH, PREPARE_FINISH)
 
+# common.proc.get(c)refsize
+# (1=ref/cref,2=olbsrc,3=olbnbytes)
+m4_define([_PROC_GETREFSIZE], [
+    INSTR_DEFINE([common.proc.get$1size_$2_$3],
+        CODE(0x00, 0x02, 0x0b, OLB_CODE_$2, OLB_CODE_$3, 0x00, 0x00, 0x00),
+        ARGS(2),
+        NO_PREPARATION,
+        NO_IMPL_SUFFIX, IMPL([
+            const Sharemind[]m4_ifelse($1, [cref], [C])[]Reference * restrict srcRef;
+            m4_ifelse($2, [imm], [], [SharemindCodeBlock * src;])
+            SharemindCodeBlock * m4_ifelse($2, [imm], [restrict]) dest;
+            m4_ifelse($2, [imm],
+                      [SHAREMIND_MI_GET_$1(srcRef, SHAREMIND_MI_ARG_AS(1, sizet));],
+                      [SHAREMIND_MI_GET_CONST_$2(src, SHAREMIND_MI_ARG_AS(1,sizet));
+                       SHAREMIND_MI_GET_$1(srcRef, SHAREMIND_MI_BLOCK_AS(src, sizet));])
+            SHAREMIND_MI_GET_$3(dest, SHAREMIND_MI_ARG_AS(2, sizet));
+            SHAREMIND_MI_BLOCK_AS(dest,sizet) = srcRef->size]),
+        DO_DISPATCH, PREPARE_FINISH)])
+m4_define([PROC_GETREFSIZE_DEFINE], [_PROC_GETREFSIZE(_ARG1$1, _ARG2$1, _ARG3$1)])
+foreach([PROC_GETREFSIZE_DEFINE], (product(([cref], [ref]), ([imm], [reg], [stack]), ([reg], [stack]))))
+
 # common.mem.alloc
 m4_define([_MEM_ALLOC_DEFINE], [
     INSTR_DEFINE([common.mem.alloc_$1_$2],
