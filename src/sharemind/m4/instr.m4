@@ -829,9 +829,9 @@ m4_define([MEM_FREE_DEFINE], [
 MEM_FREE_DEFINE([reg])
 MEM_FREE_DEFINE([stack])
 
-# common.mem.getsize
-m4_define([MEM_GET_SIZE_DEFINE], [
-    INSTR_DEFINE([common.mem.getsize_$1_$2],
+# common.mem.getmemsize
+m4_define([MEM_GETMEMSIZE_DEFINE], [
+    INSTR_DEFINE([common.mem.getmemsize_$1_$2],
         CODE(0x00, 0x03, 0x02, OLB_CODE_$1, OLB_CODE_$2, 0x00, 0x00, 0x00),
         ARGS(2), NO_PREPARATION, NO_IMPL_SUFFIX,
         IMPL([
@@ -844,12 +844,12 @@ m4_define([MEM_GET_SIZE_DEFINE], [
             SHAREMIND_MI_MEM_GET_SIZE(ptr,sizedest);]),
         DO_DISPATCH, PREPARE_FINISH
     )])
-MEM_GET_SIZE_DEFINE([imm],[reg])
-MEM_GET_SIZE_DEFINE([imm],[stack])
-MEM_GET_SIZE_DEFINE([reg],[reg])
-MEM_GET_SIZE_DEFINE([reg],[stack])
-MEM_GET_SIZE_DEFINE([stack],[reg])
-MEM_GET_SIZE_DEFINE([stack],[stack])
+MEM_GETMEMSIZE_DEFINE([imm],[reg])
+MEM_GETMEMSIZE_DEFINE([imm],[stack])
+MEM_GETMEMSIZE_DEFINE([reg],[reg])
+MEM_GETMEMSIZE_DEFINE([reg],[stack])
+MEM_GETMEMSIZE_DEFINE([stack],[reg])
+MEM_GETMEMSIZE_DEFINE([stack],[stack])
 
 # common.convert
 m4_define([_CONVERT_DEFINE], [m4_ifelse($1, $3, [], [
