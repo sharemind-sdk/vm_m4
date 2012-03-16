@@ -804,7 +804,7 @@ INSTR_DEFINE([common.proc.resizestack],
 # (1=ref/cref,2=olbsrc,3=olbnbytes)
 m4_define([_PROC_GETREFSIZE], [
     INSTR_DEFINE([common.proc.get$1size_$2_$3],
-        CODE(0x00, 0x02, 0x0b, OLB_CODE_$2, OLB_CODE_$3, 0x00, 0x00, 0x00),
+        CODE(0x00, 0x02, m4_ifelse($1, [ref], [0x0c], [0x0d]), OLB_CODE_$2, OLB_CODE_$3, 0x00, 0x00, 0x00),
         ARGS(2),
         NO_PREPARATION,
         NO_IMPL_SUFFIX, IMPL([
