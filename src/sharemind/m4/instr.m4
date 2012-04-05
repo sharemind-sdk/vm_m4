@@ -40,7 +40,8 @@ m4_define([_DEC_TO_HEX], [m4_ifelse([$1], [15], [f], [$1], [14], [e], [$1], [13]
 
 m4_define([INSTR_COUNT],0)
 m4_define([INSTR], [m4_defn(m4_format([[INSTR_%s]], [$1]))])
-m4_define([INSTR_DEFINE], [m4_define(m4_format([[INSTR_%s]], [$1]), [$1, $2, $3, $4, $5, $6, $7, $8, ]INSTR_COUNT)
+m4_define([INSTR_DEFINE], [m4_ifelse(m4_eval(m4_len([$1])[ >= 64]),[1],[m4_errprint([Instruction name "$1" (length ]m4_len([$1])[) exceeds maximum length limit of 63 characters!])m4_m4exit(1)])
+                        m4_define(m4_format([[INSTR_%s]], [$1]), [$1, $2, $3, $4, $5, $6, $7, $8, ]INSTR_COUNT)
                         m4_define([INSTR_COUNT],m4_incr(INSTR_COUNT))
                         m4_define([INSTR_]INSTR_COUNT,[$1])])
 
