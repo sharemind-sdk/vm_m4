@@ -34,7 +34,6 @@ FILE(MAKE_DIRECTORY "${M4_DIR_B}")
 SET(M4_2_H_SOURCES
     "dispatches.m4"
     "instruction_index.m4"
-    "instruction_structs.m4"
     "static_label_structs.m4"
     "preprocess_pass2_functions.m4")
 
