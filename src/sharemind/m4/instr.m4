@@ -669,15 +669,17 @@ m4_define([_PUSHREFPART_BLOCK_DEFINE], [
         ARGS(3),
         m4_ifelse($3_$4, [imm_imm],
                   PREPARATION([
-                      SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(2,uint64) < 8u,
+                      SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(2,uint64) < 7u,
                                                        SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);
                       SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(3,uint64) > 0u,
+                                                       SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);
+                      SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(3,uint64) <= 8u,
                                                        SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);
                       SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(2,uint64) + SHAREMIND_PREPARE_ARG_AS(3,uint64) <= 8u,
                                                        SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS)]),
                   $3, [imm],
                   PREPARATION([
-                      SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(2,uint64) < 8u,
+                      SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(2,uint64) < 7u,
                                                        SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS)]),
                   $4, [imm],
                   PREPARATION([
@@ -699,7 +701,7 @@ m4_define([_PUSHREFPART_BLOCK_DEFINE], [
             m4_ifelse($3, [imm],
                       [offset = SHAREMIND_MI_ARG_P(2);],
                       [SHAREMIND_MI_GET_CONST_$3(offset, SHAREMIND_MI_ARG_AS(2, sizet));
-                       SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_BLOCK_AS(offset, uint64) < 8u,
+                       SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_BLOCK_AS(offset, uint64) < 7u,
                                                SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_REFERENCE_INDEX);])
             m4_ifelse($4, [imm],
                       [nBytes = SHAREMIND_MI_ARG_P(3);],
@@ -741,10 +743,12 @@ m4_define([_PUSHREFPART_REF_DEFINE], [
                                 SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_REFERENCE_INDEX);
         m4_ifelse($4, [imm],
                   [nBytes = SHAREMIND_MI_ARG_P(3);],
-                  [SHAREMIND_MI_GET_CONST_$4(nBytes, SHAREMIND_MI_ARG_AS(3, sizet));])
+                  [SHAREMIND_MI_GET_CONST_$4(nBytes, SHAREMIND_MI_ARG_AS(3, sizet));
+                   SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_BLOCK_AS(nBytes,uint64) > 0u,
+                                           SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_REFERENCE_SIZE);])
         SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_BLOCK_AS(nBytes,uint64) <= srcRef->size,
                                 SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_REFERENCE_SIZE);
-        SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_BLOCK_AS(offset,uint64) < srcRef->size - SHAREMIND_MI_BLOCK_AS(nBytes,uint64),
+        SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_BLOCK_AS(offset,uint64) <= srcRef->size - SHAREMIND_MI_BLOCK_AS(nBytes,uint64),
                                 SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_REFERENCE_SIZE);
         SHAREMIND_MI_PUSHREFPART_REF_$1(srcRef, SHAREMIND_MI_BLOCK_AS(offset,uint64), SHAREMIND_MI_BLOCK_AS(nBytes,uint64))]),
     DO_DISPATCH, PREPARE_FINISH)])
@@ -778,10 +782,12 @@ m4_define([_PUSHREFPART_MEM_DEFINE], [
                                 SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_REFERENCE_INDEX);
         m4_ifelse($4, [imm],
                   [nBytes = SHAREMIND_MI_ARG_P(3);],
-                  [SHAREMIND_MI_GET_CONST_$4(nBytes, SHAREMIND_MI_ARG_AS(3, sizet));])
+                  [SHAREMIND_MI_GET_CONST_$4(nBytes, SHAREMIND_MI_ARG_AS(3, sizet));
+                   SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_BLOCK_AS(nBytes,uint64) > 0u,
+                                           SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_REFERENCE_SIZE);])
         SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_BLOCK_AS(nBytes,uint64) <= srcSlot->size,
                                 SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_REFERENCE_SIZE);
-        SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_BLOCK_AS(offset,uint64) < srcSlot->size - SHAREMIND_MI_BLOCK_AS(nBytes,uint64),
+        SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_BLOCK_AS(offset,uint64) <= srcSlot->size - SHAREMIND_MI_BLOCK_AS(nBytes,uint64),
                                 SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_REFERENCE_SIZE);
         SHAREMIND_MI_PUSHREFPART_MEM_$1(srcSlot, SHAREMIND_MI_BLOCK_AS(offset,uint64), SHAREMIND_MI_BLOCK_AS(nBytes,uint64))]),
     DO_DISPATCH, PREPARE_FINISH)])
