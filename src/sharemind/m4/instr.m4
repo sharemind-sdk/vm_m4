@@ -986,7 +986,7 @@ m4_define([GCC_BUG_50865_WORKAROUND], [if (($4) == -1) { ($1) = ($2) (($3) % 1);
 # arith.uneg
 m4_define([ARITH_UNEG_OP], [m4_ifelse($1, [float32], [SHAREMIND_MI_UNEG_FLOAT32(*d)], [(*d) = (DTB_TYPE_$1) -(*d)])])
 m4_define([ARITH_UNEG_DEFINE], [ALBI_D_DEFINE([[arith.uneg]], 0x1, 0x00, _ARG1$1, _ARG2$1, NO_PREPARATION, ARITH_UNEG_OP(_ARG1$1))])
-foreach([ARITH_UNEG_DEFINE], (product(([int8], [int16], [int32], [int64], [float32]), ([reg], [stack]))))
+foreach([ARITH_UNEG_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]), ([reg], [stack]))))
 
 # arith.uinc
 m4_define([ARITH_UINC_OP], [m4_ifelse($1, [float32], [SHAREMIND_MI_UINC_FLOAT32(*d)], [(*d)++])])
@@ -1001,7 +1001,7 @@ foreach([ARITH_UDEC_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [i
 # arith.bneg
 m4_define([ARITH_BNEG_OP], [m4_ifelse($1, [float32], [SHAREMIND_MI_BNEG_FLOAT32(*d,*s)], [(*d) = (DTB_TYPE_$1) -(*s)])])
 m4_define([ARITH_BNEG_DEFINE], [ALBI_DS_DEFINE([[arith.bneg]], 0x1, 0x40, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, ARITH_BNEG_OP(_ARG1$1))])
-foreach([ARITH_BNEG_DEFINE], (product(([int8], [int16], [int32], [int64], [float32]),
+foreach([ARITH_BNEG_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32]),
                                       ([reg], [stack]),
                                       ([reg], [stack]))))
 
