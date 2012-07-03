@@ -8,7 +8,6 @@
 #
 
 CMAKE_MINIMUM_REQUIRED(VERSION "2.8")
-CMAKE_POLICY(SET CMP0015 NEW)
 PROJECT("SHAREMIND_VM_M4")
 
 FIND_PROGRAM(M4 m4)
@@ -18,17 +17,12 @@ ELSE(M4)
     MESSAGE(FATAL_ERROR "Required m4 command not found!")
 ENDIF(M4)
 
-IF(NOT SHAREMIND_GEN_DIR)
-    MESSAGE(FATAL_ERROR "SHAREMIND_GEN_DIR not defined!")
-ENDIF(NOT SHAREMIND_GEN_DIR)
-
-
 ################################################################################
 # m4 files
 ################################################################################
 
 SET(M4_DIR_S "${CMAKE_CURRENT_SOURCE_DIR}/m4")
-SET(M4_DIR_B "${SHAREMIND_GEN_DIR}/sharemind/m4")
+SET(M4_DIR_B "${CMAKE_CURRENT_BINARY_DIR}/m4")
 FILE(MAKE_DIRECTORY "${M4_DIR_B}")
 
 SET(M4_2_H_SOURCES
