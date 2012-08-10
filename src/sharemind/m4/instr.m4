@@ -121,6 +121,31 @@ INSTR_DEFINE([common.trap],
     CODE(0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00),
     NO_ARGS, NO_PREPARATION, NO_IMPL_SUFFIX, IMPL([SHAREMIND_MI_TRAP]), DO_DISPATCH, PREPARE_FINISH)
 
+m4_define([FPU_GETSTATE_DEFINE], [
+    INSTR_DEFINE([common.fpu.getstate_$1],
+        CODE(0x00, 0x05, 0x00, OLB_CODE_$1, 0x00, 0x00, 0x00, 0x00),
+        ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX,
+        IMPL([
+            SharemindCodeBlock * d;
+            SHAREMIND_MI_GET_$1(d, SHAREMIND_MI_ARG_AS(1, sizet));
+            SHAREMIND_MI_BLOCK_AS(d,uint64) = SHAREMIND_MI_FPU_STATE]), DO_DISPATCH, PREPARE_FINISH)])
+FPU_GETSTATE_DEFINE([reg])
+FPU_GETSTATE_DEFINE([stack])
+
+m4_define([FPU_SETSTATE_DEFINE], [
+    INSTR_DEFINE([common.fpu.setstate_$1],
+        CODE(0x00, 0x05, 0x01, OLB_CODE_$1, 0x00, 0x00, 0x00, 0x00),
+        ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX,
+        IMPL([
+            const SharemindCodeBlock * s;
+            m4_ifelse($1, [imm],
+                      [s = SHAREMIND_MI_ARG_P(1)],
+                      [SHAREMIND_MI_GET_CONST_$1(s, SHAREMIND_MI_ARG_AS(1, sizet))]);
+            SHAREMIND_MI_FPU_STATE_SET(SHAREMIND_MI_BLOCK_AS(s,uint64))]), DO_DISPATCH, PREPARE_FINISH)])
+FPU_SETSTATE_DEFINE([imm])
+FPU_SETSTATE_DEFINE([reg])
+FPU_SETSTATE_DEFINE([stack])
+
 # common.mov (imm, reg, stack) >> (reg, stack)
 # (1=olbsrc,2=olbdest)
 m4_define([_MOV_REGS_TO_REGS_DEFINE], [
