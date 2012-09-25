@@ -17,5 +17,5 @@ m4_define([DO_EMPTY_IMPL_LABELS], [m4_ifelse(EMPTY_IMPL_COUNT, [0], [], [foreach
 
 m4_divert[]m4_dnl
 
-static void * instr_labels[[]]      = { DO_INSTR_LABELS NULL };
-static void * empty_impl_labels[[]] = { DO_EMPTY_IMPL_LABELS NULL };
+static const ImplLabelType instr_labels[[]]      = { DO_INSTR_LABELS NULL };
+static const ImplLabelType empty_impl_labels[[]] = { DO_EMPTY_IMPL_LABELS NULL };
