@@ -841,7 +841,7 @@ m4_define([_PROC_GETREFSIZE], [
         NO_PREPARATION,
         NO_IMPL_SUFFIX, IMPL([
             const Sharemind[]m4_ifelse($1, [cref], [C])[]Reference * restrict srcRef;
-            m4_ifelse($2, [imm], [], [SharemindCodeBlock * src;])
+            m4_ifelse($2, [imm], [], [const SharemindCodeBlock * src;])
             SharemindCodeBlock * m4_ifelse($2, [imm], [restrict]) dest;
             m4_ifelse($2, [imm],
                       [SHAREMIND_MI_GET_$1(srcRef, SHAREMIND_MI_ARG_AS(1, sizet));],
