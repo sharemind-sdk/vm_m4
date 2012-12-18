@@ -1,3 +1,6 @@
+To run this file, type:
+  m4 -E -P instr.m4 stats.m4
+
 m4_divert[]
 INSTRUCTION STATISTICS:
 ----------------------------------------------------
