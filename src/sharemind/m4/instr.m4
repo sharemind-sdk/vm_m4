@@ -981,7 +981,6 @@ m4_define([ALBI_DS_DEFINE], [
                 $8;
             }]),
         DO_DISPATCH, PREPARE_FINISH)])
-m4_define([ALBI_DDS_DEFINE], [ALBI_DSS_DEFINE])
 
 # (1=name,2=namespace,3=class,4=dtb_d,5=olb_d,6=olb_s1,7=olb_s2,8=prepare,9=impl)
 m4_define([ALBI_DSS_DEFINE], [m4_ifelse($6, $7, m4_ifelse($6, [imm], [], [_$0($@)]))])
@@ -1482,7 +1481,7 @@ foreach([LOGICAL_T1110_DEFINE], (product(([uint8], [uint16], [uint32], [uint64])
 
 # logical.teq
 m4_define([LOGICAL_TEQ_OP], [m4_ifelse(DTB_CAT_$1, [float], [SHAREMIND_MI_TEQ_FLOAT]DTB_BITS_$1[(*d,*s1,*s2)], [(*d) = ((*s1) == (*s2))])])
-m4_define([LOGICAL_TEQ_DEFINE], [ALBI_DSS_DEFINE([[logical.teq]], 0x3, 0xd0, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, LOGICAL_TEQ_OP(_ARG$1))])
+m4_define([LOGICAL_TEQ_DEFINE], [ALBI_DSS_DEFINE([[logical.teq]], 0x3, 0xd0, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, LOGICAL_TEQ_OP(_ARG1$1))])
 foreach([LOGICAL_TEQ_DEFINE], (product(([int8], [int16], [int32], [int64], [uint8], [uint16], [uint32], [uint64], [float32], [float64]),
                 ([reg], [stack]),
                 ([imm], [reg], [stack]),
@@ -1490,7 +1489,7 @@ foreach([LOGICAL_TEQ_DEFINE], (product(([int8], [int16], [int32], [int64], [uint
 
 # logical.tne
 m4_define([LOGICAL_TNE_OP], [m4_ifelse(DTB_CAT_$1, [float], [SHAREMIND_MI_TNE_FLOAT]DTB_BITS_$1[(*d,*s1,*s2)], [(*d) = ((*s1) != (*s2))])])
-m4_define([LOGICAL_TNE_DEFINE], [ALBI_DSS_DEFINE([[logical.tne]], 0x3, 0xd1, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, LOGICAL_TNE_OP(_ARG$1))])
+m4_define([LOGICAL_TNE_DEFINE], [ALBI_DSS_DEFINE([[logical.tne]], 0x3, 0xd1, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, LOGICAL_TNE_OP(_ARG1$1))])
 foreach([LOGICAL_TNE_DEFINE], (product(([int8], [int16], [int32], [int64], [uint8], [uint16], [uint32], [uint64], [float32], [float64]),
                 ([reg], [stack]),
                 ([imm], [reg], [stack]),
