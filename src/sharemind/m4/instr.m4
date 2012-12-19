@@ -914,9 +914,9 @@ m4_define([_CONVERT_DEFINE], [m4_ifelse($1, $3, [], [
             SHAREMIND_MI_GET_CONST_$2(s, SHAREMIND_MI_ARG_AS(1, sizet));
             SharemindCodeBlock * d;
             SHAREMIND_MI_GET_$4(d, SHAREMIND_MI_ARG_AS(2, sizet));
-            m4_ifelse(TB_CAT_$1, [float],
+            m4_ifelse(DTB_CAT_$1, [float],
                       [SHAREMIND_MI_CONVERT_$1_TO_$3(SHAREMIND_MI_BLOCK_AS(d,$3), SHAREMIND_MI_BLOCK_AS(s,$1))],
-                      TB_CAT_$3, [float],
+                      DTB_CAT_$3, [float],
                       [SHAREMIND_MI_CONVERT_$1_TO_$3(SHAREMIND_MI_BLOCK_AS(d,$3), SHAREMIND_MI_BLOCK_AS(s,$1))],
                       [SHAREMIND_MI_BLOCK_AS(d,$3) = (DTB_TYPE_$3) SHAREMIND_MI_BLOCK_AS(s,$1)])]),
         DO_DISPATCH, PREPARE_FINISH
