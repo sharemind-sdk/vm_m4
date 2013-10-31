@@ -19,4 +19,4 @@ static const SharemindVmInstruction sharemindVmInstructionIndex[[]] = {DO_INSTRS
     { .fullName = "", .code = 0u, .numArgs = 0u }
 };
 
-const unsigned sharemindVmInstructionCount = INSTR_COUNT;
+static const unsigned sharemindVmInstructionCount = INSTR_COUNT;
