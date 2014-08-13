@@ -1440,7 +1440,7 @@ m4_define([LOGICAL_UNOT_DEFINE], [LBI_D_DEFINE([[logical.unot]], 0x3, 0x00, _ARG
 foreach([LOGICAL_UNOT_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]))))
 
 # logical.bnot
-m4_define([LOGICAL_BNOT_DEFINE], [LBI_DS_DEFINE([[logical.bnot]], 0x3, 0x40, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = !(*s)])])
+m4_define([LOGICAL_BNOT_DEFINE], [LBI_DS_DEFINE([[logical.bnot]], 0x3, 0x40, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(void) sd; (*d) = !(*s)])])
 foreach([LOGICAL_BNOT_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([reg], [stack]))))
 
 # logical.lband
