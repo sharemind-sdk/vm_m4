@@ -1,0 +1,17 @@
+#
+# Copyright (C) Cybernetica AS
+#
+# All rights are reserved. Reproduction in whole or part is prohibited
+# without the written consent of the copyright owner. The usage of this
+# code is subject to the appropriate license agreement.
+#
+
+# This file defines the following variables:
+#   SharemindVmM4_INCLUDE_DIRS - include directories
+#   SharemindVmM4_LIBRARIES    - libraries to link against
+#   SharemindVmM4_DEFINITIONS  - required compiler definitions
+
+
+SET(SharemindVmM4_INCLUDE_DIRS @VM_M4_INSTALL_INCLUDE_DIRS@)
+SET(SharemindVmM4_LIBRARIES @VM_M4_INSTALL_LINK_LIBRARIES@)
+SET(SharemindVmM4_DEFINITIONS @VM_M4_INSTALL_DEFINITIONS@)
