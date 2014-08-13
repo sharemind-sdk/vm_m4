@@ -7,7 +7,7 @@
 # code is subject to the appropriate license agreement.
 #
 
-CMAKE_MINIMUM_REQUIRED(VERSION "2.8")
+CMAKE_MINIMUM_REQUIRED(VERSION "2.8.12")
 PROJECT("SHAREMIND_VM_M4")
 
 IF(${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
