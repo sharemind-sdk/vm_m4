@@ -37,7 +37,9 @@ SET(M4_2_H_SOURCES
     "preprocess_pass2_functions.m4")
 
 ADD_CUSTOM_COMMAND(OUTPUT "${M4_DIR_B}/instr.m4f"
-                   COMMAND ${M4} -E -P "--include=${M4_DIR_S}" "${M4_DIR_S}/instr.m4" "--freeze-state=${M4_DIR_B}/instr.m4f"
+                   COMMAND ${M4} -E -P "--include=${M4_DIR_S}"
+                                 "${M4_DIR_S}/instr.m4"
+                                 "--freeze-state=${M4_DIR_B}/instr.m4f"
                    MAIN_DEPENDENCY "${M4_DIR_S}/instr.m4"
                    COMMENT "Generating ${M4_DIR_B}/instr.m4f")
 ADD_CUSTOM_TARGET(m4_instr_m4f ALL DEPENDS  "${M4_DIR_B}/instr.m4f")
@@ -49,7 +51,10 @@ FOREACH(_H_SOURCE ${M4_2_H_SOURCES})
   STRING(REPLACE ".h" "_h" M4_TARGET_NAME "m4_${_H_TARGET}")
 
   ADD_CUSTOM_COMMAND(OUTPUT "${M4_DIR_B}/${_H_TARGET}"
-                     COMMAND ${M4} -E -P "--include=${M4_DIR_S}" "--reload-state=${M4_DIR_B}/instr.m4f" "${M4_DIR_S}/${_H_SOURCE}" > "${M4_DIR_B}/${_H_TARGET}"
+                     COMMAND ${M4} -E -P "--include=${M4_DIR_S}"
+                                   "--reload-state=${M4_DIR_B}/instr.m4f"
+                                   "${M4_DIR_S}/${_H_SOURCE}" >
+                                   "${M4_DIR_B}/${_H_TARGET}"
                      MAIN_DEPENDENCY "${M4_DIR_S}/${_H_SOURCE}"
                      DEPENDS m4_instr_m4f
                      COMMENT "Generating ${M4_DIR_B}/${_H_TARGET}")
