@@ -377,7 +377,6 @@ m4_define([_MOV_REGS_TO_REF_DEFINE], [
             m4_ifelse($1, [imm], [],
                       [SHAREMIND_MI_GET_CONST_$1(src, SHAREMIND_MI_ARG_AS(1, sizet));])
             SHAREMIND_MI_GET_ref(destRef, SHAREMIND_MI_ARG_AS(2, sizet));
-            SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_REF_CAN_WRITE(destRef), SHAREMIND_VM_PROCESS_WRITE_DENIED);
             m4_ifelse($2, [imm], [],
                       [SHAREMIND_MI_GET_CONST_$2(destOffset, SHAREMIND_MI_ARG_AS(3, sizet));])
             m4_ifelse($3, [imm], [],
@@ -424,7 +423,6 @@ m4_define([_MOV_REF_TO_REF_DEFINE], [
             m4_ifelse($2, [imm], [],
                       [SHAREMIND_MI_GET_CONST_$2(srcOffset, SHAREMIND_MI_ARG_AS(2, sizet));])
             SHAREMIND_MI_GET_ref(destRef, SHAREMIND_MI_ARG_AS(3, sizet));
-            SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_REF_CAN_WRITE(destRef), SHAREMIND_VM_PROCESS_WRITE_DENIED);
             m4_ifelse($3, [imm], [],
                       [SHAREMIND_MI_GET_CONST_$3(destOffset, SHAREMIND_MI_ARG_AS(4, sizet));])
             m4_ifelse($4, [imm], [],
@@ -530,7 +528,6 @@ m4_define([_MOV_MEM_TO_REF_DEFINE], [
             m4_ifelse($2, [imm], [],
                       [SHAREMIND_MI_GET_CONST_$2(srcOffset, SHAREMIND_MI_ARG_AS(2, sizet));])
             SHAREMIND_MI_GET_ref(destRef, SHAREMIND_MI_ARG_AS(3, sizet));
-            SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_REF_CAN_WRITE(destRef), SHAREMIND_VM_PROCESS_WRITE_DENIED);
             m4_ifelse($3, [imm], [],
                       [SHAREMIND_MI_GET_CONST_$3(destOffset, SHAREMIND_MI_ARG_AS(4, sizet));])
             m4_ifelse($4, [imm], [],
@@ -662,7 +659,9 @@ m4_define([PUSHREF_REF_DEFINE], [
     IMPL([
         const Sharemind[]m4_ifelse($2, [cref], [C])Reference * restrict srcRef;
         SHAREMIND_MI_GET_$2(srcRef, SHAREMIND_MI_ARG_AS(1, sizet));
-        m4_ifelse($1, [cref], [SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_REF_CAN_READ(srcRef), SHAREMIND_VM_PROCESS_INVALID_ARGUMENT);])
+        m4_ifelse($1, [ref], [], $2, [cref], [],
+                  [SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_REF_CAN_READ(srcRef),
+                                           SHAREMIND_VM_PROCESS_INVALID_ARGUMENT);])
         SHAREMIND_MI_PUSHREF_REF_$1(srcRef)]),
     DO_DISPATCH, PREPARE_FINISH)])
 PUSHREF_REF_DEFINE([cref], [cref])
@@ -680,7 +679,10 @@ m4_define([_PUSHREF_MEM_DEFINE], [
         SharemindMemorySlot * srcSlot;
         SHAREMIND_MI_GET_CONST_$2(srcPtr, SHAREMIND_MI_ARG_AS(1, sizet));
         SHAREMIND_MI_MEM_GET_SLOT_OR_EXCEPT(SHAREMIND_MI_BLOCK_AS(srcPtr,uint64), srcSlot);
-        m4_ifelse($1, [cref], [SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_MEM_CAN_READ(srcSlot), SHAREMIND_VM_PROCESS_INVALID_ARGUMENT);])
+        SHAREMIND_MI_TRY_EXCEPT(
+                SHAREMIND_MI_MEM_CAN_[]m4_ifelse($1, [cref], [READ], [WRITE])(
+                        srcSlot),
+                SHAREMIND_VM_PROCESS_INVALID_ARGUMENT);
         SHAREMIND_MI_PUSHREF_MEM_$1(srcSlot)]),
     DO_DISPATCH, PREPARE_FINISH)])
 m4_define([PUSHREF_MEM_DEFINE], [_PUSHREF_MEM_DEFINE(_ARG1$1, _ARG2$1)])
@@ -751,7 +753,9 @@ m4_define([_PUSHREFPART_REF_DEFINE], [
         const SharemindCodeBlock * m4_ifelse($3, [imm], [restrict]) offset;
         const SharemindCodeBlock * m4_ifelse($3, [imm], [restrict]) nBytes;
         SHAREMIND_MI_GET_$2(srcRef, SHAREMIND_MI_ARG_AS(1, sizet));
-        m4_ifelse($1, [cref], [SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_REF_CAN_READ(srcRef), SHAREMIND_VM_PROCESS_INVALID_ARGUMENT);])
+        m4_ifelse($1, [ref], [], $2, [cref], [],
+                  [SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_REF_CAN_READ(srcRef),
+                                           SHAREMIND_VM_PROCESS_INVALID_ARGUMENT);])
         m4_ifelse($3, [imm],
                   [offset = SHAREMIND_MI_ARG_P(2);],
                   [SHAREMIND_MI_GET_CONST_$3(offset, SHAREMIND_MI_ARG_AS(2, sizet));])
@@ -785,7 +789,10 @@ m4_define([_PUSHREFPART_MEM_DEFINE], [
         SharemindMemorySlot * srcSlot;
         SHAREMIND_MI_GET_CONST_$2(srcPtr, SHAREMIND_MI_ARG_AS(1, sizet));
         SHAREMIND_MI_MEM_GET_SLOT_OR_EXCEPT(SHAREMIND_MI_BLOCK_AS(srcPtr,uint64), srcSlot);
-        m4_ifelse($1, [cref], [SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_MEM_CAN_READ(srcSlot), SHAREMIND_VM_PROCESS_INVALID_ARGUMENT);])
+        SHAREMIND_MI_TRY_EXCEPT(
+                SHAREMIND_MI_MEM_CAN_[]m4_ifelse($1, [cref], [READ], [WRITE])(
+                        srcSlot),
+                SHAREMIND_VM_PROCESS_INVALID_ARGUMENT);
         m4_ifelse($3, [imm],
                   [offset = SHAREMIND_MI_ARG_P(2);],
                   [SHAREMIND_MI_GET_CONST_$3(offset, SHAREMIND_MI_ARG_AS(2, sizet));])
