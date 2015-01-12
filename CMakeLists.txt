@@ -32,6 +32,8 @@ ENDIF(M4)
 # m4 files
 ################################################################################
 
+FILE(GLOB_RECURSE ALL_M4_FILES "${CMAKE_CURRENT_SOURCE_DIR}/m4/*.m4")
+ADD_CUSTOM_TARGET("include_ALL_M4_FILES_in_IDE" SOURCES ${ALL_M4_FILES})
 SET(M4_DIR_S "${CMAKE_CURRENT_SOURCE_DIR}/m4")
 SET(M4_DIR_B "${CMAKE_CURRENT_BINARY_DIR}/m4")
 FILE(MAKE_DIRECTORY "${M4_DIR_B}")
