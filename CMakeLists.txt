@@ -18,7 +18,7 @@
 #
 
 CMAKE_MINIMUM_REQUIRED(VERSION "2.8.12")
-PROJECT("SHAREMIND_VM_M4")
+PROJECT("SHAREMIND_VM_M4" NONE)
 
 SET(VM_M4_VERSION "0.1.0.0")
 
@@ -33,9 +33,9 @@ ENDIF()
 
 IF(M4)
     MESSAGE(STATUS "Found m4 at ${M4}")
-ELSE(M4)
+ELSE()
     MESSAGE(FATAL_ERROR "Required m4 command not found!")
-ENDIF(M4)
+ENDIF()
 
 
 ################################################################################
@@ -87,7 +87,7 @@ INSTALL(FILES ${M4_H_TARGETS}
 # CMake FIND_PACKAGE support:
 ################################################################################
 
-FILE(GLOB_RECURSE sharemind_vm_m4_in_files "${CMAKE_CURRENT_SOURCE_DIR}/*.in")
+FILE(GLOB sharemind_vm_m4_in_files "${CMAKE_CURRENT_SOURCE_DIR}/*.in")
 ADD_CUSTOM_TARGET("include_sharemind_vm_m4_in_files_in_IDE"
                   SOURCES ${sharemind_vm_m4_in_files})
 SET(VM_M4_INSTALL_LINK_LIBRARIES "")
