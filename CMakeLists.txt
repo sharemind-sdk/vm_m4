@@ -43,8 +43,6 @@ ENDIF()
 ################################################################################
 
 SET(M4_DIR_S "${CMAKE_CURRENT_SOURCE_DIR}/m4")
-FILE(GLOB_RECURSE ALL_M4_FILES "${M4_DIR_S}/*.m4")
-ADD_CUSTOM_TARGET("include_ALL_M4_FILES_in_IDE" SOURCES ${ALL_M4_FILES})
 
 SET(M4_2_H_SOURCES
     "dispatches.m4"
@@ -99,3 +97,17 @@ CONFIGURE_FILE(
 INSTALL(FILES "${CMAKE_CURRENT_BINARY_DIR}/SharemindVmM4Config.cmake"
               "${CMAKE_CURRENT_BINARY_DIR}/SharemindVmM4ConfigVersion.cmake"
         DESTINATION "lib/SharemindVmM4")
+
+
+################################################################################
+# Misc. files
+################################################################################
+
+FILE(GLOB MD_FILES "${CMAKE_CURRENT_SOURCE_DIR}/*.md")
+FILE(GLOB_RECURSE DOC_FILES "${CMAKE_CURRENT_SOURCE_DIR}/doc/*")
+FILE(GLOB LICENSE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE*")
+FILE(GLOB_RECURSE ALL_SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/m4/*")
+ADD_CUSTOM_TARGET("include_MISC_FILES_in_IDE" SOURCES
+    ${MD_FILES} ${DOC_FILES} ${LICENSE_FILES} ${ALL_SOURCE_FILES}
+    "${CMAKE_CURRENT_SOURCE_DIR}/config.local.example"
+)
