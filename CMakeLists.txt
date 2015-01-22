@@ -50,12 +50,21 @@ SET(M4_2_H_SOURCES
     "static_label_structs.m4"
     "preprocess_pass2_functions.m4")
 
-ADD_CUSTOM_TARGET(m4_instr_m4f ALL
+ADD_CUSTOM_COMMAND(
+  OUTPUT "instr.m4f"
   COMMAND ${M4} -E -P "--include=${M4_DIR_S}" "${M4_DIR_S}/instr.m4"
-          "--freeze-state=instr.m4f"
-  DEPENDS "${M4_DIR_S}/instr.m4"
+                "--freeze-state=instr.m4f"
+  MAIN_DEPENDENCY "${M4_DIR_S}/instr.m4"
+  DEPENDS
+    "${M4_DIR_S}/datatypebyte.m4"
+    "${M4_DIR_S}/foreach.m4"
+    "${M4_DIR_S}/forloop.m4"
+    "${M4_DIR_S}/gnu_m4_examples/foreachq4.m4"
+    "${M4_DIR_S}/operandlocationbyte.m4"
+    "${M4_DIR_S}/product.m4"
   COMMENT "Generating instr.m4f"
 )
+ADD_CUSTOM_TARGET(m4_instr_m4f ALL DEPENDS "instr.m4f")
 
 SET(M4_INSTALL_TARGETS tmp)
 LIST(REMOVE_ITEM M4_INSTALL_TARGETS tmp)
@@ -64,14 +73,18 @@ FOREACH(S ${M4_2_H_SOURCES})
   LIST(APPEND M4_INSTALL_TARGETS "${CMAKE_CURRENT_BINARY_DIR}/${T}")
   STRING(REPLACE ".h" "_h" M4_TARGET_NAME "m4_${T}")
 
-  ADD_CUSTOM_TARGET("${M4_TARGET_NAME}" ALL
+  ADD_CUSTOM_COMMAND(
+    OUTPUT "${T}"
     COMMAND ${M4} -E -P "--include=${M4_DIR_S}"
                   "--reload-state=instr.m4f"
                   "${M4_DIR_S}/${S}" >
                   "${T}"
-    DEPENDS "${M4_DIR_S}/${S}"
+    MAIN_DEPENDENCY "${M4_DIR_S}/${S}"
+    DEPENDS "instr.m4f"
     COMMENT "Generating ${T}"
-    )
+  )
+
+  ADD_CUSTOM_TARGET("${M4_TARGET_NAME}" ALL DEPENDS "${T}")
   ADD_DEPENDENCIES("${M4_TARGET_NAME}" m4_instr_m4f)
 ENDFOREACH()
 
