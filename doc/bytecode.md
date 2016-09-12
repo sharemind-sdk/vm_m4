@@ -224,8 +224,8 @@ follows:
 | 3      | Fatal exceptions flags   | 0x01 << 3 | Crash on inexact result (default is not set) |
 | 4      | Fatal exceptions flags   | 0x02 << 3 | Crash on underflow (default is not set) |
 | 5      | Fatal exceptions flags   | 0x04 << 3 | Crash on overflow (default is not set) |
-| 6      | Fatal exceptions flags   | 0x08 << 3 | Crash on divide by zero (default is set) |
-| 7      | Fatal exceptions flags   | 0x10 << 3 | Crash on invalid operation (default is set) |
+| 6      | Fatal exceptions flags   | 0x08 << 3 | Crash on divide by zero (default is not set) |
+| 7      | Fatal exceptions flags   | 0x10 << 3 | Crash on invalid operation (default is not set) |
 | 8      | Active exception flags   | 0x01 << 8 | Inexact result (default is not set) |
 | 9      | Active exception flags   | 0x02 << 8 | Underflow (default is not set) |
 | 10     | Active exception flags   | 0x04 << 8 | Overflow (default is not set) |
@@ -241,6 +241,8 @@ state register.
 The virtual machine never clears the active exception flags.
 It is the responsibility of the process to clear the active exception flags when
 desired.
+By default, the "Crash on ..." bits are not set and all raised exceptions are
+effectively ignored (this replicates AMD64 default behaviour).
 
 
 <a name="namespaces"></a>
