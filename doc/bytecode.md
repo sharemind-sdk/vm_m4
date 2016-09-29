@@ -30,7 +30,7 @@ Bit notation is big-endian, e.g. `0x2d` is denoted as `00101101`.
 The instruction format base specifies a base layout for all instructions.
 It only uses the 2 first bytes of the 8-byte block to denote the instruction
 type.
-The last 6 bits are instruction-specific.
+The last 6 bytes are instruction-specific.
 
 |  byte 0  |  byte 1  |  byte 2  |  byte 3  |  byte 4  |  byte 5  |  byte 6  |  byte 7  |
 |----------|----------|----------|----------|----------|----------|----------|----------|
