@@ -17,17 +17,15 @@
 # For further information, please contact us at sharemind@cyber.ee.
 #
 
-CMAKE_MINIMUM_REQUIRED(VERSION "2.8.12")
-PROJECT("SHAREMIND_VM_M4" NONE)
-
-SET(CPACK_PACKAGE_VERSION_MAJOR "0")
-SET(CPACK_PACKAGE_VERSION_MINOR "1")
-SET(CPACK_PACKAGE_VERSION_PATCH "0")
-SET(VM_M4_VERSION
-    "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}")
+CMAKE_MINIMUM_REQUIRED(VERSION "3.0.0")
+PROJECT(SharemindVmM4 VERSION "0.1.0" LANGUAGES)
 
 INCLUDE("${CMAKE_CURRENT_SOURCE_DIR}/config.local" OPTIONAL)
 INCLUDE("${CMAKE_CURRENT_BINARY_DIR}/config.local" OPTIONAL)
+
+FIND_PACKAGE(SharemindCMakeHelpers REQUIRED)
+
+SharemindSetProjectVersion()
 
 IF(${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
     FIND_PROGRAM(M4 gm4)
@@ -92,28 +90,19 @@ FOREACH(S ${M4_2_H_SOURCES})
   ADD_DEPENDENCIES("${M4_TARGET_NAME}" m4_instr_m4f)
 ENDFOREACH()
 
-INSTALL(FILES ${M4_INSTALL_TARGETS} DESTINATION "include/sharemind/m4")
+INSTALL(FILES ${M4_INSTALL_TARGETS}
+        DESTINATION "include/sharemind/m4"
+        COMPONENT "dev")
 
 
 ################################################################################
 # CMake FIND_PACKAGE support:
 ################################################################################
 
-FILE(GLOB sharemind_vm_m4_in_files "${CMAKE_CURRENT_SOURCE_DIR}/*.in")
-ADD_CUSTOM_TARGET("include_sharemind_vm_m4_in_files_in_IDE"
-                  SOURCES ${sharemind_vm_m4_in_files})
-SET(VM_M4_INSTALL_LINK_LIBRARIES "")
-SET(VM_M4_INSTALL_INCLUDE_DIRS "${CMAKE_INSTALL_PREFIX}/include")
-SET(VM_M4_INSTALL_DEFINITIONS "")
-
-CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/SharemindVmM4Config.cmake.in"
-               "${CMAKE_CURRENT_BINARY_DIR}/SharemindVmM4Config.cmake" @ONLY)
-CONFIGURE_FILE(
-    "${CMAKE_CURRENT_SOURCE_DIR}/SharemindVmM4ConfigVersion.cmake.in"
-    "${CMAKE_CURRENT_BINARY_DIR}/SharemindVmM4ConfigVersion.cmake" @ONLY)
-INSTALL(FILES "${CMAKE_CURRENT_BINARY_DIR}/SharemindVmM4Config.cmake"
-              "${CMAKE_CURRENT_BINARY_DIR}/SharemindVmM4ConfigVersion.cmake"
-        DESTINATION "lib/SharemindVmM4")
+SET(SharemindVmM4_INSTALL_LINK_LIBRARIES "")
+SET(SharemindVmM4_INSTALL_INCLUDE_DIRS "${CMAKE_INSTALL_PREFIX}/include")
+SET(SharemindVmM4_INSTALL_DEFINITIONS "")
+SharemindUseCMakeFindFiles()
 
 
 ################################################################################
