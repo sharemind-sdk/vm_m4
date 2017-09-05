@@ -99,10 +99,10 @@ INSTALL(FILES ${M4_INSTALL_TARGETS}
 # CMake FIND_PACKAGE support:
 ################################################################################
 
-SET(SharemindVmM4_INSTALL_LINK_LIBRARIES "")
-SET(SharemindVmM4_INSTALL_INCLUDE_DIRS "${CMAKE_INSTALL_PREFIX}/include")
-SET(SharemindVmM4_INSTALL_DEFINITIONS "")
-SharemindUseCMakeFindFiles()
+SharemindCreateCMakeFindFiles(
+    INCLUDE_DIRS
+        "${CMAKE_INSTALL_PREFIX}/include"
+)
 
 
 ################################################################################
@@ -120,13 +120,9 @@ ADD_CUSTOM_TARGET("include_MISC_FILES_in_IDE" SOURCES
 
 
 # Packaging:
-SET(CPACK_PACKAGE_VENDOR "Cybernetica AS")
-SET(CPACK_PACKAGE_CONTACT "Sharemind packaging <sharemind-packaging@cyber.ee>")
-SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "M4 generated development headers for Sharemind VM")
-SET(CPACK_GENERATOR "DEB")
-SET(CPACK_DEBIAN_PACKAGE_NAME "libsharemind-vm-m4-dev")
-SET(CPACK_DEBIAN_PACKAGE_RELEASE "cyber1")
-SET(CPACK_DEBIAN_COMPRESSION_TYPE "xz")
-SET(CPACK_DEBIAN_PACKAGE_SECTION "libdevel")
-SET(CPACK_DEBIAN_FILE_NAME "DEB-DEFAULT")
-INCLUDE(CPack)
+SharemindSetupPackaging()
+SharemindAddComponentPackage("dev"
+    NAME "libsharemind-vm-m4-dev"
+    DESCRIPTION "M4 generated development headers for Sharemind VM"
+    DEB_SECTION "libdevel")
+SharemindPackagingFinalize()
