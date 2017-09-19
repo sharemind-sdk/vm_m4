@@ -193,10 +193,10 @@ m4_define([_MOV_MEM_TO_REGS_DEFINE], [
                                                         SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);])]),
         NO_IMPL_SUFFIX, IMPL([
             const SharemindCodeBlock * src;
-            SharemindMemorySlot * restrict srcSlot;
-            const SharemindCodeBlock * m4_ifelse($2, [imm], [restrict]) srcOffset;
+            SharemindMemorySlot * SHAREMIND_RESTRICT srcSlot;
+            const SharemindCodeBlock * m4_ifelse($2, [imm], [SHAREMIND_RESTRICT]) srcOffset;
             SharemindCodeBlock * dest;
-            const SharemindCodeBlock * m4_ifelse($4, [imm], [restrict]) numBytes;
+            const SharemindCodeBlock * m4_ifelse($4, [imm], [SHAREMIND_RESTRICT]) numBytes;
             m4_ifelse($1, [imm],
                       [src = SHAREMIND_MI_ARG_P(1);],
                       [SHAREMIND_MI_GET_CONST_$1(src, SHAREMIND_MI_ARG_AS(1, sizet));])
@@ -234,11 +234,11 @@ m4_define([_MOV_REGS_TO_MEM_DEFINE], [
                        SHAREMIND_PREPARE_CHECK_OR_ERROR(SHAREMIND_PREPARE_ARG_AS(4,uint64) <= 8u,
                                                         SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);])]),
         NO_IMPL_SUFFIX, IMPL([
-            const SharemindCodeBlock * m4_ifelse($1, [imm], [restrict]) src;
+            const SharemindCodeBlock * m4_ifelse($1, [imm], [SHAREMIND_RESTRICT]) src;
             const SharemindCodeBlock * dest;
-            const SharemindMemorySlot * restrict destSlot;
-            const SharemindCodeBlock * m4_ifelse($3, [imm], [restrict]) destOffset;
-            const SharemindCodeBlock * m4_ifelse($4, [imm], [restrict]) numBytes;
+            const SharemindMemorySlot * SHAREMIND_RESTRICT destSlot;
+            const SharemindCodeBlock * m4_ifelse($3, [imm], [SHAREMIND_RESTRICT]) destOffset;
+            const SharemindCodeBlock * m4_ifelse($4, [imm], [SHAREMIND_RESTRICT]) numBytes;
             m4_ifelse($1, [imm], [],
                       [SHAREMIND_MI_GET_CONST_$1(src, SHAREMIND_MI_ARG_AS(1, sizet));])
             m4_ifelse($2, [imm],
@@ -284,11 +284,11 @@ m4_define([_MOV_MEM_TO_MEM_DEFINE], [
         IMPL([
             const SharemindCodeBlock * src;
             const SharemindMemorySlot * srcSlot;
-            const SharemindCodeBlock * m4_ifelse($2, [imm], [restrict]) srcOffset;
+            const SharemindCodeBlock * m4_ifelse($2, [imm], [SHAREMIND_RESTRICT]) srcOffset;
             const SharemindCodeBlock * dest;
             const SharemindMemorySlot * destSlot;
-            const SharemindCodeBlock * m4_ifelse($4, [imm], [restrict]) destOffset;
-            const SharemindCodeBlock * m4_ifelse($5, [imm], [restrict]) numBytes;
+            const SharemindCodeBlock * m4_ifelse($4, [imm], [SHAREMIND_RESTRICT]) destOffset;
+            const SharemindCodeBlock * m4_ifelse($5, [imm], [SHAREMIND_RESTRICT]) numBytes;
             m4_ifelse($1, [imm],
                       [src = SHAREMIND_MI_ARG_P(1);],
                       [SHAREMIND_MI_GET_CONST_$1(src, SHAREMIND_MI_ARG_AS(1, sizet));])
@@ -336,10 +336,10 @@ m4_define([_MOV_REF_TO_REGS_DEFINE], [
                                                        SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS)])],
                   [NO_PREPARATION]),
         NO_IMPL_SUFFIX, IMPL([
-            const Sharemind[]m4_ifelse($1, [cref], [C])[]Reference * restrict srcRef;
-            const SharemindCodeBlock * m4_ifelse($2, [imm], [restrict]) srcOffset;
+            const Sharemind[]m4_ifelse($1, [cref], [C])[]Reference * SHAREMIND_RESTRICT srcRef;
+            const SharemindCodeBlock * m4_ifelse($2, [imm], [SHAREMIND_RESTRICT]) srcOffset;
             SharemindCodeBlock * dest;
-            const SharemindCodeBlock * m4_ifelse($4, [imm], [restrict]) numBytes;
+            const SharemindCodeBlock * m4_ifelse($4, [imm], [SHAREMIND_RESTRICT]) numBytes;
             SHAREMIND_MI_GET_$1(srcRef, SHAREMIND_MI_ARG_AS(1, sizet));
             m4_ifelse($1, [ref], [SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_REF_CAN_READ(srcRef), SHAREMIND_VM_PROCESS_READ_DENIED);])
             m4_ifelse($2, [imm], [],
@@ -380,10 +380,10 @@ m4_define([_MOV_REGS_TO_REF_DEFINE], [
                                                        SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS)])],
                   [NO_PREPARATION]),
         NO_IMPL_SUFFIX, IMPL([
-            const SharemindCodeBlock * m4_ifelse($1, [imm], [restrict]) src;
-            const SharemindReference * restrict destRef;
-            const SharemindCodeBlock * m4_ifelse($2, [imm], [restrict]) destOffset;
-            const SharemindCodeBlock * m4_ifelse($3, [imm], [restrict]) numBytes;
+            const SharemindCodeBlock * m4_ifelse($1, [imm], [SHAREMIND_RESTRICT]) src;
+            const SharemindReference * SHAREMIND_RESTRICT destRef;
+            const SharemindCodeBlock * m4_ifelse($2, [imm], [SHAREMIND_RESTRICT]) destOffset;
+            const SharemindCodeBlock * m4_ifelse($3, [imm], [SHAREMIND_RESTRICT]) numBytes;
             m4_ifelse($1, [imm], [],
                       [SHAREMIND_MI_GET_CONST_$1(src, SHAREMIND_MI_ARG_AS(1, sizet));])
             SHAREMIND_MI_GET_ref(destRef, SHAREMIND_MI_ARG_AS(2, sizet));
@@ -424,10 +424,10 @@ m4_define([_MOV_REF_TO_REF_DEFINE], [
         NO_IMPL_SUFFIX,
         IMPL([
             const Sharemind[]m4_ifelse($1, [cref], [C])Reference * srcRef;
-            const SharemindCodeBlock * m4_ifelse($2, [imm], [restrict]) srcOffset;
+            const SharemindCodeBlock * m4_ifelse($2, [imm], [SHAREMIND_RESTRICT]) srcOffset;
             const SharemindReference * destRef;
-            const SharemindCodeBlock * m4_ifelse($3, [imm], [restrict]) destOffset;
-            const SharemindCodeBlock * m4_ifelse($4, [imm], [restrict]) numBytes;
+            const SharemindCodeBlock * m4_ifelse($3, [imm], [SHAREMIND_RESTRICT]) destOffset;
+            const SharemindCodeBlock * m4_ifelse($4, [imm], [SHAREMIND_RESTRICT]) numBytes;
             SHAREMIND_MI_GET_$1(srcRef, SHAREMIND_MI_ARG_AS(1, sizet));
             m4_ifelse($1, [ref], [SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_REF_CAN_READ(srcRef), SHAREMIND_VM_PROCESS_READ_DENIED);])
             m4_ifelse($2, [imm], [],
@@ -471,12 +471,12 @@ m4_define([_MOV_REF_TO_MEM_DEFINE], [
                                                         SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);])]),
         NO_IMPL_SUFFIX,
         IMPL([
-            const Sharemind[]m4_ifelse($1, [cref], [C])Reference * restrict srcRef;
-            const SharemindCodeBlock * m4_ifelse($2, [imm], [restrict]) srcOffset;
-            const SharemindCodeBlock * restrict dest;
-            const SharemindMemorySlot * restrict destSlot;
-            const SharemindCodeBlock * m4_ifelse($4, [imm], [restrict]) destOffset;
-            const SharemindCodeBlock * m4_ifelse($5, [imm], [restrict]) numBytes;
+            const Sharemind[]m4_ifelse($1, [cref], [C])Reference * SHAREMIND_RESTRICT srcRef;
+            const SharemindCodeBlock * m4_ifelse($2, [imm], [SHAREMIND_RESTRICT]) srcOffset;
+            const SharemindCodeBlock * SHAREMIND_RESTRICT dest;
+            const SharemindMemorySlot * SHAREMIND_RESTRICT destSlot;
+            const SharemindCodeBlock * m4_ifelse($4, [imm], [SHAREMIND_RESTRICT]) destOffset;
+            const SharemindCodeBlock * m4_ifelse($5, [imm], [SHAREMIND_RESTRICT]) numBytes;
             SHAREMIND_MI_GET_$1(srcRef, SHAREMIND_MI_ARG_AS(1, sizet));
             m4_ifelse($1, [ref], [SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_REF_CAN_READ(srcRef), SHAREMIND_VM_PROCESS_READ_DENIED);])
             m4_ifelse($2, [imm], [],
@@ -524,12 +524,12 @@ m4_define([_MOV_MEM_TO_REF_DEFINE], [
                                                         SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS)])]),
         NO_IMPL_SUFFIX,
         IMPL([
-            const SharemindCodeBlock * restrict src;
-            const SharemindMemorySlot * restrict srcSlot;
-            const SharemindCodeBlock * m4_ifelse($2, [imm], [restrict]) srcOffset;
-            const SharemindReference * restrict destRef;
-            const SharemindCodeBlock * m4_ifelse($3, [imm], [restrict]) destOffset;
-            const SharemindCodeBlock * m4_ifelse($4, [imm], [restrict]) numBytes;
+            const SharemindCodeBlock * SHAREMIND_RESTRICT src;
+            const SharemindMemorySlot * SHAREMIND_RESTRICT srcSlot;
+            const SharemindCodeBlock * m4_ifelse($2, [imm], [SHAREMIND_RESTRICT]) srcOffset;
+            const SharemindReference * SHAREMIND_RESTRICT destRef;
+            const SharemindCodeBlock * m4_ifelse($3, [imm], [SHAREMIND_RESTRICT]) destOffset;
+            const SharemindCodeBlock * m4_ifelse($4, [imm], [SHAREMIND_RESTRICT]) numBytes;
             m4_ifelse($1, [imm],
                       [src = SHAREMIND_MI_ARG_P(1);],
                       [SHAREMIND_MI_GET_CONST_$1(src, SHAREMIND_MI_ARG_AS(1, sizet));])
@@ -569,7 +569,7 @@ m4_define([_CALL_DEFINE], [
         m4_ifelse($1, [imm], CHECK_CALL_TARGET(SHAREMIND_PREPARE_ARG_AS(1,sizet)), NO_PREPARATION),
         NO_IMPL_SUFFIX,
         IMPL([
-            const SharemindCodeBlock * m4_ifelse($1, [imm], [restrict]) addr;
+            const SharemindCodeBlock * m4_ifelse($1, [imm], [SHAREMIND_RESTRICT]) addr;
             m4_ifelse($2, [imm], [], [SharemindCodeBlock * rv;])
             m4_ifelse($1, [imm], [],
                       [SHAREMIND_MI_GET_CONST_$1(addr, SHAREMIND_MI_ARG_AS(1, sizet));])
@@ -577,8 +577,8 @@ m4_define([_CALL_DEFINE], [
                       [SHAREMIND_MI_GET_$2(rv, SHAREMIND_MI_ARG_AS(2, sizet));])
             m4_ifelse($1, [imm], [addr = SHAREMIND_MI_ARG_P(1);])
             m4_ifelse($1, [imm],
-                [SHAREMIND_MI_CALL(SHAREMIND_MI_BLOCK_AS(addr, sizet),m4_ifelse($2, [imm], [NULL], [rv]), m4_ifelse($2, [imm], [1], [2]))],
-                [SHAREMIND_MI_CHECK_CALL(addr,m4_ifelse($2, [imm], [NULL], [rv]), m4_ifelse($2, [imm], [1], [2]))])]),
+                [SHAREMIND_MI_CALL(SHAREMIND_MI_BLOCK_AS(addr, sizet),m4_ifelse($2, [imm], [SHAREMIND_NULL], [rv]), m4_ifelse($2, [imm], [1], [2]))],
+                [SHAREMIND_MI_CHECK_CALL(addr,m4_ifelse($2, [imm], [SHAREMIND_NULL], [rv]), m4_ifelse($2, [imm], [1], [2]))])]),
         NO_DISPATCH, PREPARE_FINISH)
 ])
 m4_define([CALL_DEFINE], [_CALL_DEFINE(_ARG1$1, _ARG2$1)])
@@ -594,7 +594,7 @@ m4_define([_SYSCALL_DEFINE], [
                   NO_PREPARATION),
         NO_IMPL_SUFFIX,
         IMPL([
-            const SharemindCodeBlock * m4_ifelse($1, [imm], [restrict]) addr;
+            const SharemindCodeBlock * m4_ifelse($1, [imm], [SHAREMIND_RESTRICT]) addr;
             m4_ifelse($2, [imm], [], [SharemindCodeBlock * rv;])
             m4_ifelse($1, [imm], [],
                       [SHAREMIND_MI_GET_CONST_$1(addr, SHAREMIND_MI_ARG_AS(1, sizet));])
@@ -602,8 +602,8 @@ m4_define([_SYSCALL_DEFINE], [
                       [SHAREMIND_MI_GET_$2(rv, SHAREMIND_MI_ARG_AS(2, sizet));])
             m4_ifelse($1, [imm], [addr = SHAREMIND_MI_ARG_P(1);])
             m4_ifelse($1, [imm],
-                [SHAREMIND_MI_SYSCALL(SHAREMIND_MI_BLOCK_AS(addr, cp),m4_ifelse($2, [imm], [NULL], [rv]), m4_ifelse($2, [imm], [1], [2]))],
-                [SHAREMIND_MI_CHECK_SYSCALL(addr,m4_ifelse($2, [imm], [NULL], [rv]), m4_ifelse($2, [imm], [1], [2]))])]),
+                [SHAREMIND_MI_SYSCALL(SHAREMIND_MI_BLOCK_AS(addr, cp),m4_ifelse($2, [imm], [SHAREMIND_NULL], [rv]), m4_ifelse($2, [imm], [1], [2]))],
+                [SHAREMIND_MI_CHECK_SYSCALL(addr,m4_ifelse($2, [imm], [SHAREMIND_NULL], [rv]), m4_ifelse($2, [imm], [1], [2]))])]),
         DO_DISPATCH, PREPARE_FINISH)
 ])
 m4_define([SYSCALL_DEFINE], [_SYSCALL_DEFINE(_ARG1$1, _ARG2$1)])
@@ -615,7 +615,7 @@ m4_define([RETURN_DEFINE], [
         CODE(0x00, 0x02, 0x03, OLB_CODE_$1, 0x00, 0x00, 0x00, 0x00),
         ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX,
         IMPL([
-            const SharemindCodeBlock * restrict v;
+            const SharemindCodeBlock * SHAREMIND_RESTRICT v;
             m4_ifelse($1, [imm],
                       [v = SHAREMIND_MI_ARG_P(1);],
                       [SHAREMIND_MI_GET_CONST_$1(v, SHAREMIND_MI_ARG_AS(1, sizet));])
@@ -631,7 +631,7 @@ m4_define([PUSH_DEFINE], [
         CODE(0x00, 0x02, 0x04, OLB_CODE_$1, 0x00, 0x00, 0x00, 0x00),
         ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX,
         IMPL([
-            const SharemindCodeBlock * restrict v;
+            const SharemindCodeBlock * SHAREMIND_RESTRICT v;
             m4_ifelse($1, [imm],
                       [v = SHAREMIND_MI_ARG_P(1);],
                       [SHAREMIND_MI_GET_CONST_$1(v, SHAREMIND_MI_ARG_AS(1, sizet));])
@@ -648,7 +648,7 @@ m4_define([_PUSHREF_BLOCK_DEFINE], [
         CODE(0x00, 0x02, m4_ifelse($1, [ref], [0x05], [0x07]), OLB_CODE_$2, 0x00, 0x00, 0x00, 0x00),
         ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX,
         IMPL([
-            m4_ifelse($1, [cref], [const]) SharemindCodeBlock * restrict b;
+            m4_ifelse($1, [cref], [const]) SharemindCodeBlock * SHAREMIND_RESTRICT b;
             m4_ifelse($2, [imm],
                       [b = SHAREMIND_MI_ARG_P(1);],
                       $1, [cref],
@@ -667,7 +667,7 @@ m4_define([PUSHREF_REF_DEFINE], [
     CODE(0x00, 0x02, m4_ifelse($1, [ref], [0x05], [0x07]), OLB_CODE_$2, 0x00, 0x00, 0x00, 0x00),
     ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX,
     IMPL([
-        const Sharemind[]m4_ifelse($2, [cref], [C])Reference * restrict srcRef;
+        const Sharemind[]m4_ifelse($2, [cref], [C])Reference * SHAREMIND_RESTRICT srcRef;
         SHAREMIND_MI_GET_$2(srcRef, SHAREMIND_MI_ARG_AS(1, sizet));
         m4_ifelse($1, [ref], [], $2, [cref], [],
                   [SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_REF_CAN_READ(srcRef),
@@ -685,7 +685,7 @@ m4_define([_PUSHREF_MEM_DEFINE], [
     CODE(0x00, 0x02, m4_ifelse($1, [ref], [0x05], [0x07]), OLB_CODE_mem_$2, 0x00, 0x00, 0x00, 0x00),
     ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX,
     IMPL([
-        const SharemindCodeBlock * restrict srcPtr;
+        const SharemindCodeBlock * SHAREMIND_RESTRICT srcPtr;
         SharemindMemorySlot * srcSlot;
         SHAREMIND_MI_GET_CONST_$2(srcPtr, SHAREMIND_MI_ARG_AS(1, sizet));
         SHAREMIND_MI_MEM_GET_SLOT_OR_EXCEPT(SHAREMIND_MI_BLOCK_AS(srcPtr,uint64), srcSlot);
@@ -723,9 +723,9 @@ m4_define([_PUSHREFPART_BLOCK_DEFINE], [
                   NO_PREPARATION),
         NO_IMPL_SUFFIX,
         IMPL([
-            m4_ifelse($1, [cref], [const]) SharemindCodeBlock * m4_ifelse($2, [imm], [restrict]) b;
-            const SharemindCodeBlock * m4_ifelse($3, [imm], [restrict]) offset;
-            const SharemindCodeBlock * m4_ifelse($4, [imm], [restrict]) nBytes;
+            m4_ifelse($1, [cref], [const]) SharemindCodeBlock * m4_ifelse($2, [imm], [SHAREMIND_RESTRICT]) b;
+            const SharemindCodeBlock * m4_ifelse($3, [imm], [SHAREMIND_RESTRICT]) offset;
+            const SharemindCodeBlock * m4_ifelse($4, [imm], [SHAREMIND_RESTRICT]) nBytes;
             m4_ifelse($2, [imm],
                       [b = SHAREMIND_MI_ARG_P(1);],
                       $1, [cref],
@@ -759,9 +759,9 @@ m4_define([_PUSHREFPART_REF_DEFINE], [
     NO_PREPARATION,
     NO_IMPL_SUFFIX,
     IMPL([
-        const Sharemind[]m4_ifelse($2, [cref], [C])Reference * restrict srcRef;
-        const SharemindCodeBlock * m4_ifelse($3, [imm], [restrict]) offset;
-        const SharemindCodeBlock * m4_ifelse($3, [imm], [restrict]) nBytes;
+        const Sharemind[]m4_ifelse($2, [cref], [C])Reference * SHAREMIND_RESTRICT srcRef;
+        const SharemindCodeBlock * m4_ifelse($3, [imm], [SHAREMIND_RESTRICT]) offset;
+        const SharemindCodeBlock * m4_ifelse($3, [imm], [SHAREMIND_RESTRICT]) nBytes;
         SHAREMIND_MI_GET_$2(srcRef, SHAREMIND_MI_ARG_AS(1, sizet));
         m4_ifelse($1, [ref], [], $2, [cref], [],
                   [SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_REF_CAN_READ(srcRef),
@@ -794,8 +794,8 @@ m4_define([_PUSHREFPART_MEM_DEFINE], [
     NO_IMPL_SUFFIX,
     IMPL([
         const SharemindCodeBlock * srcPtr;
-        const SharemindCodeBlock * m4_ifelse($2, [imm], [restrict]) offset;
-        const SharemindCodeBlock * m4_ifelse($2, [imm], [restrict]) nBytes;
+        const SharemindCodeBlock * m4_ifelse($2, [imm], [SHAREMIND_RESTRICT]) offset;
+        const SharemindCodeBlock * m4_ifelse($2, [imm], [SHAREMIND_RESTRICT]) nBytes;
         SharemindMemorySlot * srcSlot;
         SHAREMIND_MI_GET_CONST_$2(srcPtr, SHAREMIND_MI_ARG_AS(1, sizet));
         SHAREMIND_MI_MEM_GET_SLOT_OR_EXCEPT(SHAREMIND_MI_BLOCK_AS(srcPtr,uint64), srcSlot);
@@ -841,9 +841,9 @@ m4_define([_PROC_GETREFSIZE], [
         ARGS(2),
         NO_PREPARATION,
         NO_IMPL_SUFFIX, IMPL([
-            const Sharemind[]m4_ifelse($1, [cref], [C])[]Reference * restrict srcRef;
+            const Sharemind[]m4_ifelse($1, [cref], [C])[]Reference * SHAREMIND_RESTRICT srcRef;
             m4_ifelse($2, [imm], [], [const SharemindCodeBlock * src;])
-            SharemindCodeBlock * m4_ifelse($2, [imm], [restrict]) dest;
+            SharemindCodeBlock * m4_ifelse($2, [imm], [SHAREMIND_RESTRICT]) dest;
             m4_ifelse($2, [imm],
                       [SHAREMIND_MI_GET_$1(srcRef, SHAREMIND_MI_ARG_AS(1, sizet));],
                       [SHAREMIND_MI_GET_CONST_$2(src, SHAREMIND_MI_ARG_AS(1,sizet));
@@ -860,7 +860,7 @@ m4_define([_MEM_ALLOC_DEFINE], [
         CODE(0x00, 0x03, 0x00, OLB_CODE_$1, OLB_CODE_$2, 0x00, 0x00, 0x00),
         ARGS(2), NO_PREPARATION, NO_IMPL_SUFFIX,
         IMPL([
-            SharemindCodeBlock * m4_ifelse($2, [imm], [restrict]) ptrDest;
+            SharemindCodeBlock * m4_ifelse($2, [imm], [SHAREMIND_RESTRICT]) ptrDest;
             SHAREMIND_MI_GET_$1(ptrDest, SHAREMIND_MI_ARG_AS(1, sizet));
             m4_ifelse($2, [imm],,
                 [const SharemindCodeBlock * sizeReg;
@@ -876,7 +876,7 @@ m4_define([MEM_FREE_DEFINE], [
         CODE(0x00, 0x03, 0x01, OLB_CODE_$1, 0x00, 0x00, 0x00, 0x00),
         ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX,
         IMPL([
-            const SharemindCodeBlock * restrict ptr;
+            const SharemindCodeBlock * SHAREMIND_RESTRICT ptr;
             SHAREMIND_MI_GET_CONST_$1(ptr, SHAREMIND_MI_ARG_AS(1, sizet));
             SHAREMIND_MI_MEM_FREE(ptr)]),
         DO_DISPATCH, PREPARE_FINISH)])
@@ -934,7 +934,7 @@ m4_define([HALT_DEFINE], [
         CODE(0x00, 0xff, 0x00, OLB_CODE_$1, 0x00, 0x00, 0x00, 0x00),
         ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX,
         IMPL([
-            const SharemindCodeBlock * restrict c;
+            const SharemindCodeBlock * SHAREMIND_RESTRICT c;
             m4_ifelse($1, [imm],
                       [c = SHAREMIND_MI_ARG_P(1);],
                       [SHAREMIND_MI_GET_CONST_$1(c, SHAREMIND_MI_ARG_AS(1, sizet));])
@@ -958,10 +958,10 @@ m4_define([UBI_D_DEFINE], [
         CODE($2, $3, DTB_CODE_$4, OLB_CODE_$5, 0x00, 0x00, 0x00, 0x00),
         ARGS(1), $6, NO_IMPL_SUFFIX,
         IMPL([
-            SharemindCodeBlock * restrict bd;
+            SharemindCodeBlock * SHAREMIND_RESTRICT bd;
             SHAREMIND_MI_GET_$5(bd, SHAREMIND_MI_ARG_AS(1, sizet));
             {
-                DTB_TYPE_$4 * restrict d = SHAREMIND_MI_BLOCK_AS_P(bd,$4);
+                DTB_TYPE_$4 * SHAREMIND_RESTRICT d = SHAREMIND_MI_BLOCK_AS_P(bd,$4);
                 $7;
             }]),
         DO_DISPATCH, PREPARE_FINISH)])
@@ -972,13 +972,13 @@ m4_define([UBI_DS_DEFINE], [
         CODE($2, $3, DTB_CODE_$4, OLB_CODE_$5, OLB_CODE_$6, 0x00, 0x00, 0x00),
         ARGS(2), $7, NO_IMPL_SUFFIX,
         IMPL([
-            SharemindCodeBlock * m4_ifelse($6, [imm], [restrict]) bd;
-            const SharemindCodeBlock * m4_ifelse($6, [imm], [restrict]) bs;
+            SharemindCodeBlock * m4_ifelse($6, [imm], [SHAREMIND_RESTRICT]) bd;
+            const SharemindCodeBlock * m4_ifelse($6, [imm], [SHAREMIND_RESTRICT]) bs;
             SHAREMIND_MI_GET_$5(bd, SHAREMIND_MI_ARG_AS(1, sizet));
             m4_ifelse($6, [imm], [bs = SHAREMIND_MI_ARG_P(2)], [SHAREMIND_MI_GET_CONST_$6(bs, SHAREMIND_MI_ARG_AS(2, sizet))]);
             {
-                DTB_TYPE_$4 * m4_ifelse($6, [imm], [restrict]) d = SHAREMIND_MI_BLOCK_AS_P(bd,$4);
-                const DTB_TYPE_$4 * m4_ifelse($6, [imm], [restrict]) s = SHAREMIND_MI_BLOCK_AS_P(bs,$4);
+                DTB_TYPE_$4 * m4_ifelse($6, [imm], [SHAREMIND_RESTRICT]) d = SHAREMIND_MI_BLOCK_AS_P(bd,$4);
+                const DTB_TYPE_$4 * m4_ifelse($6, [imm], [SHAREMIND_RESTRICT]) s = SHAREMIND_MI_BLOCK_AS_P(bs,$4);
                 $8;
             }]),
         DO_DISPATCH, PREPARE_FINISH)])
@@ -990,16 +990,16 @@ m4_define([_UBI_DSS_DEFINE], [
         CODE($2, $3, DTB_CODE_$4, OLB_CODE_$5, OLB_CODE_$6, OLB_CODE_$7, 0x00, 0x00),
         ARGS(3), $8, NO_IMPL_SUFFIX,
         IMPL([
-            SharemindCodeBlock * m4_ifelse($6, [imm], m4_ifelse($7, [imm], [restrict])) bd;
-            const SharemindCodeBlock * m4_ifelse($6, [imm], [restrict]) bs1;
-            const SharemindCodeBlock * m4_ifelse($7, [imm], [restrict]) bs2;
+            SharemindCodeBlock * m4_ifelse($6, [imm], m4_ifelse($7, [imm], [SHAREMIND_RESTRICT])) bd;
+            const SharemindCodeBlock * m4_ifelse($6, [imm], [SHAREMIND_RESTRICT]) bs1;
+            const SharemindCodeBlock * m4_ifelse($7, [imm], [SHAREMIND_RESTRICT]) bs2;
             SHAREMIND_MI_GET_$5(bd, SHAREMIND_MI_ARG_AS(1, sizet));
             m4_ifelse($6, [imm], [bs1 = SHAREMIND_MI_ARG_P(2);], [SHAREMIND_MI_GET_CONST_$6(bs1, SHAREMIND_MI_ARG_AS(2, sizet));])
             m4_ifelse($7, [imm], [bs2 = SHAREMIND_MI_ARG_P(3);], [SHAREMIND_MI_GET_CONST_$7(bs2, SHAREMIND_MI_ARG_AS(3, sizet));])
             {
-                DTB_TYPE_$4 * m4_ifelse($6, [imm], m4_ifelse($7, [imm], [restrict])) d = SHAREMIND_MI_BLOCK_AS_P(bd,$4);
-                const DTB_TYPE_$4 * m4_ifelse($6, [imm], [restrict]) s1 = SHAREMIND_MI_BLOCK_AS_P(bs1,$4);
-                const DTB_TYPE_$4 * m4_ifelse($7, [imm], [restrict]) s2 = SHAREMIND_MI_BLOCK_AS_P(bs2,$4);
+                DTB_TYPE_$4 * m4_ifelse($6, [imm], m4_ifelse($7, [imm], [SHAREMIND_RESTRICT])) d = SHAREMIND_MI_BLOCK_AS_P(bd,$4);
+                const DTB_TYPE_$4 * m4_ifelse($6, [imm], [SHAREMIND_RESTRICT]) s1 = SHAREMIND_MI_BLOCK_AS_P(bs1,$4);
+                const DTB_TYPE_$4 * m4_ifelse($7, [imm], [SHAREMIND_RESTRICT]) s2 = SHAREMIND_MI_BLOCK_AS_P(bs2,$4);
                 m4_ifelse(DTB_CAT_$4, [float], [], [
                     m4_ifelse($1, [arith.tdiv], [
                         if ((*s2) == 0) { SHAREMIND_MI_DO_EXCEPT(SHAREMIND_VM_PROCESS_INTEGER_DIVIDE_BY_ZERO); }
@@ -1382,7 +1382,7 @@ m4_define([LBI_D_DEFINE], [
         CODE($2, $3, DTB_CODE_$4, OLB_CODE_$5, 0x00, 0x00, 0x00, 0x00),
         ARGS(1), $6, NO_IMPL_SUFFIX,
         IMPL([
-            SharemindCodeBlock * restrict bd;
+            SharemindCodeBlock * SHAREMIND_RESTRICT bd;
             SHAREMIND_MI_GET_$5(bd, SHAREMIND_MI_ARG_AS(1, sizet));
             {
                 uint64_t * const d = SHAREMIND_MI_BLOCK_AS_P(bd,uint64);
@@ -1397,14 +1397,14 @@ m4_define([LBI_DS_DEFINE], [
         CODE($2, $3, DTB_CODE_$4, OLB_CODE_$5, OLB_CODE_$6, 0x00, 0x00, 0x00),
         ARGS(2), $7, NO_IMPL_SUFFIX,
         IMPL([
-            SharemindCodeBlock * m4_ifelse($6, [imm], [restrict]) bd;
-            const SharemindCodeBlock * m4_ifelse($6, [imm], [restrict]) bs;
+            SharemindCodeBlock * m4_ifelse($6, [imm], [SHAREMIND_RESTRICT]) bd;
+            const SharemindCodeBlock * m4_ifelse($6, [imm], [SHAREMIND_RESTRICT]) bs;
             SHAREMIND_MI_GET_$5(bd, SHAREMIND_MI_ARG_AS(1, sizet));
             m4_ifelse($6, [imm], [bs = SHAREMIND_MI_ARG_P(2)], [SHAREMIND_MI_GET_CONST_$6(bs, SHAREMIND_MI_ARG_AS(2, sizet))]);
             {
                 uint64_t * const d = SHAREMIND_MI_BLOCK_AS_P(bd,uint64);
                 const DTB_TYPE_$4 * const sd = SHAREMIND_MI_BLOCK_AS_P(bd,$4);
-                const DTB_TYPE_$4 * const m4_ifelse($6, [imm], [restrict]) s = SHAREMIND_MI_BLOCK_AS_P(bs,$4);
+                const DTB_TYPE_$4 * const m4_ifelse($6, [imm], [SHAREMIND_RESTRICT]) s = SHAREMIND_MI_BLOCK_AS_P(bs,$4);
                 $8;
             }]),
         DO_DISPATCH, PREPARE_FINISH)])
@@ -1416,16 +1416,16 @@ m4_define([_LBI_DSS_DEFINE], [
         CODE($2, $3, DTB_CODE_$4, OLB_CODE_$5, OLB_CODE_$6, OLB_CODE_$7, 0x00, 0x00),
         ARGS(3), $8, NO_IMPL_SUFFIX,
         IMPL([
-            SharemindCodeBlock * m4_ifelse($6, [imm], m4_ifelse($7, [imm], [restrict])) bd;
-            const SharemindCodeBlock * m4_ifelse($6, [imm], [restrict]) bs1;
-            const SharemindCodeBlock * m4_ifelse($7, [imm], [restrict]) bs2;
+            SharemindCodeBlock * m4_ifelse($6, [imm], m4_ifelse($7, [imm], [SHAREMIND_RESTRICT])) bd;
+            const SharemindCodeBlock * m4_ifelse($6, [imm], [SHAREMIND_RESTRICT]) bs1;
+            const SharemindCodeBlock * m4_ifelse($7, [imm], [SHAREMIND_RESTRICT]) bs2;
             SHAREMIND_MI_GET_$5(bd, SHAREMIND_MI_ARG_AS(1, sizet));
             m4_ifelse($6, [imm], [bs1 = SHAREMIND_MI_ARG_P(2);], [SHAREMIND_MI_GET_CONST_$6(bs1, SHAREMIND_MI_ARG_AS(2, sizet));])
             m4_ifelse($7, [imm], [bs2 = SHAREMIND_MI_ARG_P(3);], [SHAREMIND_MI_GET_CONST_$7(bs2, SHAREMIND_MI_ARG_AS(3, sizet));])
             {
-                uint64_t * const m4_ifelse($6, [imm], m4_ifelse($7, [imm], [restrict])) d = SHAREMIND_MI_BLOCK_AS_P(bd,uint64);
-                const DTB_TYPE_$4 * const m4_ifelse($6, [imm], [restrict]) s1 = SHAREMIND_MI_BLOCK_AS_P(bs1,$4);
-                const DTB_TYPE_$4 * const m4_ifelse($7, [imm], [restrict]) s2 = SHAREMIND_MI_BLOCK_AS_P(bs2,$4);
+                uint64_t * const m4_ifelse($6, [imm], m4_ifelse($7, [imm], [SHAREMIND_RESTRICT])) d = SHAREMIND_MI_BLOCK_AS_P(bd,uint64);
+                const DTB_TYPE_$4 * const m4_ifelse($6, [imm], [SHAREMIND_RESTRICT]) s1 = SHAREMIND_MI_BLOCK_AS_P(bs1,$4);
+                const DTB_TYPE_$4 * const m4_ifelse($7, [imm], [SHAREMIND_RESTRICT]) s2 = SHAREMIND_MI_BLOCK_AS_P(bs2,$4);
                 $9;
             }]),
         DO_DISPATCH, PREPARE_FINISH)])
@@ -1612,7 +1612,7 @@ m4_define([INSTR_JUMP_DEFINE], [
         IMPL([
             m4_ifelse([$9], [NO_JUMP_PRECODE], [], [$9;])
             m4_ifelse([$10], [NO_JUMP_CONDITION], [], [if ($10) ]){
-            const SharemindCodeBlock * const restrict addr = SHAREMIND_MI_ARG_P(1);
+            const SharemindCodeBlock * const SHAREMIND_RESTRICT addr = SHAREMIND_MI_ARG_P(1);
             SHAREMIND_MI_JUMP_REL(addr);
             }]),
         $11, PREPARE_FINISH)
@@ -1624,7 +1624,7 @@ m4_define([INSTR_JUMP_DEFINE], [
         IMPL([
             m4_ifelse([$9], [NO_JUMP_PRECODE], [], [$9;])
             m4_ifelse([$10], [NO_JUMP_CONDITION], [], [if ($10) ]){
-            const SharemindCodeBlock * restrict t;
+            const SharemindCodeBlock * SHAREMIND_RESTRICT t;
             SHAREMIND_MI_GET_reg(t, SHAREMIND_MI_ARG_AS(1, sizet));
             SHAREMIND_MI_CHECK_JUMP_REL(SHAREMIND_MI_BLOCK_AS(t,int64));
             }]),
@@ -1637,7 +1637,7 @@ m4_define([INSTR_JUMP_DEFINE], [
         IMPL([
             m4_ifelse([$9], [NO_JUMP_PRECODE], [], [$9;])
             m4_ifelse([$10], [NO_JUMP_CONDITION], [], [if ($10) ]){
-            const SharemindCodeBlock * restrict t;
+            const SharemindCodeBlock * SHAREMIND_RESTRICT t;
             SHAREMIND_MI_GET_stack(t, SHAREMIND_MI_ARG_AS(1, sizet));
             SHAREMIND_MI_CHECK_JUMP_REL(SHAREMIND_MI_BLOCK_AS(t,int64));
             }]),
@@ -1653,7 +1653,7 @@ m4_define([INSTR_JUMP_COND_1_DEFINE], [
         $2, DTB_CODE_$4, OLB_CODE_$5, 0x00, 2,
         NO_PREPARATION,
         [
-        m4_ifelse($1, [dnjz],, $1, [dnjnz],, [const]) SharemindCodeBlock * m4_ifelse($5, [imm], [restrict]) c;
+        m4_ifelse($1, [dnjz],, $1, [dnjnz],, [const]) SharemindCodeBlock * m4_ifelse($5, [imm], [SHAREMIND_RESTRICT]) c;
         SHAREMIND_MI_GET_[]$5(c, SHAREMIND_MI_ARG_AS(2, sizet))],
         $3, DO_DISPATCH)])
 
@@ -1666,8 +1666,8 @@ m4_define([INSTR_JUMP_COND_2_DEFINE], [
                                     SHAREMIND_VM_PREPARE_ERROR_INVALID_ARGUMENTS);], [NO_PREPARATION]),
         [
         bool lc;
-        const SharemindCodeBlock * m4_ifelse($5, [imm], [restrict]) c1;
-        const SharemindCodeBlock * m4_ifelse($6, [imm], [restrict]) c2;
+        const SharemindCodeBlock * m4_ifelse($5, [imm], [SHAREMIND_RESTRICT]) c1;
+        const SharemindCodeBlock * m4_ifelse($6, [imm], [SHAREMIND_RESTRICT]) c2;
         m4_ifelse([$5], [imm], [],
                   [SHAREMIND_MI_GET_$5(c1, SHAREMIND_MI_ARG_AS(2, sizet));])
         m4_ifelse([$6], [imm], [],
@@ -1675,8 +1675,8 @@ m4_define([INSTR_JUMP_COND_2_DEFINE], [
         m4_ifelse([$5], [imm], [c1 = SHAREMIND_MI_ARG_P(2);])
         m4_ifelse([$6], [imm], [c2 = SHAREMIND_MI_ARG_P(3);])
         {
-            const DTB_TYPE_$4 * m4_ifelse($5, [imm], [restrict]) const o1 = SHAREMIND_MI_BLOCK_AS_P(c1,$4);
-            const DTB_TYPE_$4 * m4_ifelse($6, [imm], [restrict]) const o2 = SHAREMIND_MI_BLOCK_AS_P(c2,$4);
+            const DTB_TYPE_$4 * m4_ifelse($5, [imm], [SHAREMIND_RESTRICT]) const o1 = SHAREMIND_MI_BLOCK_AS_P(c1,$4);
+            const DTB_TYPE_$4 * m4_ifelse($6, [imm], [SHAREMIND_RESTRICT]) const o2 = SHAREMIND_MI_BLOCK_AS_P(c2,$4);
             $3;
         }],
         [lc], DO_DISPATCH)])
