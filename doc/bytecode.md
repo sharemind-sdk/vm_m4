@@ -115,46 +115,6 @@ Most instructions only use imm, reg and stack to keep the total number of
 instructions reasonable.
 
 
-<a name="exceptions"></a>
-## Exception Codes
-
-| Name                               | Code     | Description                |
-|------------------------------------|----------|----------------------------|
-| E_NONE                             | `0x0000` | No exception               |
-| E_OUT_OF_MEMORY                    | `0x0001` | Out of memory              |
-| E_INVALID_ARGUMENT                 | `0x0002` | The combination of arguments passed to an instruction was invalid |
-| E_INVALID_SYSCALL_INVOCATION       | `0x0003` | The combination of arguments passed to a system call was invalid |
-| E_SYSCALL_FAILURE                  | `0x0004` | The system call failed, fatally |
-| E_INVALID_INDEX_REGISTER           | `0x0100` | Tried to access an uninitialized register |
-| E_INVALID_INDEX_STACK              | `0x0101` | Tried to access an uninitialized stack slot |
-| E_INVALID_INDEX_REFERENCE          | `0x0102` | Tried to access an uninitialized mutable reference slot |
-| E_INVALID_INDEX_CONST_REFERENCE    | `0x0103` | Tried to access an uninitialized constant reference slot |
-| E_JUMP_TO_INVALID_ADDRESS          | `0x0200` | Tried to jump to data or end of code section reached |
-| E_INVALID_INDEX_SYSCALL            | `0x0201` | Tried to execute a system call not defined |
-| E_INVALID_MEMORY_HANDLE            | `0x0300` | The given memory handle was invalid |
-| E_MEMORY_IN_USE                    | `0x0301` | Tried to free memory which is used by at least one other reference |
-| E_OUT_OF_BOUNDS_READ               | `0x0302` | Tried to read data from an invalid memory location |
-| E_OUT_OF_BOUNDS_WRITE              | `0x0303` | Tried to write data to an invalid memory location |
-| E_OUT_OF_BOUNDS_REFERENCE_INDEX    | `0x0304` | Tried to create a (const) reference wholly past a valid memory area |
-| E_OUT_OF_BOUNDS_REFERENCE_SIZE     | `0x0305` | Tried to create a (const) reference partially past a valid memory area |
-| E_READ_DENIED                      | `0x0306` | Tried to read from a memory region for which reading is forbidden |
-| E_WRITE_DENIED                     | `0x0307` | Tried to write to a memory region for which writing is forbidden |
-| E_UNKNOWN_FPE                      | `0x0400` | An unknown arithmetic or floating-point exception occured |
-| E_INTEGER_DIVIDE_BY_ZERO           | `0x0401` | A signed or unsigned integer was divided by zero |
-| E_INTEGER_OVERFLOW                 | `0x0402` | A signed or unsigned integer overflow occured |
-| E_FLOATING_POINT_DIVIDE_BY_ZERO    | `0x0403` | A floating point value was divided by zero |
-| E_FLOATING_POINT_OVERFLOW          | `0x0404` | A floating point overflow occured |
-| E_FLOATING_POINT_UNDERFLOW         | `0x0405` | A floating point underflow occured |
-| E_FLOATING_POINT_INEXACT_RESULT    | `0x0406` | A floating point operation resulted in an inexact result due to rounding |
-| E_FLOATING_POINT_INVALID_OPERATION | `0x0407` | An invalid floating point operation was performed |
-| E_USER_ASSERT                      | `0x0f00` | A bytecode-level assertion |
-    
-**NB!** E_INTEGER_OVERFLOW can only occur when Sharemind was built on a platform
-which does not support "defined" integer overflows.
-See C99 reference on undefined behaviour on integer overflows and the `-fwrapv`
-GCC compiler flag.
-
-
 <a name="intro_abl"></a>
 ## Introduction to the "arith", "bitwise" and "logical" namespaces
 
@@ -286,7 +246,7 @@ effectively ignored (this replicates AMD64 default behaviour).
 | common.fpu.getstate      | `0x000500` | reads the state of the FPU | Yes |
 | common.fpu.setstate      | `0x000501` | sets the state of the FPU | Yes |
 | common.halt              | `0x00ff00` | ends program execution | Yes    |
-| common.except            | `0x00ff01` | throws a virtual machine exception | Yes |
+| common.except            | `0x00ff01` | throws an user exception | Yes |
 
 
 ### common.nop (0x000000)
@@ -741,14 +701,14 @@ Arguments:
 
 ### common.except (0x00ff01)
 
-Halts program execution with an exception.
+Halts program execution with an user exception.
 
 |  byte 0  |  byte 1  |  byte 2  |  byte 3  |  byte 4  |  byte 5  |  byte 6  |  byte 7  |  arg 1  |
 |----------|----------|----------|----------|----------|----------|----------|----------|---------|
 |`00000000`|`11111111`|`00000001`|`........`|`........`|`........`|`........`|`........`| errnum  |
 
 Arguments:
-  1. The [exception code](#exceptions).
+  1. An user exception code.
 
 
 ## The "arith" Namespace (0x01)
