@@ -902,7 +902,7 @@ m4_define([_CONVERT_DEFINE], [m4_ifelse($1, $3, [], [
                       [SHAREMIND_MI_CONVERT_$1_TO_$3(SHAREMIND_MI_BLOCK_AS(d,$3), SHAREMIND_MI_BLOCK_AS(s,$1))],
                       DTB_CAT_$3, [float],
                       [SHAREMIND_MI_CONVERT_$1_TO_$3(SHAREMIND_MI_BLOCK_AS(d,$3), SHAREMIND_MI_BLOCK_AS(s,$1))],
-                      [SHAREMIND_MI_BLOCK_AS(d,$3) = SHAREMIND_STATIC_CAST(DTB_TYPE_$3, SHAREMIND_MI_BLOCK_AS(s,$1))])]),
+                      [SHAREMIND_MI_BLOCK_AS(d,$3) = SHAREMIND_VM_STATIC_CAST(DTB_TYPE_$3, SHAREMIND_MI_BLOCK_AS(s,$1))])]),
         DO_DISPATCH, PREPARE_FINISH
     )])])
 m4_define([CONVERT_DEFINE], [_$0(_ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1)])
@@ -989,10 +989,10 @@ m4_define([_UBI_DSS_DEFINE], [
         DO_DISPATCH, PREPARE_FINISH)])
 
 # See http://gcc.gnu.org/bugzilla/show_bug.cgi?id=50865
-m4_define([GCC_BUG_50865_WORKAROUND], [if (($4) == -1) { ($1) = SHAREMIND_STATIC_CAST($2, ($3) % 1); } else { ($1) = SHAREMIND_STATIC_CAST($2, ($3) % -($4)); }])
+m4_define([GCC_BUG_50865_WORKAROUND], [if (($4) == -1) { ($1) = SHAREMIND_VM_STATIC_CAST($2, ($3) % 1); } else { ($1) = SHAREMIND_VM_STATIC_CAST($2, ($3) % -($4)); }])
 
 # arith.uneg
-m4_define([ARITH_UNEG_OP], [m4_ifelse(DTB_CAT_$1, [float], [SHAREMIND_MI_UNEG_FLOAT]DTB_BITS_$1[(*d)], [(*d) = SHAREMIND_STATIC_CAST(DTB_TYPE_$1, -(*d))])])
+m4_define([ARITH_UNEG_OP], [m4_ifelse(DTB_CAT_$1, [float], [SHAREMIND_MI_UNEG_FLOAT]DTB_BITS_$1[(*d)], [(*d) = SHAREMIND_VM_STATIC_CAST(DTB_TYPE_$1, -(*d))])])
 m4_define([ARITH_UNEG_DEFINE], [UBI_D_DEFINE([[arith.uneg]], 0x1, 0x00, _ARG1$1, _ARG2$1, NO_PREPARATION, ARITH_UNEG_OP(_ARG1$1))])
 foreach([ARITH_UNEG_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32], [float64]), ([reg], [stack]))))
 
@@ -1007,49 +1007,49 @@ m4_define([ARITH_UDEC_DEFINE], [UBI_D_DEFINE([[arith.udec]], 0x1, 0x02, _ARG1$1,
 foreach([ARITH_UDEC_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32], [float64]), ([reg], [stack]))))
 
 # arith.bneg
-m4_define([ARITH_BNEG_OP], [m4_ifelse(DTB_CAT_$1, [float], [SHAREMIND_MI_BNEG_FLOAT]DTB_BITS_$1[(*d,*s)], [(*d) = SHAREMIND_STATIC_CAST(DTB_TYPE_$1, -(*s))])])
+m4_define([ARITH_BNEG_OP], [m4_ifelse(DTB_CAT_$1, [float], [SHAREMIND_MI_BNEG_FLOAT]DTB_BITS_$1[(*d,*s)], [(*d) = SHAREMIND_VM_STATIC_CAST(DTB_TYPE_$1, -(*s))])])
 m4_define([ARITH_BNEG_DEFINE], [UBI_DS_DEFINE([[arith.bneg]], 0x1, 0x40, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, ARITH_BNEG_OP(_ARG1$1))])
 foreach([ARITH_BNEG_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32], [float64]),
                                       ([reg], [stack]),
                                       ([reg], [stack]))))
 
 # arith.binc
-m4_define([ARITH_BINC_OP], [m4_ifelse(DTB_CAT_$1, [float], [SHAREMIND_MI_BINC_FLOAT]DTB_BITS_$1[(*d,*s)], [(*d) = SHAREMIND_STATIC_CAST(DTB_TYPE_$1, (*s) + 1)])])
+m4_define([ARITH_BINC_OP], [m4_ifelse(DTB_CAT_$1, [float], [SHAREMIND_MI_BINC_FLOAT]DTB_BITS_$1[(*d,*s)], [(*d) = SHAREMIND_VM_STATIC_CAST(DTB_TYPE_$1, (*s) + 1)])])
 m4_define([ARITH_BINC_DEFINE], [UBI_DS_DEFINE([[arith.binc]], 0x1, 0x41, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, ARITH_BINC_OP(_ARG1$1))])
 foreach([ARITH_BINC_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32], [float64]),
                                       ([reg], [stack]),
                                       ([reg], [stack]))))
 
 # arith.bdec
-m4_define([ARITH_BDEC_OP], [m4_ifelse(DTB_CAT_$1, [float], [SHAREMIND_MI_BDEC_FLOAT]DTB_BITS_$1[(*d,*s)], [(*d) = SHAREMIND_STATIC_CAST(DTB_TYPE_$1, (*s) - 1)])])
+m4_define([ARITH_BDEC_OP], [m4_ifelse(DTB_CAT_$1, [float], [SHAREMIND_MI_BDEC_FLOAT]DTB_BITS_$1[(*d,*s)], [(*d) = SHAREMIND_VM_STATIC_CAST(DTB_TYPE_$1, (*s) - 1)])])
 m4_define([ARITH_BDEC_DEFINE], [UBI_DS_DEFINE([[arith.bdec]], 0x1, 0x42, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, ARITH_BDEC_OP(_ARG1$1))])
 foreach([ARITH_BDEC_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32], [float64]),
                                       ([reg], [stack]),
                                       ([reg], [stack]))))
 
 # arith.badd
-m4_define([ARITH_BADD_OP], [m4_ifelse(DTB_CAT_$1, [float], [SHAREMIND_MI_BADD_FLOAT]DTB_BITS_$1[(*d,*s)], [(*d) = SHAREMIND_STATIC_CAST(DTB_TYPE_$1, (*d) + (*s))])])
+m4_define([ARITH_BADD_OP], [m4_ifelse(DTB_CAT_$1, [float], [SHAREMIND_MI_BADD_FLOAT]DTB_BITS_$1[(*d,*s)], [(*d) = SHAREMIND_VM_STATIC_CAST(DTB_TYPE_$1, (*d) + (*s))])])
 m4_define([ARITH_BADD_DEFINE], [UBI_DS_DEFINE([[arith.badd]], 0x1, 0x80, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, ARITH_BADD_OP(_ARG1$1))])
 foreach([ARITH_BADD_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32], [float64]),
                                       ([reg], [stack]),
                                       ([imm], [reg], [stack]))))
 
 # arith.bsub
-m4_define([ARITH_BSUB_OP], [m4_ifelse(DTB_CAT_$1, [float], [SHAREMIND_MI_BSUB_FLOAT]DTB_BITS_$1[(*d,*s)], [(*d) = SHAREMIND_STATIC_CAST(DTB_TYPE_$1, (*d) - (*s))])])
+m4_define([ARITH_BSUB_OP], [m4_ifelse(DTB_CAT_$1, [float], [SHAREMIND_MI_BSUB_FLOAT]DTB_BITS_$1[(*d,*s)], [(*d) = SHAREMIND_VM_STATIC_CAST(DTB_TYPE_$1, (*d) - (*s))])])
 m4_define([ARITH_BSUB_DEFINE], [UBI_DS_DEFINE([[arith.bsub]], 0x1, 0x81, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, ARITH_BSUB_OP(_ARG1$1))])
 foreach([ARITH_BSUB_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32], [float64]),
                                       ([reg], [stack]),
                                       ([imm], [reg], [stack]))))
 
 # arith.bsub2
-m4_define([ARITH_BSUB2_OP], [m4_ifelse(DTB_CAT_$1, [float], [SHAREMIND_MI_BSUB2_FLOAT]DTB_BITS_$1[(*d,*s)], [(*d) = SHAREMIND_STATIC_CAST(DTB_TYPE_$1, (*s) - (*d))])])
+m4_define([ARITH_BSUB2_OP], [m4_ifelse(DTB_CAT_$1, [float], [SHAREMIND_MI_BSUB2_FLOAT]DTB_BITS_$1[(*d,*s)], [(*d) = SHAREMIND_VM_STATIC_CAST(DTB_TYPE_$1, (*s) - (*d))])])
 m4_define([ARITH_BSUB2_DEFINE], [UBI_DS_DEFINE([[arith.bsub2]], 0x1, 0x82, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, ARITH_BSUB2_OP(_ARG1$1))])
 foreach([ARITH_BSUB2_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32], [float64]),
                                        ([reg], [stack]),
                                        ([imm], [reg], [stack]))))
 
 # arith.bmul
-m4_define([ARITH_BMUL_OP], [m4_ifelse(DTB_CAT_$1, [float], [SHAREMIND_MI_BMUL_FLOAT]DTB_BITS_$1[(*d,*s)], [(*d) = SHAREMIND_STATIC_CAST(DTB_TYPE_$1, (*d) * (*s))])])
+m4_define([ARITH_BMUL_OP], [m4_ifelse(DTB_CAT_$1, [float], [SHAREMIND_MI_BMUL_FLOAT]DTB_BITS_$1[(*d,*s)], [(*d) = SHAREMIND_VM_STATIC_CAST(DTB_TYPE_$1, (*d) * (*s))])])
 m4_define([ARITH_BMUL_DEFINE], [UBI_DS_DEFINE([[arith.bmul]], 0x1, 0x83, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, ARITH_BMUL_OP(_ARG1$1))])
 foreach([ARITH_BMUL_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32], [float64]),
                                       ([reg], [stack]),
@@ -1061,7 +1061,7 @@ m4_define([ARITH_BDIV_OP],
                      [SHAREMIND_MI_BDIV_FLOAT]DTB_BITS_$1[(*d,*s)],
                      [if ((*s) == 0) { SHAREMIND_MI_DO_EXCEPT(SHAREMIND_VM_PROCESS_INTEGER_DIVIDE_BY_ZERO); }
                       m4_ifelse(DTB_CAT_$1, [signed], [else if ((*s) == -1 && (*d) == DTB_MIN_$1) { SHAREMIND_MI_DO_EXCEPT(SHAREMIND_VM_PROCESS_INTEGER_OVERFLOW); }])
-                      (*d) = SHAREMIND_STATIC_CAST(DTB_TYPE_$1, (*d) / (*s))])])
+                      (*d) = SHAREMIND_VM_STATIC_CAST(DTB_TYPE_$1, (*d) / (*s))])])
 m4_define([ARITH_BDIV_DEFINE], [UBI_DS_DEFINE([[arith.bdiv]], 0x1, 0x84, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, ARITH_BDIV_OP(_ARG1$1))])
 foreach([ARITH_BDIV_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32], [float64]),
                                       ([reg], [stack]),
@@ -1073,7 +1073,7 @@ m4_define([ARITH_BDIV2_OP],
                      [SHAREMIND_MI_BDIV2_FLOAT]DTB_BITS_$1[(*d,*s)],
                      [if ((*d) == 0) { SHAREMIND_MI_DO_EXCEPT(SHAREMIND_VM_PROCESS_INTEGER_DIVIDE_BY_ZERO); }
                       m4_ifelse(DTB_CAT_$1, [signed], [else if ((*d) == -1 && (*s) == DTB_MIN_$1) { SHAREMIND_MI_DO_EXCEPT(SHAREMIND_VM_PROCESS_INTEGER_OVERFLOW); }])
-                      (*d) = SHAREMIND_STATIC_CAST(DTB_TYPE_$1, (*s) / (*d))])])
+                      (*d) = SHAREMIND_VM_STATIC_CAST(DTB_TYPE_$1, (*s) / (*d))])])
 m4_define([ARITH_BDIV2_DEFINE], [UBI_DS_DEFINE([[arith.bdiv2]], 0x1, 0x85, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, ARITH_BDIV2_OP(_ARG1$1))])
 foreach([ARITH_BDIV2_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32], [float64]),
                                        ([reg], [stack]),
@@ -1085,7 +1085,7 @@ m4_define([ARITH_BMOD_OP],
                      [SHAREMIND_MI_BMOD_FLOAT]DTB_BITS_$1[(*d,*s)],
                      [if ((*s) == 0) { SHAREMIND_MI_DO_EXCEPT(SHAREMIND_VM_PROCESS_INTEGER_DIVIDE_BY_ZERO); }
                       m4_ifelse(DTB_CAT_$1, [signed], [else if (((*s) < 0) && ((*s) != DTB_MIN_$1)) { GCC_BUG_50865_WORKAROUND((*d), DTB_TYPE_$1, (*d), (*s)); }])
-                      else (*d) = SHAREMIND_STATIC_CAST(DTB_TYPE_$1, (*d) % (*s))])])
+                      else (*d) = SHAREMIND_VM_STATIC_CAST(DTB_TYPE_$1, (*d) % (*s))])])
 m4_define([ARITH_BMOD_DEFINE], [UBI_DS_DEFINE([[arith.bmod]], 0x1, 0x86, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, ARITH_BMOD_OP(_ARG1$1))])
 foreach([ARITH_BMOD_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32], [float64]),
                                       ([reg], [stack]),
@@ -1097,14 +1097,14 @@ m4_define([ARITH_BMOD2_OP],
                      [SHAREMIND_MI_BMOD2_FLOAT]DTB_BITS_$1[(*d,*s)],
                      [if ((*d) == 0) { SHAREMIND_MI_DO_EXCEPT(SHAREMIND_VM_PROCESS_INTEGER_DIVIDE_BY_ZERO); }
                       m4_ifelse(DTB_CAT_$1, [signed], [else if (((*d) < 0) && ((*d) != DTB_MIN_$1)) { GCC_BUG_50865_WORKAROUND((*d), DTB_TYPE_$1, (*s), (*d)); }])
-                      else (*d) = SHAREMIND_STATIC_CAST(DTB_TYPE_$1, (*s) % (*d))])])
+                      else (*d) = SHAREMIND_VM_STATIC_CAST(DTB_TYPE_$1, (*s) % (*d))])])
 m4_define([ARITH_BMOD2_DEFINE], [UBI_DS_DEFINE([[arith.bmod2]], 0x1, 0x87, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, ARITH_BMOD2_OP(_ARG1$1))])
 foreach([ARITH_BMOD2_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32], [float64]),
                                        ([reg], [stack]),
                                        ([imm], [reg], [stack]))))
 
 # arith.tadd
-m4_define([ARITH_TADD_OP], [m4_ifelse(DTB_CAT_$1, [float], [SHAREMIND_MI_TADD_FLOAT]DTB_BITS_$1[(*d,*s1,*s2)], [(*d) = SHAREMIND_STATIC_CAST(DTB_TYPE_$1, (*s1) + (*s2))])])
+m4_define([ARITH_TADD_OP], [m4_ifelse(DTB_CAT_$1, [float], [SHAREMIND_MI_TADD_FLOAT]DTB_BITS_$1[(*d,*s1,*s2)], [(*d) = SHAREMIND_VM_STATIC_CAST(DTB_TYPE_$1, (*s1) + (*s2))])])
 m4_define([ARITH_TADD_DEFINE], [UBI_DSS_DEFINE([[arith.tadd]], 0x1, 0xc0, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, ARITH_TADD_OP(_ARG1$1))])
 foreach([ARITH_TADD_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32], [float64]),
                                       ([reg], [stack]),
@@ -1112,7 +1112,7 @@ foreach([ARITH_TADD_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [i
                                       ([imm], [reg], [stack]))))
 
 # arith.tsub
-m4_define([ARITH_TSUB_OP], [m4_ifelse(DTB_CAT_$1, [float], [SHAREMIND_MI_TSUB_FLOAT]DTB_BITS_$1[(*d,*s1,*s2)], [(*d) = SHAREMIND_STATIC_CAST(DTB_TYPE_$1, (*s1) - (*s2))])])
+m4_define([ARITH_TSUB_OP], [m4_ifelse(DTB_CAT_$1, [float], [SHAREMIND_MI_TSUB_FLOAT]DTB_BITS_$1[(*d,*s1,*s2)], [(*d) = SHAREMIND_VM_STATIC_CAST(DTB_TYPE_$1, (*s1) - (*s2))])])
 m4_define([ARITH_TSUB_DEFINE], [UBI_DSS_DEFINE([[arith.tsub]], 0x1, 0xc1, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, ARITH_TSUB_OP(_ARG1$1))])
 foreach([ARITH_TSUB_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32], [float64]),
                                       ([reg], [stack]),
@@ -1120,7 +1120,7 @@ foreach([ARITH_TSUB_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [i
                                       ([imm], [reg], [stack]))))
 
 # arith.tmul
-m4_define([ARITH_TMUL_OP], [m4_ifelse(DTB_CAT_$1, [float], [SHAREMIND_MI_TMUL_FLOAT]DTB_BITS_$1[(*d,*s1,*s2)], [(*d) = SHAREMIND_STATIC_CAST(DTB_TYPE_$1, (*s1) * (*s2))])])
+m4_define([ARITH_TMUL_OP], [m4_ifelse(DTB_CAT_$1, [float], [SHAREMIND_MI_TMUL_FLOAT]DTB_BITS_$1[(*d,*s1,*s2)], [(*d) = SHAREMIND_VM_STATIC_CAST(DTB_TYPE_$1, (*s1) * (*s2))])])
 m4_define([ARITH_TMUL_DEFINE], [UBI_DSS_DEFINE([[arith.tmul]], 0x1, 0xc2, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, ARITH_TMUL_OP(_ARG1$1))])
 foreach([ARITH_TMUL_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32], [float64]),
                                       ([reg], [stack]),
@@ -1128,7 +1128,7 @@ foreach([ARITH_TMUL_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [i
                                       ([imm], [reg], [stack]))))
 
 # arith.tdiv
-m4_define([ARITH_TDIV_OP], [m4_ifelse(DTB_CAT_$1, [float], [SHAREMIND_MI_TDIV_FLOAT]DTB_BITS_$1[(*d,*s1,*s2)], [(*d) = SHAREMIND_STATIC_CAST(DTB_TYPE_$1, (*s1) / (*s2))])])
+m4_define([ARITH_TDIV_OP], [m4_ifelse(DTB_CAT_$1, [float], [SHAREMIND_MI_TDIV_FLOAT]DTB_BITS_$1[(*d,*s1,*s2)], [(*d) = SHAREMIND_VM_STATIC_CAST(DTB_TYPE_$1, (*s1) / (*s2))])])
 m4_define([ARITH_TDIV_DEFINE], [UBI_DSS_DEFINE([[arith.tdiv]], 0x1, 0xc3, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, ARITH_TDIV_OP(_ARG1$1))])
 foreach([ARITH_TDIV_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32], [float64]),
                                       ([reg], [stack]),
@@ -1141,7 +1141,7 @@ m4_define([ARITH_TMOD_OP],
                      [SHAREMIND_MI_TMOD_FLOAT]DTB_BITS_$1[(*d,*s1,*s2)],
                      [if ((*s2) == 0) { SHAREMIND_MI_DO_EXCEPT(SHAREMIND_VM_PROCESS_INTEGER_DIVIDE_BY_ZERO); }
                       m4_ifelse(DTB_CAT_$1, [signed], [else if (((*s2) < 0) && ((*s2) != DTB_MIN_$1)) { GCC_BUG_50865_WORKAROUND((*d), DTB_TYPE_$1, (*s1), (*s2)); }])
-                      else (*d) = SHAREMIND_STATIC_CAST(DTB_TYPE_$1, (*s1) % (*s2))])])
+                      else (*d) = SHAREMIND_VM_STATIC_CAST(DTB_TYPE_$1, (*s1) % (*s2))])])
 m4_define([ARITH_TMOD_DEFINE], [UBI_DSS_DEFINE([[arith.tmod]], 0x1, 0xc4, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, ARITH_TMOD_OP(_ARG1$1))])
 foreach([ARITH_TMOD_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [int8], [int16], [int32], [int64], [float32], [float64]),
                                       ([reg], [stack]),
@@ -1149,7 +1149,7 @@ foreach([ARITH_TMOD_DEFINE], (product(([uint8], [uint16], [uint32], [uint64], [i
                                       ([imm], [reg], [stack]))))
 
 # binary.uinv
-m4_define([BINARY_UINV_DEFINE], [UBI_D_DEFINE([[binary.uinv]], 0x2, 0x00, _ARG1$1, _ARG2$1, NO_PREPARATION, [(*d) = SHAREMIND_STATIC_CAST(DTB_GET_TYPE(_ARG1$1), ~(*d))])])
+m4_define([BINARY_UINV_DEFINE], [UBI_D_DEFINE([[binary.uinv]], 0x2, 0x00, _ARG1$1, _ARG2$1, NO_PREPARATION, [(*d) = SHAREMIND_VM_STATIC_CAST(DTB_GET_TYPE(_ARG1$1), ~(*d))])])
 foreach([BINARY_UINV_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]))))
 
 # binary.urtl
@@ -1185,7 +1185,7 @@ m4_define([BINARY_USHR_DEFINE], [UBI_D_DEFINE([[binary.ushr]], 0x2, 0x09, _ARG1$
 foreach([BINARY_USHR_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]))))
 
 # binary.binv
-m4_define([BINARY_BINV_DEFINE], [UBI_DS_DEFINE([[binary.binv]], 0x2, 0x40, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = SHAREMIND_STATIC_CAST(DTB_GET_TYPE(_ARG1$1), ~(*s))])])
+m4_define([BINARY_BINV_DEFINE], [UBI_DS_DEFINE([[binary.binv]], 0x2, 0x40, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = SHAREMIND_VM_STATIC_CAST(DTB_GET_TYPE(_ARG1$1), ~(*s))])])
 foreach([BINARY_BINV_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([reg], [stack]))))
 
 # binary.b1rtl
@@ -1221,43 +1221,43 @@ m4_define([BINARY_B1SHR_DEFINE], [UBI_DS_DEFINE([[binary.b1shr]], 0x2, 0x49, _AR
 foreach([BINARY_B1SHR_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([reg], [stack]))))
 
 # binary.bband: conjunction
-m4_define([BINARY_BAND_DEFINE], [UBI_DS_DEFINE([[binary.bband]], 0x2, 0x81, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = SHAREMIND_STATIC_CAST(DTB_GET_TYPE(_ARG1$1), (*d) & (*s))])])
+m4_define([BINARY_BAND_DEFINE], [UBI_DS_DEFINE([[binary.bband]], 0x2, 0x81, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = SHAREMIND_VM_STATIC_CAST(DTB_GET_TYPE(_ARG1$1), (*d) & (*s))])])
 foreach([BINARY_BAND_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]))))
 
 # binary.bbabj: abjunction (material nonimplication)
-m4_define([BINARY_BABJ_DEFINE], [UBI_DS_DEFINE([[binary.bbabj]], 0x2, 0x82, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = SHAREMIND_STATIC_CAST(DTB_GET_TYPE(_ARG1$1), (*d) & ~(*s))])])
+m4_define([BINARY_BABJ_DEFINE], [UBI_DS_DEFINE([[binary.bbabj]], 0x2, 0x82, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = SHAREMIND_VM_STATIC_CAST(DTB_GET_TYPE(_ARG1$1), (*d) & ~(*s))])])
 foreach([BINARY_BABJ_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]))))
 
 # binary.bbcni: converse nonimplication
-m4_define([BINARY_BCNI_DEFINE], [UBI_DS_DEFINE([[binary.bbcni]], 0x2, 0x84, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = SHAREMIND_STATIC_CAST(DTB_GET_TYPE(_ARG1$1), ~(*d) & (*s))])])
+m4_define([BINARY_BCNI_DEFINE], [UBI_DS_DEFINE([[binary.bbcni]], 0x2, 0x84, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = SHAREMIND_VM_STATIC_CAST(DTB_GET_TYPE(_ARG1$1), ~(*d) & (*s))])])
 foreach([BINARY_BCNI_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]))))
 
 # binary.bbxor: exclusive disjunction
-m4_define([BINARY_BXOR_DEFINE], [UBI_DS_DEFINE([[binary.bbxor]], 0x2, 0x86, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = SHAREMIND_STATIC_CAST(DTB_GET_TYPE(_ARG1$1), (*d) ^ (*s))])])
+m4_define([BINARY_BXOR_DEFINE], [UBI_DS_DEFINE([[binary.bbxor]], 0x2, 0x86, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = SHAREMIND_VM_STATIC_CAST(DTB_GET_TYPE(_ARG1$1), (*d) ^ (*s))])])
 foreach([BINARY_BXOR_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]))))
 
 # binary.bbor: disjunction
-m4_define([BINARY_BOR_DEFINE], [UBI_DS_DEFINE([[binary.bbor]], 0x2, 0x87, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = SHAREMIND_STATIC_CAST(DTB_GET_TYPE(_ARG1$1), (*d) | (*s))])])
+m4_define([BINARY_BOR_DEFINE], [UBI_DS_DEFINE([[binary.bbor]], 0x2, 0x87, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = SHAREMIND_VM_STATIC_CAST(DTB_GET_TYPE(_ARG1$1), (*d) | (*s))])])
 foreach([BINARY_BOR_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]))))
 
 # binary.bbnor: joint denial
-m4_define([BINARY_BNOR_DEFINE], [UBI_DS_DEFINE([[binary.bbnor]], 0x2, 0x88, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = SHAREMIND_STATIC_CAST(DTB_GET_TYPE(_ARG1$1), ~((*d) | (*s)))])])
+m4_define([BINARY_BNOR_DEFINE], [UBI_DS_DEFINE([[binary.bbnor]], 0x2, 0x88, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = SHAREMIND_VM_STATIC_CAST(DTB_GET_TYPE(_ARG1$1), ~((*d) | (*s)))])])
 foreach([BINARY_BNOR_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]))))
 
 # binary.bbxnor: biconditional
-m4_define([BINARY_BXNOR_DEFINE], [UBI_DS_DEFINE([[binary.bbxnor]], 0x2, 0x89, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = SHAREMIND_STATIC_CAST(DTB_GET_TYPE(_ARG1$1), ~((*d) ^ (*s)))])])
+m4_define([BINARY_BXNOR_DEFINE], [UBI_DS_DEFINE([[binary.bbxnor]], 0x2, 0x89, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = SHAREMIND_VM_STATIC_CAST(DTB_GET_TYPE(_ARG1$1), ~((*d) ^ (*s)))])])
 foreach([BINARY_BXNOR_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]))))
 
 # binary.bbci: converse implication
-m4_define([BINARY_BCI_DEFINE], [UBI_DS_DEFINE([[binary.bbci]], 0x2, 0x8b, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = SHAREMIND_STATIC_CAST(DTB_GET_TYPE(_ARG1$1), (*d) | ~(*s))])])
+m4_define([BINARY_BCI_DEFINE], [UBI_DS_DEFINE([[binary.bbci]], 0x2, 0x8b, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = SHAREMIND_VM_STATIC_CAST(DTB_GET_TYPE(_ARG1$1), (*d) | ~(*s))])])
 foreach([BINARY_BCI_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]))))
 
 # binary.bbimp: (material) implication
-m4_define([BINARY_BIMP_DEFINE], [UBI_DS_DEFINE([[binary.bbimp]], 0x2, 0x8d, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = SHAREMIND_STATIC_CAST(DTB_GET_TYPE(_ARG1$1), ~(*d) | (*s))])])
+m4_define([BINARY_BIMP_DEFINE], [UBI_DS_DEFINE([[binary.bbimp]], 0x2, 0x8d, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = SHAREMIND_VM_STATIC_CAST(DTB_GET_TYPE(_ARG1$1), ~(*d) | (*s))])])
 foreach([BINARY_BIMP_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]))))
 
 # binary.bbnand: alternative denial
-m4_define([BINARY_BNAND_DEFINE], [UBI_DS_DEFINE([[binary.bbnand]], 0x2, 0x8e, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = SHAREMIND_STATIC_CAST(DTB_GET_TYPE(_ARG1$1), ~((*d) & (*s)))])])
+m4_define([BINARY_BNAND_DEFINE], [UBI_DS_DEFINE([[binary.bbnand]], 0x2, 0x8e, _ARG1$1, _ARG2$1, _ARG3$1, NO_PREPARATION, [(*d) = SHAREMIND_VM_STATIC_CAST(DTB_GET_TYPE(_ARG1$1), ~((*d) & (*s)))])])
 foreach([BINARY_BNAND_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]))))
 
 # binary.brtl
@@ -1293,35 +1293,35 @@ m4_define([BINARY_BSHR_DEFINE], [UBI_DS_DEFINE([[binary.bshr]], 0x2, 0x97, _ARG1
 foreach([BINARY_BSHR_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]))))
 
 # binary.btand: conjunction
-m4_define([BINARY_TAND_DEFINE], [UBI_DSS_DEFINE([[binary.btand]], 0x2, 0xc1, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) = SHAREMIND_STATIC_CAST(DTB_GET_TYPE(_ARG1$1), (*s1) & (*s2))])])
+m4_define([BINARY_TAND_DEFINE], [UBI_DSS_DEFINE([[binary.btand]], 0x2, 0xc1, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) = SHAREMIND_VM_STATIC_CAST(DTB_GET_TYPE(_ARG1$1), (*s1) & (*s2))])])
 foreach([BINARY_TAND_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]), ([imm], [reg], [stack]))))
 
 # binary.btabj: abjunction (material nonimplication); swap operands for converse nonimplication
-m4_define([BINARY_TABJ_DEFINE], [UBI_DSS_DEFINE([[binary.btabj]], 0x2, 0xc2, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) = SHAREMIND_STATIC_CAST(DTB_GET_TYPE(_ARG1$1), (*s1) & ~(*s2))])])
+m4_define([BINARY_TABJ_DEFINE], [UBI_DSS_DEFINE([[binary.btabj]], 0x2, 0xc2, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) = SHAREMIND_VM_STATIC_CAST(DTB_GET_TYPE(_ARG1$1), (*s1) & ~(*s2))])])
 foreach([BINARY_TABJ_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]), ([imm], [reg], [stack]))))
 
 # binary.btxor: exclusive disjunction
-m4_define([BINARY_TXOR_DEFINE], [UBI_DSS_DEFINE([[binary.btxor]], 0x2, 0xc6, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) = SHAREMIND_STATIC_CAST(DTB_GET_TYPE(_ARG1$1), (*s1) ^ (*s2))])])
+m4_define([BINARY_TXOR_DEFINE], [UBI_DSS_DEFINE([[binary.btxor]], 0x2, 0xc6, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) = SHAREMIND_VM_STATIC_CAST(DTB_GET_TYPE(_ARG1$1), (*s1) ^ (*s2))])])
 foreach([BINARY_TXOR_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]), ([imm], [reg], [stack]))))
 
 # binary.btor: disjunction
-m4_define([BINARY_TOR_DEFINE], [UBI_DSS_DEFINE([[binary.btor]], 0x2, 0xc7, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) = SHAREMIND_STATIC_CAST(DTB_GET_TYPE(_ARG1$1), (*s1) | (*s2))])])
+m4_define([BINARY_TOR_DEFINE], [UBI_DSS_DEFINE([[binary.btor]], 0x2, 0xc7, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) = SHAREMIND_VM_STATIC_CAST(DTB_GET_TYPE(_ARG1$1), (*s1) | (*s2))])])
 foreach([BINARY_TOR_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]), ([imm], [reg], [stack]))))
 
 # binary.btnor: joint denial
-m4_define([BINARY_TNOR_DEFINE], [UBI_DSS_DEFINE([[binary.btnor]], 0x2, 0xc8, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) = SHAREMIND_STATIC_CAST(DTB_GET_TYPE(_ARG1$1), ~((*s1) | (*s2)))])])
+m4_define([BINARY_TNOR_DEFINE], [UBI_DSS_DEFINE([[binary.btnor]], 0x2, 0xc8, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) = SHAREMIND_VM_STATIC_CAST(DTB_GET_TYPE(_ARG1$1), ~((*s1) | (*s2)))])])
 foreach([BINARY_TNOR_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]), ([imm], [reg], [stack]))))
 
 # binary.btxnor: biconditional
-m4_define([BINARY_TXNOR_DEFINE], [UBI_DSS_DEFINE([[binary.btxnor]], 0x2, 0xc9, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) = SHAREMIND_STATIC_CAST(DTB_GET_TYPE(_ARG1$1), ~((*s1) ^ (*s2)))])])
+m4_define([BINARY_TXNOR_DEFINE], [UBI_DSS_DEFINE([[binary.btxnor]], 0x2, 0xc9, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) = SHAREMIND_VM_STATIC_CAST(DTB_GET_TYPE(_ARG1$1), ~((*s1) ^ (*s2)))])])
 foreach([BINARY_TXNOR_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]), ([imm], [reg], [stack]))))
 
 # binary.btimp: (material) implication; swap operands for converse implication
-m4_define([BINARY_TIMP_DEFINE], [UBI_DSS_DEFINE([[binary.btimp]], 0x2, 0xcd, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) = SHAREMIND_STATIC_CAST(DTB_GET_TYPE(_ARG1$1), ~(*s1) | (*s2))])])
+m4_define([BINARY_TIMP_DEFINE], [UBI_DSS_DEFINE([[binary.btimp]], 0x2, 0xcd, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) = SHAREMIND_VM_STATIC_CAST(DTB_GET_TYPE(_ARG1$1), ~(*s1) | (*s2))])])
 foreach([BINARY_TIMP_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]), ([imm], [reg], [stack]))))
 
 # binary.btnand: alternative denial
-m4_define([BINARY_TNAND_DEFINE], [UBI_DSS_DEFINE([[binary.btnand]], 0x2, 0xce, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) = SHAREMIND_STATIC_CAST(DTB_GET_TYPE(_ARG1$1), ~((*s1) & (*s2)))])])
+m4_define([BINARY_TNAND_DEFINE], [UBI_DSS_DEFINE([[binary.btnand]], 0x2, 0xce, _ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, NO_PREPARATION, [(*d) = SHAREMIND_VM_STATIC_CAST(DTB_GET_TYPE(_ARG1$1), ~((*s1) & (*s2)))])])
 foreach([BINARY_TNAND_DEFINE], (product(([uint8], [uint16], [uint32], [uint64]), ([reg], [stack]), ([imm], [reg], [stack]), ([imm], [reg], [stack]))))
 
 # binary.trtl
@@ -1571,17 +1571,17 @@ m4_define([INSTR_JUMP_DEFINE], [
             m4_ifelse([$8], [NO_PREPARATION], [], [$8;
             ])
             if (SHAREMIND_PREPARE_ARG_AS(1,int64) < 0) {
-                DTB_TYPE_uint64 delta_minus_one = SHAREMIND_STATIC_CAST(DTB_TYPE_uint64, -(SHAREMIND_PREPARE_ARG_AS(1,int64) + 1));
+                DTB_TYPE_uint64 delta_minus_one = SHAREMIND_VM_STATIC_CAST(DTB_TYPE_uint64, -(SHAREMIND_PREPARE_ARG_AS(1,int64) + 1));
                 SHAREMIND_PREPARE_ARGUMENTS_CHECK(
                     delta_minus_one < SHAREMIND_PREPARE_CURRENT_I);
                 SHAREMIND_PREPARE_ARGUMENTS_CHECK(
-                    SHAREMIND_PREPARE_IS_INSTR(SHAREMIND_STATIC_CAST(SHAREMIND_T_uintptr, SHAREMIND_PREPARE_CURRENT_I - 1u - delta_minus_one)));
+                    SHAREMIND_PREPARE_IS_INSTR(SHAREMIND_VM_STATIC_CAST(SHAREMIND_T_uintptr, SHAREMIND_PREPARE_CURRENT_I - 1u - delta_minus_one)));
             } else {
-                DTB_TYPE_uint64 delta = SHAREMIND_STATIC_CAST(DTB_TYPE_uint64, SHAREMIND_PREPARE_ARG_AS(1,int64));
+                DTB_TYPE_uint64 delta = SHAREMIND_VM_STATIC_CAST(DTB_TYPE_uint64, SHAREMIND_PREPARE_ARG_AS(1,int64));
                 SHAREMIND_PREPARE_ARGUMENTS_CHECK(
-                    delta < SHAREMIND_STATIC_CAST(SHAREMIND_T_size, SHAREMIND_PREPARE_CODESIZE - SHAREMIND_PREPARE_CURRENT_I - 1u));
+                    delta < SHAREMIND_VM_STATIC_CAST(SHAREMIND_T_size, SHAREMIND_PREPARE_CODESIZE - SHAREMIND_PREPARE_CURRENT_I - 1u));
                 SHAREMIND_PREPARE_ARGUMENTS_CHECK(
-                    delta == 0u || SHAREMIND_PREPARE_IS_INSTR(SHAREMIND_STATIC_CAST(SHAREMIND_T_uintptr, SHAREMIND_PREPARE_CURRENT_I + delta)));
+                    delta == 0u || SHAREMIND_PREPARE_IS_INSTR(SHAREMIND_VM_STATIC_CAST(SHAREMIND_T_uintptr, SHAREMIND_PREPARE_CURRENT_I + delta)));
             }
         }],
         NO_IMPL_SUFFIX,
