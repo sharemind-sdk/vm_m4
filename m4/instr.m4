@@ -339,7 +339,7 @@ m4_define([_MOV_REF_TO_REGS_DEFINE], [
             m4_ifelse($4, [imm], [numBytes = SHAREMIND_MI_ARG_P(4);])
             SHAREMIND_MI_TRY_MEMRANGE(SHAREMIND_MI_REFERENCE_GET_SIZE(srcRef), SHAREMIND_MI_BLOCK_AS(srcOffset,uint64), SHAREMIND_MI_BLOCK_AS(numBytes,uint64), SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_READ);
             m4_pushdef([CPY_ARGS], [&(SHAREMIND_MI_BLOCK_AS(dest,uint64)),
-                                    SHAREMIND_MI_REFERENCE_GET_CONST_PTR(srcRef) + SHAREMIND_MI_BLOCK_AS(srcOffset,uint64),
+                                    SHAREMIND_PTRADD(SHAREMIND_MI_REFERENCE_GET_CONST_PTR(srcRef), SHAREMIND_MI_BLOCK_AS(srcOffset,uint64)),
                                     SHAREMIND_MI_BLOCK_AS(numBytes,uint64)])
             m4_ifelse($3, [stack],
                       [SHAREMIND_MEMCPY(CPY_ARGS);],
@@ -381,7 +381,7 @@ m4_define([_MOV_REGS_TO_REF_DEFINE], [
             m4_ifelse($3, [imm], [numBytes = SHAREMIND_MI_ARG_P(4);])
             SHAREMIND_MI_TRY_MEMRANGE(SHAREMIND_MI_REFERENCE_GET_SIZE(destRef), SHAREMIND_MI_BLOCK_AS(destOffset,uint64), SHAREMIND_MI_BLOCK_AS(numBytes,uint64), SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_WRITE);
             m4_ifelse($1, [imm], [src = SHAREMIND_MI_ARG_P(1);])
-            m4_pushdef([CPY_ARGS], [SHAREMIND_MI_REFERENCE_GET_PTR(destRef) + SHAREMIND_MI_BLOCK_AS(destOffset,uint64),
+            m4_pushdef([CPY_ARGS], [SHAREMIND_PTRADD(SHAREMIND_MI_REFERENCE_GET_PTR(destRef), SHAREMIND_MI_BLOCK_AS(destOffset,uint64)),
                                     &(SHAREMIND_MI_BLOCK_AS(src,uint64)),
                                     SHAREMIND_MI_BLOCK_AS(numBytes,uint64)])
             m4_ifelse($1, [reg],
@@ -426,8 +426,8 @@ m4_define([_MOV_REF_TO_REF_DEFINE], [
             SHAREMIND_MI_TRY_MEMRANGE(SHAREMIND_MI_REFERENCE_GET_SIZE(srcRef), SHAREMIND_MI_BLOCK_AS(srcOffset,uint64), SHAREMIND_MI_BLOCK_AS(numBytes,uint64), SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_READ);
             m4_ifelse($3, [imm], [destOffset = SHAREMIND_MI_ARG_P(4);])
             SHAREMIND_MI_TRY_MEMRANGE(SHAREMIND_MI_REFERENCE_GET_SIZE(destRef), SHAREMIND_MI_BLOCK_AS(destOffset,uint64), SHAREMIND_MI_BLOCK_AS(numBytes,uint64), SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_WRITE);
-            m4_pushdef([CPY_ARGS], [SHAREMIND_MI_REFERENCE_GET_PTR(destRef) + SHAREMIND_MI_BLOCK_AS(destOffset,uint64),
-                                    SHAREMIND_MI_REFERENCE_GET_CONST_PTR(srcRef) + SHAREMIND_MI_BLOCK_AS(srcOffset,uint64),
+            m4_pushdef([CPY_ARGS], [SHAREMIND_PTRADD(SHAREMIND_MI_REFERENCE_GET_PTR(destRef), SHAREMIND_MI_BLOCK_AS(destOffset,uint64)),
+                                    SHAREMIND_PTRADD(SHAREMIND_MI_REFERENCE_GET_CONST_PTR(srcRef), SHAREMIND_MI_BLOCK_AS(srcOffset,uint64)),
                                     SHAREMIND_MI_BLOCK_AS(numBytes,uint64)])
             if (SHAREMIND_MI_REFERENCE_GET_MEMORY_PTR(srcRef) != SHAREMIND_MI_REFERENCE_GET_MEMORY_PTR(destRef)) {
                 SHAREMIND_MEMCPY(CPY_ARGS);
@@ -525,7 +525,7 @@ m4_define([_MOV_MEM_TO_REF_DEFINE], [
             SHAREMIND_MI_TRY_MEMRANGE(SHAREMIND_MI_MEM_GET_SIZE_FROM_SLOT(srcSlot), SHAREMIND_MI_BLOCK_AS(srcOffset,uint64), SHAREMIND_MI_BLOCK_AS(numBytes,uint64), SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_READ);
             m4_ifelse($3, [imm], [destOffset = SHAREMIND_MI_ARG_P(4);])
             SHAREMIND_MI_TRY_MEMRANGE(SHAREMIND_MI_REFERENCE_GET_SIZE(destRef), SHAREMIND_MI_BLOCK_AS(destOffset,uint64), SHAREMIND_MI_BLOCK_AS(numBytes,uint64), SHAREMIND_VM_PROCESS_OUT_OF_BOUNDS_WRITE);
-            m4_pushdef([CPY_ARGS], [SHAREMIND_MI_REFERENCE_GET_PTR(destRef) + SHAREMIND_MI_BLOCK_AS(destOffset,uint64),
+            m4_pushdef([CPY_ARGS], [SHAREMIND_PTRADD(SHAREMIND_MI_REFERENCE_GET_PTR(destRef), SHAREMIND_MI_BLOCK_AS(destOffset,uint64)),
                                     SHAREMIND_PTRADD(SHAREMIND_MI_MEM_GET_DATA_FROM_SLOT(srcSlot), SHAREMIND_MI_BLOCK_AS(srcOffset,uint64)),
                                     SHAREMIND_MI_BLOCK_AS(numBytes,uint64)])
             if (srcSlot != SHAREMIND_MI_REFERENCE_GET_MEMORY_PTR(destRef)) {
