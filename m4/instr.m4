@@ -191,7 +191,6 @@ m4_define([_MOV_MEM_TO_REGS_DEFINE], [
                        SHAREMIND_PREPARE_ARGUMENTS_CHECK(SHAREMIND_PREPARE_ARG_AS(4,uint64) <= 8u);])]),
         NO_IMPL_SUFFIX, IMPL([
             const SHAREMIND_T_CodeBlock * src;
-            SHAREMIND_T_MemorySlot * SHAREMIND_RESTRICT srcSlot;
             const SHAREMIND_T_CodeBlock * m4_ifelse($2, [imm], [SHAREMIND_RESTRICT]) srcOffset;
             SHAREMIND_T_CodeBlock * dest;
             const SHAREMIND_T_CodeBlock * m4_ifelse($4, [imm], [SHAREMIND_RESTRICT]) numBytes;
@@ -230,7 +229,6 @@ m4_define([_MOV_REGS_TO_MEM_DEFINE], [
         NO_IMPL_SUFFIX, IMPL([
             const SHAREMIND_T_CodeBlock * m4_ifelse($1, [imm], [SHAREMIND_RESTRICT]) src;
             const SHAREMIND_T_CodeBlock * dest;
-            const SHAREMIND_T_MemorySlot * SHAREMIND_RESTRICT destSlot;
             const SHAREMIND_T_CodeBlock * m4_ifelse($3, [imm], [SHAREMIND_RESTRICT]) destOffset;
             const SHAREMIND_T_CodeBlock * m4_ifelse($4, [imm], [SHAREMIND_RESTRICT]) numBytes;
             m4_ifelse($1, [imm], [],
@@ -272,10 +270,8 @@ m4_define([_MOV_MEM_TO_MEM_DEFINE], [
         NO_IMPL_SUFFIX,
         IMPL([
             const SHAREMIND_T_CodeBlock * src;
-            const SHAREMIND_T_MemorySlot * srcSlot;
             const SHAREMIND_T_CodeBlock * m4_ifelse($2, [imm], [SHAREMIND_RESTRICT]) srcOffset;
             const SHAREMIND_T_CodeBlock * dest;
-            const SHAREMIND_T_MemorySlot * destSlot;
             const SHAREMIND_T_CodeBlock * m4_ifelse($4, [imm], [SHAREMIND_RESTRICT]) destOffset;
             const SHAREMIND_T_CodeBlock * m4_ifelse($5, [imm], [SHAREMIND_RESTRICT]) numBytes;
             m4_ifelse($1, [imm],
@@ -343,11 +339,7 @@ m4_define([_MOV_REF_TO_REGS_DEFINE], [
                                     SHAREMIND_MI_BLOCK_AS(numBytes,uint64)])
             m4_ifelse($3, [stack],
                       [SHAREMIND_MEMCPY(CPY_ARGS);],
-                      [if (SHAREMIND_MI_REFERENCE_GET_MEMORY_PTR(srcRef)) {
-                           SHAREMIND_MEMCPY(CPY_ARGS);
-                       } else {
-                           SHAREMIND_MEMMOVE(CPY_ARGS);
-                       }])
+                      [SHAREMIND_MEMMOVE(CPY_ARGS);])
             m4_popdef([CPY_ARGS])]),
         DO_DISPATCH, PREPARE_FINISH)])
 m4_define([MOV_REF_TO_REGS_DEFINE], [_MOV_REF_TO_REGS_DEFINE(_ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1)])
@@ -385,11 +377,7 @@ m4_define([_MOV_REGS_TO_REF_DEFINE], [
                                     &(SHAREMIND_MI_BLOCK_AS(src,uint64)),
                                     SHAREMIND_MI_BLOCK_AS(numBytes,uint64)])
             m4_ifelse($1, [reg],
-                      [if (SHAREMIND_MI_REFERENCE_GET_MEMORY_PTR(destRef)) {
-                           SHAREMIND_MEMCPY(CPY_ARGS);
-                       } else {
-                           SHAREMIND_MEMMOVE(CPY_ARGS);
-                       }],
+                      [SHAREMIND_MEMMOVE(CPY_ARGS);],
                       [SHAREMIND_MEMCPY(CPY_ARGS)])m4_popdef([CPY_ARGS])]),
         DO_DISPATCH, PREPARE_FINISH)])
 m4_define([MOV_REGS_TO_REF_DEFINE], [_MOV_REGS_TO_REF_DEFINE(_ARG1$1, _ARG2$1, _ARG3$1)])
@@ -429,11 +417,7 @@ m4_define([_MOV_REF_TO_REF_DEFINE], [
             m4_pushdef([CPY_ARGS], [SHAREMIND_PTRADD(SHAREMIND_MI_REFERENCE_GET_PTR(destRef), SHAREMIND_MI_BLOCK_AS(destOffset,uint64)),
                                     SHAREMIND_PTRADD(SHAREMIND_MI_REFERENCE_GET_CONST_PTR(srcRef), SHAREMIND_MI_BLOCK_AS(srcOffset,uint64)),
                                     SHAREMIND_MI_BLOCK_AS(numBytes,uint64)])
-            if (SHAREMIND_MI_REFERENCE_GET_MEMORY_PTR(srcRef) != SHAREMIND_MI_REFERENCE_GET_MEMORY_PTR(destRef)) {
-                SHAREMIND_MEMCPY(CPY_ARGS);
-            } else {
-                SHAREMIND_MEMMOVE(CPY_ARGS);
-            }m4_popdef([CPY_ARGS])]),
+            SHAREMIND_MEMMOVE(CPY_ARGS);m4_popdef([CPY_ARGS])]),
         DO_DISPATCH, PREPARE_FINISH)])
 m4_define([MOV_REF_TO_REF_DEFINE], [_MOV_REF_TO_REF_DEFINE(_ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1)])
 foreach([MOV_REF_TO_REF_DEFINE], (product(([cref], [ref]), ([imm], [reg], [stack]), ([imm], [reg], [stack]), ([imm], [reg], [stack]))))
@@ -455,7 +439,6 @@ m4_define([_MOV_REF_TO_MEM_DEFINE], [
             const SHAREMIND_T_[]m4_ifelse($1, [cref], [C])Reference * SHAREMIND_RESTRICT srcRef;
             const SHAREMIND_T_CodeBlock * m4_ifelse($2, [imm], [SHAREMIND_RESTRICT]) srcOffset;
             const SHAREMIND_T_CodeBlock * SHAREMIND_RESTRICT dest;
-            const SHAREMIND_T_MemorySlot * SHAREMIND_RESTRICT destSlot;
             const SHAREMIND_T_CodeBlock * m4_ifelse($4, [imm], [SHAREMIND_RESTRICT]) destOffset;
             const SHAREMIND_T_CodeBlock * m4_ifelse($5, [imm], [SHAREMIND_RESTRICT]) numBytes;
             SHAREMIND_MI_GET_$1(srcRef, SHAREMIND_MI_ARG_AS(1, sizet));
@@ -479,11 +462,7 @@ m4_define([_MOV_REF_TO_MEM_DEFINE], [
             m4_pushdef([CPY_ARGS], [SHAREMIND_PTRADD(SHAREMIND_MI_MEM_GET_DATA_FROM_SLOT(destSlot), SHAREMIND_MI_BLOCK_AS(destOffset,uint64)),
                                     SHAREMIND_PTRADD(SHAREMIND_MI_REFERENCE_GET_CONST_PTR(srcRef), SHAREMIND_MI_BLOCK_AS(srcOffset,uint64)),
                                     SHAREMIND_MI_BLOCK_AS(numBytes,uint64)])
-            if (SHAREMIND_MI_REFERENCE_GET_MEMORY_PTR(srcRef) != destSlot) {
-                SHAREMIND_MEMCPY(CPY_ARGS);
-            } else {
-                SHAREMIND_MEMMOVE(CPY_ARGS);
-            }m4_popdef([CPY_ARGS])]),
+            SHAREMIND_MEMMOVE(CPY_ARGS);m4_popdef([CPY_ARGS])]),
         DO_DISPATCH, PREPARE_FINISH)])
 m4_define([MOV_REF_TO_MEM_DEFINE], [_MOV_REF_TO_MEM_DEFINE(_ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1, _ARG5$1)])
 foreach([MOV_REF_TO_MEM_DEFINE], (product(([cref], [ref]), ([imm], [reg], [stack]), ([reg], [stack]), ([imm], [reg], [stack]), ([imm], [reg], [stack]))))
@@ -503,7 +482,6 @@ m4_define([_MOV_MEM_TO_REF_DEFINE], [
         NO_IMPL_SUFFIX,
         IMPL([
             const SHAREMIND_T_CodeBlock * SHAREMIND_RESTRICT src;
-            const SHAREMIND_T_MemorySlot * SHAREMIND_RESTRICT srcSlot;
             const SHAREMIND_T_CodeBlock * m4_ifelse($2, [imm], [SHAREMIND_RESTRICT]) srcOffset;
             const SHAREMIND_T_Reference * SHAREMIND_RESTRICT destRef;
             const SHAREMIND_T_CodeBlock * m4_ifelse($3, [imm], [SHAREMIND_RESTRICT]) destOffset;
@@ -528,11 +506,7 @@ m4_define([_MOV_MEM_TO_REF_DEFINE], [
             m4_pushdef([CPY_ARGS], [SHAREMIND_PTRADD(SHAREMIND_MI_REFERENCE_GET_PTR(destRef), SHAREMIND_MI_BLOCK_AS(destOffset,uint64)),
                                     SHAREMIND_PTRADD(SHAREMIND_MI_MEM_GET_DATA_FROM_SLOT(srcSlot), SHAREMIND_MI_BLOCK_AS(srcOffset,uint64)),
                                     SHAREMIND_MI_BLOCK_AS(numBytes,uint64)])
-            if (srcSlot != SHAREMIND_MI_REFERENCE_GET_MEMORY_PTR(destRef)) {
-                SHAREMIND_MEMCPY(CPY_ARGS);
-            } else {
-                SHAREMIND_MEMMOVE(CPY_ARGS);
-            }m4_popdef([CPY_ARGS])]),
+            SHAREMIND_MEMMOVE(CPY_ARGS);m4_popdef([CPY_ARGS])]),
         DO_DISPATCH, PREPARE_FINISH)])
 m4_define([MOV_MEM_TO_REF_DEFINE], [_MOV_MEM_TO_REF_DEFINE(_ARG1$1, _ARG2$1, _ARG3$1, _ARG4$1)])
 foreach([MOV_MEM_TO_REF_DEFINE], (product(([reg], [stack]), ([imm], [reg], [stack]), ([imm], [reg], [stack]), ([imm], [reg], [stack]))))
@@ -580,8 +554,8 @@ m4_define([_SYSCALL_DEFINE], [
                       [SHAREMIND_MI_GET_$2(rv, SHAREMIND_MI_ARG_AS(2, sizet));])
             m4_ifelse($1, [imm], [addr = SHAREMIND_MI_ARG_P(1);])
             m4_ifelse($1, [imm],
-                [SHAREMIND_MI_SYSCALL(SHAREMIND_MI_BLOCK_AS(addr, cp),m4_ifelse($2, [imm], [SHAREMIND_NULL], [rv]), m4_ifelse($2, [imm], [1], [2]))],
-                [SHAREMIND_MI_CHECK_SYSCALL(addr,m4_ifelse($2, [imm], [SHAREMIND_NULL], [rv]), m4_ifelse($2, [imm], [1], [2]))])]),
+                [SHAREMIND_MI_SYSCALL(addr,m4_ifelse($2, [imm], [SHAREMIND_NULL], [rv]))],
+                [SHAREMIND_MI_CHECK_SYSCALL(addr,m4_ifelse($2, [imm], [SHAREMIND_NULL], [rv]))])]),
         DO_DISPATCH, PREPARE_FINISH)
 ])
 m4_define([SYSCALL_DEFINE], [_SYSCALL_DEFINE(_ARG1$1, _ARG2$1)])
@@ -652,7 +626,7 @@ m4_define([PUSHREF_REF_DEFINE], [
                       [SHAREMIND_MI_TRY_EXCEPT(SHAREMIND_MI_REF_CAN_READ(srcRef),
                                                SHAREMIND_VM_PROCESS_INVALID_ARGUMENT);])
         ])
-        SHAREMIND_MI_PUSHREF_REF_$1(srcRef)]),
+        SHAREMIND_MI_PUSHREF_REF_$1(*srcRef)]),
     DO_DISPATCH, PREPARE_FINISH)])
 PUSHREF_REF_DEFINE([cref], [cref])
 PUSHREF_REF_DEFINE([cref], [ref])
@@ -666,7 +640,6 @@ m4_define([_PUSHREF_MEM_DEFINE], [
     ARGS(1), NO_PREPARATION, NO_IMPL_SUFFIX,
     IMPL([
         const SHAREMIND_T_CodeBlock * SHAREMIND_RESTRICT srcPtr;
-        SHAREMIND_T_MemorySlot * srcSlot;
         SHAREMIND_MI_GET_CONST_$2(srcPtr, SHAREMIND_MI_ARG_AS(1, sizet));
         SHAREMIND_MI_MEM_GET_SLOT_OR_EXCEPT(SHAREMIND_MI_BLOCK_AS(srcPtr,uint64), srcSlot);
         COMMENT([
@@ -776,7 +749,6 @@ m4_define([_PUSHREFPART_MEM_DEFINE], [
         const SHAREMIND_T_CodeBlock * srcPtr;
         const SHAREMIND_T_CodeBlock * m4_ifelse($2, [imm], [SHAREMIND_RESTRICT]) offset;
         const SHAREMIND_T_CodeBlock * m4_ifelse($2, [imm], [SHAREMIND_RESTRICT]) nBytes;
-        SHAREMIND_T_MemorySlot * srcSlot;
         SHAREMIND_MI_GET_CONST_$2(srcPtr, SHAREMIND_MI_ARG_AS(1, sizet));
         SHAREMIND_MI_MEM_GET_SLOT_OR_EXCEPT(SHAREMIND_MI_BLOCK_AS(srcPtr,uint64), srcSlot);
         COMMENT([
