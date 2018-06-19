@@ -23,7 +23,7 @@ PROJECT(SharemindVmM4 VERSION "0.3.0" LANGUAGES)
 INCLUDE("${CMAKE_CURRENT_SOURCE_DIR}/config.local" OPTIONAL)
 INCLUDE("${CMAKE_CURRENT_BINARY_DIR}/config.local" OPTIONAL)
 
-FIND_PACKAGE(SharemindCMakeHelpers REQUIRED)
+FIND_PACKAGE(SharemindCMakeHelpers 1.2 REQUIRED)
 
 SharemindSetProjectVersion()
 
