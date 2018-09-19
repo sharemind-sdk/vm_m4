@@ -219,34 +219,35 @@ effectively ignored (this replicates AMD64 default behaviour).
 
 ## The "common" Namespace (0x00)
 
-| Instruction              | Prefix     | Description      | Implemented? |
-|--------------------------|------------|------------------|--------------|
-| common.nop               | `0x000000` | no operation     | Yes          |
-| common.trap              | `0x000001` | trap             | Yes          |
-| common.mov               | `0x0001`   | move value       | Yes          |
-| common.proc.call         | `0x000200` | call a procedure from the current code segment | Yes |
-| common.proc.lnkcall      | `0x000201` | call a procedure from another linked code segment | No |
-| common.proc.syscall      | `0x000202` | call a system procedure | Yes |
-| common.proc.return       | `0x000203` | return from the current proceure | Yes |
-| common.proc.push         | `0x000204` | push a value onto the next procedure stack | Yes |
-| common.proc.pushref      | `0x000205` | push a reference onto the next procedure reference stack | Yes |
-| common.proc.pushrefpart  | `0x000206` | push a partial reference onto the next procedure reference stack | Yes |
-| common.proc.pushcref     | `0x000207` | push a constant reference onto the next procedure constant reference stack | Yes |
-| common.proc.pushcrefpart | `0x000208` | push a partial constant reference onto the next procedure constant reference stack | Yes |
-| common.proc.clrstack     | `0x000209` | clears all the next procedure stacks | Yes |
-| common.proc.resizestack  | `0x00020a` | resizes the current stack frame | Yes |
-| common.proc.getrefsize   | `0x00020c` | gets the size of the given mutable reference in bytes | Yes |
-| common.proc.getcrefsize  | `0x00020d` | gets the size of the given constant reference in bytes | Yes |
-| common.mem.alloc         | `0x000300` | allocates memory | Yes          |
-| common.mem.free          | `0x000301` | frees allocated memory | Yes    |
-| common.mem.getmemsize    | `0x000302` | gets the size of the given memory area in bytes | Yes |
-| common.mem.getnrefs      | `0x000303` | gets the number of references the given memory area has | No |
-| common.mem.dup           | `0x000304` | duplicates the given memory | No |
-| common.convert           | `0x0004`   | converts between values | Yes   |
-| common.fpu.getstate      | `0x000500` | reads the state of the FPU | Yes |
-| common.fpu.setstate      | `0x000501` | sets the state of the FPU | Yes |
-| common.halt              | `0x00ff00` | ends program execution | Yes    |
-| common.except            | `0x00ff01` | throws an user exception | Yes |
+| Instruction              | Prefix       | Description      | Implemented? |
+|--------------------------|--------------|------------------|--------------|
+| common.nop               | `0x000000`   | no operation     | Yes          |
+| common.trap              | `0x000001`   | trap             | Yes          |
+| common.mov               | `0x0001`     | move value       | Yes          |
+| common.proc.call         | `0x000200`   | call a procedure from the current code segment | Yes |
+| common.proc.lnkcall      | `0x000201`   | call a procedure from another linked code segment | No |
+| common.proc.syscall      | `0x000202`   | call a system procedure | Yes |
+| common.proc.return       | `0x000203`   | return from the current proceure | Yes |
+| common.proc.push         | `0x000204`   | push a value onto the next procedure stack | Yes |
+| common.proc.pushref      | `0x000205`   | push a reference onto the next procedure reference stack | Yes |
+| common.proc.pushrefpart  | `0x000206`   | push a partial reference onto the next procedure reference stack | Yes |
+| common.proc.pushcref     | `0x000207`   | push a constant reference onto the next procedure constant reference stack | Yes |
+| common.proc.pushcrefpart | `0x000208`   | push a partial constant reference onto the next procedure constant reference stack | Yes |
+| common.proc.clrstack     | `0x000209`   | clears all the next procedure stacks | Yes |
+| common.proc.resizestack  | `0x00020a`   | resizes the current stack frame | Yes |
+| common.proc.getrefsize   | `0x00020c`   | gets the size of the given mutable reference in bytes | Yes |
+| common.proc.getcrefsize  | `0x00020d`   | gets the size of the given constant reference in bytes | Yes |
+| common.mem.alloc         | `0x000300`   | allocates memory | Yes          |
+| common.mem.free          | `0x000301`   | frees allocated memory | Yes    |
+| common.mem.getmemsize    | `0x000302`   | gets the size of the given memory area in bytes | Yes |
+| common.mem.getnrefs      | `0x000303`   | gets the number of references the given memory area has | No |
+| common.mem.dup           | `0x000304`   | duplicates the given memory | No |
+| common.convert           | `0x0004`     | converts between values | Yes   |
+| common.fpu.getstate      | `0x000500`   | reads the state of the FPU | Yes |
+| common.fpu.setstate      | `0x000501`   | sets the state of the FPU | Yes |
+| common.halt              | `0x00ff00`   | ends program execution | Yes    |
+| common.except            | `0x00ff0100` | throws an user exception | Yes |
+| common.user_except       | `0x00ff0101` | throws an user exception | Yes |
 
 
 ### common.nop (0x000000)
@@ -699,16 +700,30 @@ Arguments:
      2<sup>32</sup>-1)
 
 
-### common.except (0x00ff01)
+### common.except (0x00ff0100)
 
-Halts program execution with an user exception.
+Halts program execution with an user exception. This system call is deprecated.
+Use common.user_except instead.
 
 |  byte 0  |  byte 1  |  byte 2  |  byte 3  |  byte 4  |  byte 5  |  byte 6  |  byte 7  |  arg 1  |
 |----------|----------|----------|----------|----------|----------|----------|----------|---------|
-|`00000000`|`11111111`|`00000001`|`........`|`........`|`........`|`........`|`........`| errnum  |
+|`00000000`|`11111111`|`00000001`|`00000000`|`........`|`........`|`........`|`........`| errnum  |
 
 Arguments:
   1. An user exception code.
+
+
+### common.user_except (0x00ff0100)
+
+Halts program execution with an user exception given a custom message contained
+on the top of the constant reference stack. If there constant reference stack is
+empty, then errors.
+
+|  byte 0  |  byte 1  |  byte 2  |  byte 3  |  byte 4  |  byte 5  |  byte 6  |  byte 7  |
+|----------|----------|----------|----------|----------|----------|----------|----------|
+|`00000000`|`11111111`|`00000001`|`00000001`|`........`|`........`|`........`|`........`|
+
+Arguments: None.
 
 
 ## The "arith" Namespace (0x01)
