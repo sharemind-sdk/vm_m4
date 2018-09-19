@@ -246,7 +246,7 @@ effectively ignored (this replicates AMD64 default behaviour).
 | common.fpu.getstate      | `0x000500`   | reads the state of the FPU | Yes |
 | common.fpu.setstate      | `0x000501`   | sets the state of the FPU | Yes |
 | common.halt              | `0x00ff00`   | ends program execution | Yes    |
-| common.except            | `0x00ff0100` | throws an user exception | Yes |
+| common.except            | `0x00ff0100` | throws an user exception (deprecated) | Yes |
 | common.user_except       | `0x00ff0101` | throws an user exception | Yes |
 
 
@@ -702,8 +702,8 @@ Arguments:
 
 ### common.except (0x00ff0100)
 
-Halts program execution with an user exception. This system call is deprecated.
-Use common.user_except instead.
+Halts program execution with an user exception. This system call is deprecated,
+use common.user_except instead.
 
 |  byte 0  |  byte 1  |  byte 2  |  byte 3  |  byte 4  |  byte 5  |  byte 6  |  byte 7  |  arg 1  |
 |----------|----------|----------|----------|----------|----------|----------|----------|---------|
@@ -713,7 +713,7 @@ Arguments:
   1. An user exception code.
 
 
-### common.user_except (0x00ff0100)
+### common.user_except (0x00ff0101)
 
 Halts program execution with an user exception given a custom message contained
 on the top of the constant reference stack. If there constant reference stack is
