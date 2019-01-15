@@ -676,12 +676,14 @@ Sets the state of the FPU.
 |----------|----------|----------|----------|----------|----------|----------|----------|---------|
 |`00000000`|`00000101`|`00000000`|OLB<sub>src</sub>|`........`|`........`|`........`|`........`| src |
 
-  * OLB<sub>src</sub> - the [operand location](#olb) (reg or stack) where to
-    read the contents of the [FPU state register](#fpu) from.
+  * OLB<sub>src</sub> - the [operand location](#olb) (imm, reg or stack) where
+    to read the contents of the [FPU state register](#fpu) from.
 
 Arguments:
-  1. The 64-bit unsigned index of the destination register or stack slot where
-     to read the contents of the [FPU state register](#fpu) from.
+  1. If OLB<sub>src</sub> ⊂ { reg, stack }, the 64-bit unsigned index of the
+     destination register or stack slot where to read the contents of the
+     [FPU state register](#fpu) from. Otherwise, if OLB<sub>src</sub> = imm, the
+     immediate value to set the FPU state register to.
 
 
 ### common.halt (0x00ff00)
