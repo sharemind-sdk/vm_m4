@@ -23,7 +23,8 @@ PROJECT(SharemindVmM4 VERSION 0.4.1 LANGUAGES)
 INCLUDE("${CMAKE_CURRENT_SOURCE_DIR}/config.local" OPTIONAL)
 INCLUDE("${CMAKE_CURRENT_BINARY_DIR}/config.local" OPTIONAL)
 
-FIND_PACKAGE(SharemindCMakeHelpers 1.3 REQUIRED)
+FIND_PACKAGE(SharemindCMakeHelpers 1.6 REQUIRED)
+
 
 IF(${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
     FIND_PROGRAM(M4 gm4)
@@ -97,10 +98,14 @@ INSTALL(FILES ${M4_INSTALL_TARGETS}
 # CMake FIND_PACKAGE support:
 ################################################################################
 
-SharemindCreateCMakeFindFiles(
-    INCLUDE_DIRS
-        "${CMAKE_INSTALL_PREFIX}/include"
-)
+SharemindAddInterfaceLibrary(VmM4)
+ADD_DEPENDENCIES(VmM4 ${M4_INSTALL_TARGETS})
+TARGET_INCLUDE_DIRECTORIES(VmM4
+    INTERFACE
+        # $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src> # TODO
+        $<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include>
+    )
+SharemindCreateCMakeFindFilesForTarget(VmM4)
 
 
 ################################################################################
