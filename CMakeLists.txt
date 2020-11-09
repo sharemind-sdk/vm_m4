@@ -98,7 +98,12 @@ INSTALL(FILES ${M4_INSTALL_TARGETS}
 # CMake FIND_PACKAGE support:
 ################################################################################
 
-SharemindAddInterfaceLibrary(VmM4)
+FILE(GLOB MD_FILES "${CMAKE_CURRENT_SOURCE_DIR}/*.md")
+FILE(GLOB_RECURSE DOC_FILES "${CMAKE_CURRENT_SOURCE_DIR}/doc/*")
+FILE(GLOB LICENSE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE*")
+FILE(GLOB_RECURSE ALL_SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/m4/*")
+SharemindAddInterfaceLibrary(VmM4
+    EXPOSE_FILES ${MD_FILES} ${DOC_FILES} ${LICENSE_FILES} ${ALL_SOURCE_FILES})
 ADD_DEPENDENCIES(VmM4 ${M4_INSTALL_TARGETS})
 TARGET_INCLUDE_DIRECTORIES(VmM4
     INTERFACE
@@ -106,19 +111,6 @@ TARGET_INCLUDE_DIRECTORIES(VmM4
         $<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/include>
     )
 SharemindCreateCMakeFindFilesForTarget(VmM4)
-
-
-################################################################################
-# Misc. files
-################################################################################
-
-FILE(GLOB MD_FILES "${CMAKE_CURRENT_SOURCE_DIR}/*.md")
-FILE(GLOB_RECURSE DOC_FILES "${CMAKE_CURRENT_SOURCE_DIR}/doc/*")
-FILE(GLOB LICENSE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE*")
-FILE(GLOB_RECURSE ALL_SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/m4/*")
-ADD_CUSTOM_TARGET("include_MISC_FILES_in_IDE" SOURCES
-    ${MD_FILES} ${DOC_FILES} ${LICENSE_FILES} ${ALL_SOURCE_FILES}
-)
 
 
 # Packaging:
