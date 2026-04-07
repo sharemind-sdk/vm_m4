@@ -17,7 +17,7 @@
 # For further information, please contact us at sharemind@cyber.ee.
 #
 
-CMAKE_MINIMUM_REQUIRED(VERSION "3.0.0")
+CMAKE_MINIMUM_REQUIRED(VERSION 3.18)
 PROJECT(SharemindVmM4 VERSION 0.5.0 LANGUAGES)
 
 INCLUDE("${CMAKE_CURRENT_SOURCE_DIR}/config.local" OPTIONAL)
